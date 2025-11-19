@@ -1009,54 +1009,7 @@
                 <p>Explore our comprehensive collection of medical notes organized by specialty</p>
             </div>
 
-            <div class="categories">
-                <div class="category-card" onclick="showCategory('Medical')">
-                    <div class="admin-controls" id="medicalLibAdminControls">
-                        <button class="admin-btn edit" onclick="event.stopPropagation(); editCategory('Medical')" title="Edit Category">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                        <button class="admin-btn add" onclick="event.stopPropagation(); addSubcategory('Medical')" title="Add Subcategory">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                    <div class="category-icon medical">
-                        <i class="fas fa-heartbeat"></i>
-                    </div>
-                    <h3>Medical</h3>
-                    <p>Cardiology, Endocrinology, Respiratory, Gastroenterology</p>
-                </div>
-                <div class="category-card" onclick="showCategory('Surgical')">
-                    <div class="admin-controls" id="surgicalLibAdminControls">
-                        <button class="admin-btn edit" onclick="event.stopPropagation(); editCategory('Surgical')" title="Edit Category">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                        <button class="admin-btn add" onclick="event.stopPropagation(); addSubcategory('Surgical')" title="Add Subcategory">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                    <div class="category-icon surgical">
-                        <i class="fas fa-user-md"></i>
-                    </div>
-                    <h3>Surgical</h3>
-                    <p>General Surgery, Orthopedics, Neurosurgery</p>
-                </div>
-                <div class="category-card" onclick="showCategory('Specialty')">
-                    <div class="admin-controls" id="specialtyLibAdminControls">
-                        <button class="admin-btn edit" onclick="event.stopPropagation(); editCategory('Specialty')" title="Edit Category">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                        <button class="admin-btn add" onclick="event.stopPropagation(); addSubcategory('Specialty')" title="Add Subcategory">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                    <div class="category-icon specialty">
-                        <i class="fas fa-user-md"></i>
-                    </div>
-                    <h3>Specialty</h3>
-                    <p>Psychiatry, Dermatology, Radiology</p>
-                </div>
-            </div>
-        </div>
+            <div class="categories" id="dynamicHomeCategories"></div>
 
         <!-- Category Page -->
         <div id="categoryPage" class="page hidden">
