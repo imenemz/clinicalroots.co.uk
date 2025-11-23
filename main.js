@@ -70,7 +70,6 @@ const elements = {
     loginModal: qs("loginModal"),
     loginBtn: qs("loginBtn"),
     userMenu: qs("userMenu"),
-    userEmailDisplay: qs("userEmailDisplay"),
     noteForm: qs("noteForm"),
     noteFormTitle: qs("noteFormTitle"),
     noteFormCategory: qs("noteFormCategory"),
@@ -104,8 +103,10 @@ function initTheme() {
     const saved = localStorage.getItem("theme");
     if (saved) {
         document.body.setAttribute("data-theme", saved);
-    } else if (window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    } else if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
         document.body.setAttribute("data-theme", "dark");
     } else {
         document.body.setAttribute("data-theme", "light");
@@ -193,6 +194,11 @@ function hideUserMenu() {
     if (dd) dd.style.display = "none";
 }
 
+// simple stub for signup button
+function showSignup() {
+    alert("Sign up is not enabled yet. Only the admin login is available.");
+}
+
 // --------------------------
 // CATEGORY FETCH & HELPERS
 // --------------------------
@@ -242,6 +248,47 @@ function getDescendantsOf(rootId) {
     );
 }
 
+// helper used by home cards: showCategory('Medical')
+async function showCategory(rootName) {
+    if (!flatCategories.length) {
+        await fetchCategoriesTree();
+    }
+    const root = flatCategories.find(
+        (c) => !c.parent_id && c.name === rootName
+    );
+    if (!root) {
+        alert(`Category "${rootName}" not found in backend.`);
+        return;
+    }
+    openCategoryById(root.id);
+}
+
+// used by the old "addSubcategory('Medical')" buttons
+async function addSubcategory(rootName) {
+    if (!currentUser || currentUser.role !== "admin") {
+        openLogin();
+        return;
+    }
+    if (!flatCategories.length) {
+        await fetchCategoriesTree();
+    }
+    const root = flatCategories.find(
+        (c) => !c.parent_id && c.name === rootName
+    );
+    if (!root) {
+        alert("Root category not found in backend.");
+        return;
+    }
+    promptAddSubcategory(root.id);
+}
+
+// used by "editCategory('Medical')" – but we protect roots
+function editCategory(rootName) {
+    alert(
+        "Top-level categories (Medical, Surgical, Specialty) cannot be renamed. You can add/edit subcategories inside them."
+    );
+}
+
 // --------------------------
 // PUBLIC CATEGORY / NOTES VIEW
 // --------------------------
@@ -250,9 +297,7 @@ async function fetchAndRenderTopCategories() {
         await fetchCategoriesTree();
     }
 
-    const grid =
-        document.getElementById("subcategoriesGrid") ||
-        document.querySelector(".categories");
+    const grid = qs("subcategoriesGrid");
     if (!grid) return;
 
     grid.innerHTML = "";
@@ -289,7 +334,7 @@ async function openCategoryById(catId) {
     subcontainer.innerHTML = "";
 
     // Admin button to add subcategory under this category
-    if (currentUser && currentUser.role === "admin") {
+    if (currentUser && currentUser.role === "admin" && cat) {
         const btnWrap = document.createElement("div");
         btnWrap.style.marginBottom = "1rem";
 
@@ -311,7 +356,6 @@ async function openCategoryById(catId) {
         let adminControlsHtml = "";
         if (currentUser && currentUser.role === "admin") {
             const isRoot = !ch.parent_id;
-            // Do not allow edit/delete of 3 root cats (enforced in backend too)
             if (!isRoot) {
                 adminControlsHtml = `
                     <div class="admin-controls">
@@ -342,7 +386,7 @@ async function openCategoryById(catId) {
     notesContainer.innerHTML = "";
 
     // Admin "add note" button for this category
-    if (currentUser && currentUser.role === "admin") {
+    if (currentUser && currentUser.role === "admin" && cat) {
         const btnWrap = document.createElement("div");
         btnWrap.style.marginBottom = "1rem";
 
@@ -448,7 +492,6 @@ async function promptDeleteCategory(catId) {
 // ADMIN – NOTES
 // --------------------------
 function fillNoteFormSelects(preselectedCategoryId = null) {
-    // root select = 3 main categories
     const rootSelect = elements.noteFormCategory;
     const subSelect = elements.noteFormSubcategory;
     if (!rootSelect || !subSelect) return;
@@ -471,7 +514,7 @@ function fillNoteFormSelects(preselectedCategoryId = null) {
         descendants.forEach((c) => {
             const opt = document.createElement("option");
             opt.value = c.id;
-            opt.textContent = c.path.replace(/^.+ :: /, ""); // drop root name
+            opt.textContent = c.path.replace(/^.+ :: /, "");
             subSelect.appendChild(opt);
         });
         if (selectedLeafId) {
@@ -483,7 +526,6 @@ function fillNoteFormSelects(preselectedCategoryId = null) {
         populateSubs(rootSelect.value);
     };
 
-    // preselect if we know target category
     if (preselectedCategoryId) {
         const root = getRootForCategory(preselectedCategoryId);
         if (root) {
@@ -505,7 +547,6 @@ function showAddNote(categoryId = null) {
 
     elements.noteFormTitle.value = "";
     elements.noteFormContent.innerHTML = "";
-    // sources & tags in HTML – we won't send to backend yet
     const sources = qs("noteFormSources");
     const tags = qs("noteFormTags");
     if (sources) sources.value = "";
@@ -604,7 +645,6 @@ async function showAdminNotes(status) {
         return;
     }
 
-    // status: 'published' | 'drafts' | 'bin'
     switchView("adminNotes");
 
     const titleEl = qs("adminNotesTitle");
@@ -614,7 +654,8 @@ async function showAdminNotes(status) {
         descEl.textContent = "View and edit published content.";
     } else if (status === "drafts") {
         titleEl.textContent = "Draft Notes";
-        descEl.textContent = "Notes saved as draft (not visible to users).";
+        descEl.textContent =
+            "Notes saved as draft (not visible to users).";
     } else {
         titleEl.textContent = "Recycle Bin";
         descEl.textContent =
@@ -667,8 +708,8 @@ async function showAdminNotes(status) {
                     <h4>${n.title}</h4>
                     <div class="note-meta">${catPath}</div>
                     <div class="note-views">${n.views} views · ${
-                n.is_published ? "Published" : "Draft"
-            }</div>
+                        n.is_published ? "Published" : "Draft"
+                    }</div>
                 </div>
                 ${actionsHtml}
             `;
@@ -691,7 +732,6 @@ function editNote(id) {
     elements.noteFormTitle.value = note.title;
     elements.noteFormContent.innerHTML = note.content || "";
 
-    // preselect category
     fillNoteFormSelects(note.category_id);
 }
 
@@ -765,7 +805,6 @@ async function fetchAdminStats() {
 }
 
 async function fetchTopNotes() {
-    // optional; fill your own list if you add it to HTML
     try {
         await api("/api/note_views");
     } catch (err) {
@@ -806,7 +845,7 @@ async function changeAdminPassword() {
 }
 
 // --------------------------
-// ABOUT / TOOLS (simple client-side editing)
+// ABOUT / TOOLS (client-side editing)
 // --------------------------
 function editAboutContent() {
     if (!currentUser || currentUser.role !== "admin") return;
@@ -865,7 +904,9 @@ function editToolsContent() {
 // NAV / VIEW HELPERS
 // --------------------------
 function hideAllPages() {
-    document.querySelectorAll(".page").forEach((p) => p.classList.add("hidden"));
+    document.querySelectorAll(".page").forEach((p) =>
+        p.classList.add("hidden")
+    );
 }
 
 function switchView(name) {
@@ -876,7 +917,6 @@ function switchView(name) {
 
 function showHome() {
     switchView("home");
-    fetchAndRenderTopCategories();
 }
 
 function showLibrary() {
@@ -897,12 +937,32 @@ function showAbout() {
 }
 
 function showManageCategories() {
-    // just open the category page with top-level categories
     switchView("category");
     qs("categoryTitle").textContent = "Manage Categories";
     qs("categoryDescription").textContent =
         "Click a category to drill down. You can add/edit/delete subcategories (but not the top 3 roots).";
-    fetchAndRenderTopCategories();
+
+    if (!flatCategories.length) {
+        fetchCategoriesTree().then(renderRootManageCategories);
+    } else {
+        renderRootManageCategories();
+    }
+}
+
+function renderRootManageCategories() {
+    const subcontainer = qs("subcategoriesContainer");
+    subcontainer.innerHTML = "";
+    const roots = flatCategories.filter((c) => !c.parent_id);
+    roots.forEach((c) => {
+        const card = document.createElement("div");
+        card.className = "subcategory-card";
+        card.onclick = () => openCategoryById(c.id);
+        card.innerHTML = `
+            <h4>${c.name}</h4>
+            <p>${c.path}</p>
+        `;
+        subcontainer.appendChild(card);
+    });
 }
 
 // --------------------------
@@ -922,6 +982,17 @@ document.addEventListener("DOMContentLoaded", () => {
             closeLogin();
         }
     });
+
+    // back buttons
+    const subBack = qs("subcategoryBackBtn");
+    if (subBack) subBack.addEventListener("click", () => showLibrary());
+
+    const noteBack = qs("noteBackBtn");
+    if (noteBack)
+        noteBack.addEventListener("click", () => {
+            if (currentCategoryId) openCategoryById(currentCategoryId);
+            else showLibrary();
+        });
 
     fetchCategoriesTree().then(() => {
         showHome();
