@@ -82,11 +82,11 @@ const elements = {
 };
 
 let currentUser = null;
-let currentCategoryId = null; // category currently being viewed
+let currentCategoryId = null;
 let categoriesTree = [];
-let flatCategories = []; // {id, name, parent_id, path}
-let adminNoteCache = {}; // id -> note
-let editingNoteId = null; // null = create mode
+let flatCategories = [];   // {id, name, parent_id, path}
+let adminNoteCache = {};   // id -> note
+let editingNoteId = null;  // null = create mode
 
 // --------------------------
 // THEME
@@ -103,10 +103,8 @@ function initTheme() {
     const saved = localStorage.getItem("theme");
     if (saved) {
         document.body.setAttribute("data-theme", saved);
-    } else if (
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
+    } else if (window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches) {
         document.body.setAttribute("data-theme", "dark");
     } else {
         document.body.setAttribute("data-theme", "light");
@@ -194,11 +192,6 @@ function hideUserMenu() {
     if (dd) dd.style.display = "none";
 }
 
-// simple stub for signup button
-function showSignup() {
-    alert("Sign up is not enabled yet. Only the admin login is available.");
-}
-
 // --------------------------
 // CATEGORY FETCH & HELPERS
 // --------------------------
@@ -248,56 +241,18 @@ function getDescendantsOf(rootId) {
     );
 }
 
-// helper used by home cards: showCategory('Medical')
-async function showCategory(rootName) {
-    if (!flatCategories.length) {
-        await fetchCategoriesTree();
-    }
-    const root = flatCategories.find(
-        (c) => !c.parent_id && c.name === rootName
-    );
-    if (!root) {
-        alert(`Category "${rootName}" not found in backend.`);
-        return;
-    }
-    openCategoryById(root.id);
-}
-
-// used by the old "addSubcategory('Medical')" buttons
-async function addSubcategory(rootName) {
-    if (!currentUser || currentUser.role !== "admin") {
-        openLogin();
-        return;
-    }
-    if (!flatCategories.length) {
-        await fetchCategoriesTree();
-    }
-    const root = flatCategories.find(
-        (c) => !c.parent_id && c.name === rootName
-    );
-    if (!root) {
-        alert("Root category not found in backend.");
-        return;
-    }
-    promptAddSubcategory(root.id);
-}
-
-// used by "editCategory('Medical')" – but we protect roots
-function editCategory(rootName) {
-    alert(
-        "Top-level categories (Medical, Surgical, Specialty) cannot be renamed. You can add/edit subcategories inside them."
-    );
-}
-
 // --------------------------
 // PUBLIC CATEGORY / NOTES VIEW
 // --------------------------
+
+// ONLY renders into Library page (#subcategoriesGrid)
+// does NOT touch the big 3 boxes on the Home page anymore
 async function fetchAndRenderTopCategories() {
     if (!flatCategories.length) {
         await fetchCategoriesTree();
     }
 
-    const grid = qs("subcategoriesGrid");
+    const grid = document.getElementById("subcategoriesGrid");
     if (!grid) return;
 
     grid.innerHTML = "";
@@ -329,7 +284,6 @@ async function openCategoryById(catId) {
     switchView("category");
 
     const children = flatCategories.filter((c) => c.parent_id === catId);
-
     const subcontainer = qs("subcategoriesContainer");
     subcontainer.innerHTML = "";
 
@@ -486,6 +440,28 @@ async function promptDeleteCategory(catId) {
     } catch (err) {
         alert("Error deleting category: " + err.message);
     }
+}
+
+// stubs for the admin buttons on the 3 big home cards
+async function addSubcategory(rootName) {
+    if (!currentUser || currentUser.role !== "admin") return;
+    if (!flatCategories.length) {
+        await fetchCategoriesTree();
+    }
+    const root = flatCategories.find(
+        (c) => !c.parent_id && c.name === rootName
+    );
+    if (!root) {
+        alert("Root category not found yet, try reloading page.");
+        return;
+    }
+    promptAddSubcategory(root.id);
+}
+
+function editCategory(rootName) {
+    alert(
+        "Editing the 3 main root categories is disabled. You can only edit their subcategories."
+    );
 }
 
 // --------------------------
@@ -654,8 +630,7 @@ async function showAdminNotes(status) {
         descEl.textContent = "View and edit published content.";
     } else if (status === "drafts") {
         titleEl.textContent = "Draft Notes";
-        descEl.textContent =
-            "Notes saved as draft (not visible to users).";
+        descEl.textContent = "Notes saved as draft (not visible to users).";
     } else {
         titleEl.textContent = "Recycle Bin";
         descEl.textContent =
@@ -708,8 +683,8 @@ async function showAdminNotes(status) {
                     <h4>${n.title}</h4>
                     <div class="note-meta">${catPath}</div>
                     <div class="note-views">${n.views} views · ${
-                        n.is_published ? "Published" : "Draft"
-                    }</div>
+                n.is_published ? "Published" : "Draft"
+            }</div>
                 </div>
                 ${actionsHtml}
             `;
@@ -822,7 +797,7 @@ async function showAdminDashboard() {
     await fetchAdminStats();
 }
 
-// Simple change-password flow using prompts
+// change-password endpoint (you still need to add it in Flask)
 async function changeAdminPassword() {
     if (!currentUser || currentUser.role !== "admin") {
         alert("Admin only.");
@@ -845,7 +820,7 @@ async function changeAdminPassword() {
 }
 
 // --------------------------
-// ABOUT / TOOLS (client-side editing)
+// ABOUT / TOOLS (client-side editing only)
 // --------------------------
 function editAboutContent() {
     if (!currentUser || currentUser.role !== "admin") return;
@@ -904,9 +879,7 @@ function editToolsContent() {
 // NAV / VIEW HELPERS
 // --------------------------
 function hideAllPages() {
-    document.querySelectorAll(".page").forEach((p) =>
-        p.classList.add("hidden")
-    );
+    document.querySelectorAll(".page").forEach((p) => p.classList.add("hidden"));
 }
 
 function switchView(name) {
@@ -916,7 +889,7 @@ function switchView(name) {
 }
 
 function showHome() {
-    switchView("home");
+    switchView("home");      // no more dynamic fetch here
 }
 
 function showLibrary() {
@@ -936,30 +909,41 @@ function showAbout() {
     switchView("about");
 }
 
-function showManageCategories() {
+// Manage Categories: show the 3 roots, then drill down with openCategoryById
+async function showManageCategories() {
+    await fetchCategoriesTree();
+
     switchView("category");
     qs("categoryTitle").textContent = "Manage Categories";
     qs("categoryDescription").textContent =
         "Click a category to drill down. You can add/edit/delete subcategories (but not the top 3 roots).";
 
-    if (!flatCategories.length) {
-        fetchCategoriesTree().then(renderRootManageCategories);
-    } else {
-        renderRootManageCategories();
-    }
-}
-
-function renderRootManageCategories() {
     const subcontainer = qs("subcategoriesContainer");
     subcontainer.innerHTML = "";
+
     const roots = flatCategories.filter((c) => !c.parent_id);
-    roots.forEach((c) => {
+
+    roots.forEach((r) => {
         const card = document.createElement("div");
         card.className = "subcategory-card";
-        card.onclick = () => openCategoryById(c.id);
+        card.onclick = () => openCategoryById(r.id);
+
+        let adminControlsHtml = "";
+        if (currentUser && currentUser.role === "admin") {
+            adminControlsHtml = `
+                <div class="admin-controls">
+                    <button class="admin-btn add" title="Add subcategory"
+                        onclick="event.stopPropagation(); promptAddSubcategory(${r.id})">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            `;
+        }
+
         card.innerHTML = `
-            <h4>${c.name}</h4>
-            <p>${c.path}</p>
+            ${adminControlsHtml}
+            <h4>${r.name}</h4>
+            <p>${r.path}</p>
         `;
         subcontainer.appendChild(card);
     });
@@ -983,18 +967,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // back buttons
-    const subBack = qs("subcategoryBackBtn");
-    if (subBack) subBack.addEventListener("click", () => showLibrary());
+    // Preload categories (for later) but don't touch DOM yet
+    fetchCategoriesTree().catch((err) =>
+        console.error("Error fetching categories:", err)
+    );
 
-    const noteBack = qs("noteBackBtn");
-    if (noteBack)
-        noteBack.addEventListener("click", () => {
-            if (currentCategoryId) openCategoryById(currentCategoryId);
-            else showLibrary();
-        });
-
-    fetchCategoriesTree().then(() => {
-        showHome();
-    });
+    // Show static home content
+    showHome();
 });
