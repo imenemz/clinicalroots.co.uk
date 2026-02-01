@@ -984,6 +984,18 @@ function showAbout() {
     switchView("about");
 }
 
+async function openRootCategory(rootName) {
+  if (!flatCategories.length) await fetchCategoriesTree();
+  const root = flatCategories.find((c) => !c.parent_id && c.name === rootName);
+  if (!root) {
+    alert(`Root category "${rootName}" not found.`);
+    return;
+  }
+  showLibrary();
+  openCategoryById(root.id);
+}
+
+
 // Manage Categories: show the 3 roots, then drill down with openCategoryById
 async function showManageCategories() {
     await fetchCategoriesTree();
