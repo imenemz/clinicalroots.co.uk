@@ -87,7 +87,7 @@ const elements = {
         ia: qs("iaPage"),
         about: qs("aboutPage"),
     },
-    subcategoriesGrid: qs("subcategoriesContainer"),
+    subcategoriesGrid: qs("subcategoriesGrid"),
     notesContainer: qs("notesContainer"),
     adminNotesContainer: qs("adminNotesContainer"),
     noteTitle: qs("noteTitle"),
