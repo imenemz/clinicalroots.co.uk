@@ -302,72 +302,90 @@ async function openCategoryById(catId) {
     currentCategoryId = catId;
 
     const cat = getCategoryById(catId);
-    const header = qs("categoryTitle");
-    if (header) header.textContent = cat ? cat.name : "Category";
-
-    const desc = qs("categoryDescription");
-    if (desc) desc.textContent = cat ? cat.path : "";
-
-    switchView("category");
-
     const children = flatCategories.filter((c) => c.parent_id === catId);
-    const subcontainer = qs("subcategoriesContainer");
-    subcontainer.innerHTML = "";
 
-    // Admin button to add subcategory under this category
-    if (currentUser && currentUser.role === "admin" && cat) {
-        const btnWrap = document.createElement("div");
-        btnWrap.style.marginBottom = "1rem";
+    // Decide which page to show
+    if (children.length > 0) {
+        // Parent category => show subcategories
+        switchView("category");
 
-        const btn = document.createElement("button");
-        btn.className = "btn btn-success";
-        btn.textContent = `+ Add subcategory under "${cat.name}"`;
-        btn.onclick = () => promptAddSubcategory(catId);
+        const header = qs("categoryTitle");
+        const desc = qs("categoryDescription");
+        if (header) header.textContent = cat ? cat.name : "Category";
+        if (desc) desc.textContent = cat ? cat.path : "";
 
-        btnWrap.appendChild(btn);
-        subcontainer.appendChild(btnWrap);
-    }
+        const subcontainer = qs("subcategoriesContainer");
+        if (subcontainer) subcontainer.innerHTML = "";
 
-    // Render child categories
-    children.forEach((ch) => {
-        const card = document.createElement("div");
-        card.className = "subcategory-card";
-        card.onclick = () => openCategoryById(ch.id);
+        // Admin button to add subcategory under this category
+        if (currentUser && currentUser.role === "admin" && cat && subcontainer) {
+            const btnWrap = document.createElement("div");
+            btnWrap.style.marginBottom = "1rem";
 
-        let adminControlsHtml = "";
-        if (currentUser && currentUser.role === "admin") {
-            const isRoot = !ch.parent_id;
-            if (!isRoot) {
-                adminControlsHtml = `
-                    <div class="admin-controls">
-                        <button class="admin-btn edit" title="Rename"
-                            onclick="event.stopPropagation(); promptRenameCategory(${ch.id})">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                        <button class="admin-btn delete" title="Delete"
-                            onclick="event.stopPropagation(); promptDeleteCategory(${ch.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-            }
+            const btn = document.createElement("button");
+            btn.className = "btn btn-success";
+            btn.textContent = `+ Add subcategory under "${cat.name}"`;
+            btn.onclick = () => promptAddSubcategory(catId);
+
+            btnWrap.appendChild(btn);
+            subcontainer.appendChild(btnWrap);
         }
 
-        card.innerHTML = `
-            ${adminControlsHtml}
-            <h4>${ch.name}</h4>
-            <p>${ch.path}</p>
-        `;
-        subcontainer.appendChild(card);
-    });
+        // Render child categories
+        if (subcontainer) {
+            children.forEach((ch) => {
+                const card = document.createElement("div");
+                card.className = "subcategory-card";
+                card.onclick = () => openCategoryById(ch.id);
 
-    // Notes in this category
+                let adminControlsHtml = "";
+                if (currentUser && currentUser.role === "admin") {
+                    const isRoot = !ch.parent_id;
+                    if (!isRoot) {
+                        adminControlsHtml = `
+                            <div class="admin-controls">
+                                <button class="admin-btn edit" title="Rename"
+                                    onclick="event.stopPropagation(); promptRenameCategory(${ch.id})">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                                <button class="admin-btn delete" title="Delete"
+                                    onclick="event.stopPropagation(); promptDeleteCategory(${ch.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
+
+                card.innerHTML = `
+                    ${adminControlsHtml}
+                    <h4>${ch.name}</h4>
+                    <p>${ch.path}</p>
+                `;
+                subcontainer.appendChild(card);
+            });
+        }
+
+        // IMPORTANT:
+        // Don’t render notes on the category page (because your notes list is on subcategoryPage)
+        return;
+    }
+
+    // Leaf category => show notes list (subcategory page)
+    switchView("subcategory");
+
+    const subTitle = qs("subcategoryTitle");
+    const subDesc = qs("subcategoryDescription");
+    if (subTitle) subTitle.textContent = cat ? cat.name : "Subcategory";
+    if (subDesc) subDesc.textContent = cat ? cat.path : "";
+
+    // Fetch notes for this leaf
     const notes = await api(`/api/notes?category=${catId}`);
     const notesContainer = qs("notesContainer");
-    notesContainer.innerHTML = "";
+    if (notesContainer) notesContainer.innerHTML = "";
 
-    // Admin "add note" button for this category
-    if (currentUser && currentUser.role === "admin" && cat) {
+    // Admin "add note" button for this subcategory
+    if (currentUser && currentUser.role === "admin" && cat && notesContainer) {
         const btnWrap = document.createElement("div");
         btnWrap.style.marginBottom = "1rem";
 
@@ -380,19 +398,31 @@ async function openCategoryById(catId) {
         notesContainer.appendChild(btnWrap);
     }
 
-    notes.forEach((n) => {
-        const card = document.createElement("div");
-        card.className = "note-item";
-        card.onclick = () => showNoteView(n.id);
-        card.innerHTML = `
-            <div class="note-info">
-                <h4>${n.title}</h4>
-                <div class="note-meta">${n.views} views</div>
-            </div>
-        `;
-        notesContainer.appendChild(card);
-    });
+    if (notesContainer) {
+        notes.forEach((n) => {
+            const card = document.createElement("div");
+            card.className = "note-item";
+            card.onclick = () => showNoteView(n.id);
+            card.innerHTML = `
+                <div class="note-info">
+                    <h4>${n.title}</h4>
+                    <div class="note-meta">${n.views} views</div>
+                </div>
+            `;
+            notesContainer.appendChild(card);
+        });
+
+        if (!notes.length) {
+            notesContainer.innerHTML += `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📝</div>
+                    <p>No notes in this subcategory yet.</p>
+                </div>
+            `;
+        }
+    }
 }
+
 
 async function showNoteView(noteId) {
     switchView("noteView");
@@ -568,6 +598,24 @@ function insertHeading() {
     if (!text) return;
     document.execCommand("insertHTML", false, `<h3>${text}</h3>`);
 }
+
+function insertSubHeading() {
+    const text = prompt("Sub-heading text:");
+    if (!text) return;
+
+    const html = `
+        <div class="subheading-block">
+            <div class="subheading-title">${text}</div>
+            <div class="subheading-body"><br></div>
+        </div>
+    `;
+
+    document.execCommand("insertHTML", false, html);
+
+    // keep focus in editor
+    if (elements.noteFormContent) elements.noteFormContent.focus();
+}
+
 
 function insertList() {
     document.execCommand("insertUnorderedList", false, null);
