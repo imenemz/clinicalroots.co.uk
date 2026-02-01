@@ -22,15 +22,41 @@ async function api(endpoint, opts = {}) {
     const url = apiUrl(endpoint);
     const options = { headers: apiHeaders(), ...opts };
 
-    const res = await fetch(url, options);
+    let res;
+    try {
+        res = await fetch(url, options);
+    } catch (err) {
+        console.error("Fetch failed:", { url, err });
+        throw new Error(
+            "Backend unreachable (PythonAnywhere app may be paused) or CORS/network error."
+        );
+    }
 
-    if (!res.ok) {
-        if (res.status === 401) {
+    // --- Handle 401 properly ---
+    if (res.status === 401) {
+        const hasToken = !!sessionStorage.getItem("jwt");
+
+        // If the user was trying to LOGIN and got 401 => wrong credentials
+        if (endpoint === "/api/login") {
+            const text = await res.text();
+            // backend sends {"message":"Invalid credentials"} but text() is fine
+            throw new Error(text || "Invalid credentials");
+        }
+
+        // If we had a token and got 401 => session expired
+        if (hasToken) {
             alert("Session expired. Please log in again.");
             handleLogout(false);
             openLogin();
             throw new Error("Unauthorized");
         }
+
+        // No token + 401 => just unauthorized access attempt
+        const text = await res.text();
+        throw new Error(text || "Unauthorized");
+    }
+
+    if (!res.ok) {
         const text = await res.text();
         throw new Error(text || `HTTP ${res.status}`);
     }
@@ -38,6 +64,7 @@ async function api(endpoint, opts = {}) {
     if (res.status === 204) return {};
     return res.json();
 }
+
 
 function qs(id) {
     return document.getElementById(id);
