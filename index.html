@@ -784,6 +784,33 @@
             background: var(--primary);
             color: white;
         }
+        
+        /* Sub-heading block inserted by SH button */
+        .subheading-block{
+          border-left: 4px solid var(--primary);
+          padding-left: 12px;
+          margin: 14px 0;
+        }
+        
+        .subheading-title{
+          font-weight: 700;
+          font-size: 1rem;          /* smaller than main H */
+          margin-bottom: 6px;
+          color: var(--text-dark);
+        }
+        
+        .subheading-body{
+          font-size: 0.95rem;
+          line-height: 1.5;
+          color: var(--text-dark);
+        }
+        
+        /* extra separation between subheading blocks */
+        .subheading-block + .subheading-block{
+          margin-top: 18px;
+          padding-top: 6px;
+        }
+
 
         .empty-state {
             text-align: center;
@@ -1174,6 +1201,10 @@
                             <button type="button" class="editor-btn" onclick="insertHeading()" title="Insert Heading">
                                 <i class="fas fa-heading"></i>
                             </button>
+                            <button type="button" class="editor-btn" onclick="insertSubHeading()" title="Insert Sub-heading">
+                                SH
+                            </button>
+
                             <button type="button" class="editor-btn" onclick="insertList()" title="Insert List">
                                 <i class="fas fa-list-ul"></i>
                             </button>
