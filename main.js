@@ -781,7 +781,7 @@ function changeTextColor() {
 
 
 function insertArrow() {
-    const arrow = prompt("Choose arrow: → ⇒ ⟶ ⮕", "→");
+    const arrow = prompt("add arrow: ⟶ , ⮕ ", "⮕ , ⟶");
     if (!arrow) return;
     document.execCommand("insertText", false, arrow + " ");
 }
