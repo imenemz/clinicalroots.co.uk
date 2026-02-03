@@ -819,44 +819,42 @@
         
         /* ===== SUB HEADINGS WITH VERTICAL LINE ===== */
         
-        .subheading-block {
-            position: relative;
-            margin: 1rem 0 1rem 1.2rem;
-            padding-left: 1.2rem;
+        .subheading-block{
+          position: relative;
+          margin: 1rem 0 1.2rem 1.2rem;
+          padding-left: 2.2rem;  /* MORE SPACE so bullets don't sit on the line */
         }
         
-        .subheading-block::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0.4rem;
-            bottom: 0.4rem;
-            width: 4px;
-            background-color: var(--primary);
-            border-radius: 2px;
+        /* Move the line a bit left so it doesn't collide with bullets */
+        .subheading-block::before{
+          content:"";
+          position:absolute;
+          left: 0.9rem;          /* line position */
+          top: 0.3rem;
+          bottom: 0.3rem;
+          width: 4px;
+          background: var(--primary);
+          border-radius: 2px;
         }
         
-        .subheading-title {
-            font-size: 1.4rem; /* same as heading */
-            font-weight: 600;
-            margin-bottom: 0.4rem;
+        .subheading-title{
+          font-size: 1.6rem;     /* adjust as you want */
+          font-weight: 700;
+          margin-bottom: 0.4rem;
         }
         
-        .subheading-body {
-            font-size: 1rem;
+        /* Lists inside subheading body: give them their own indent */
+        .subheading-body ul,
+        .subheading-body ol{
+          margin: 0.3rem 0 0.6rem;
+          padding-left: 1.6rem;  /* pushes bullets right */
+          list-style-position: outside;
         }
         
-        /* Stop line if empty body */
-        .subheading-body:empty::before {
-            display: none;
+        .subheading-body li{
+          margin: 0.25rem 0;
         }
 
-        
-        /* extra separation between subheading blocks */
-        .subheading-block + .subheading-block{
-          margin-top: 18px;
-          padding-top: 6px;
-        }
 
 
         .empty-state {
@@ -1251,12 +1249,15 @@
                             <button type="button" class="editor-btn" onclick="insertSubHeading()" title="Insert Sub-heading">
                                 SH
                             </button>
-
+                            <button type="button" class="editor-btn" onclick="changeTextColor()" title="Text Color">
+                                C
+                            </button>
+                            <button type="button" class="editor-btn" onclick="insertArrow()" title="Insert Arrow">
+                                →
+                            </button>
                             <button type="button" class="editor-btn" onclick="toggleFont()" title="Font">
                                 T
                             </button>
-
-
                             <button type="button" class="editor-btn" onclick="insertList()" title="Insert List">
                                 <i class="fas fa-list-ul"></i>
                             </button>
