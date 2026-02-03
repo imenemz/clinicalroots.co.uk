@@ -594,36 +594,153 @@ function formatText(cmd) {
 }
 
 function insertHeading() {
-    const text = prompt("Heading text:");
-    if (!text) return;
+  const text = prompt("Heading text:");
+  if (!text) return;
 
-    const html = `
-        <div class="heading-block">
-            <h2 class="main-heading">${text}</h2>
-            <div class="heading-content"></div>
-        </div>
-        <p><br></p>
-    `;
+  const html = `
+    <div class="heading-block">
+      <div class="main-heading">${text}</div>
+    </div>
+    <p><br></p>
+  `;
 
-    document.execCommand("insertHTML", false, html);
-    elements.noteFormContent.focus();
+  document.execCommand("insertHTML", false, html);
+  elements.noteFormContent.focus();
 }
 
 
 function insertSubHeading() {
-    const text = prompt("Sub-heading text:");
-    if (!text) return;
+  const text = prompt("Sub-heading text:");
+  if (!text) return;
 
-    const html = `
-        <div class="subheading-block">
-            <div class="subheading-title">${text}</div>
-            <div class="subheading-body"><br></div>
-        </div>
-    `;
+  const editor = elements.noteFormContent;
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
 
-    document.execCommand("insertHTML", false, html);
-    elements.noteFormContent.focus();
+  // Find nearest heading-block before cursor
+  const range = sel.getRangeAt(0);
+  let node = range.startContainer;
+
+  // walk up to element
+  if (node.nodeType === 3) node = node.parentElement;
+
+  // Search for previous heading-block in DOM order
+  let headingBlock = node.closest(".heading-block");
+
+  // If not inside a heading-block, find the last heading-block before cursor
+  if (!headingBlock) {
+    const all = Array.from(editor.querySelectorAll(".heading-block"));
+    headingBlock = all.reverse().find(hb => {
+      try {
+        return hb.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING;
+      } catch(e){ return false; }
+    });
+  }
+
+  // If still none, create a heading first
+  if (!headingBlock) {
+    document.execCommand("insertHTML", false, `<div class="heading-block"><div class="main-heading">Heading</div></div>`);
+    headingBlock = editor.querySelector(".heading-block:last-of-type");
+  }
+
+  const block = document.createElement("div");
+  block.className = "subheading-block";
+  block.innerHTML = `
+    <div class="subheading-title">${text}</div>
+    <div class="subheading-body"><p><br></p></div>
+  `;
+
+  headingBlock.appendChild(block);
+
+  // Move caret inside the subheading body
+  const body = block.querySelector(".subheading-body");
+  placeCaretAtStart(body);
+
+  editor.focus();
 }
+
+function placeCaretAtStart(el) {
+  const range = document.createRange();
+  const sel = window.getSelection();
+  range.selectNodeContents(el);
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+function isInsideSubheadingBody() {
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return null;
+  let node = sel.getRangeAt(0).startContainer;
+  if (node.nodeType === 3) node = node.parentElement;
+  return node ? node.closest(".subheading-body") : null;
+}
+
+function moveCaretAfter(element) {
+  const range = document.createRange();
+  const sel = window.getSelection();
+  range.setStartAfter(element);
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+function isEffectivelyEmpty(el) {
+  // empty if only <br> or whitespace
+  const text = el.textContent.replace(/\u00A0/g, " ").trim();
+  const hasNonEmptyText = text.length > 0;
+  const hasMedia = el.querySelector("img, table");
+  return !hasNonEmptyText && !hasMedia;
+}
+
+function initSubheadingLineBehavior() {
+  const editor = elements.noteFormContent;
+  if (!editor) return;
+
+  editor.addEventListener("keydown", (e) => {
+    const body = isInsideSubheadingBody();
+    if (!body) return;
+
+    // SHIFT+ENTER => end the subheading (stop line)
+    if (e.key === "Enter" && e.shiftKey) {
+      e.preventDefault();
+      const subBlock = body.closest(".subheading-block");
+      if (!subBlock) return;
+
+      // insert a clean paragraph after the subheading block and move caret there
+      subBlock.insertAdjacentHTML("afterend", `<p><br></p>`);
+      moveCaretAfter(subBlock);
+      document.execCommand("insertHTML", false, `<br>`); // ensures visible caret line
+      return;
+    }
+
+    // ENTER twice on empty line => end the subheading
+    if (e.key === "Enter" && !e.shiftKey) {
+      // If current body looks empty-ish, and user presses Enter again, end block
+      // We detect: caret is in an empty paragraph inside subheading body
+      const currentP = (window.getSelection().rangeCount ? window.getSelection().getRangeAt(0).startContainer : null);
+      let pEl = currentP && currentP.nodeType === 3 ? currentP.parentElement : currentP;
+      if (pEl && pEl.nodeType === 1) pEl = pEl.closest("p");
+
+      if (pEl && pEl.closest(".subheading-body") && isEffectivelyEmpty(pEl)) {
+        // If the previous sibling paragraph is also empty => that's "double enter"
+        const prev = pEl.previousElementSibling;
+        if (prev && prev.tagName === "P" && isEffectivelyEmpty(prev)) {
+          e.preventDefault();
+          const subBlock = body.closest(".subheading-block");
+          if (!subBlock) return;
+
+          subBlock.insertAdjacentHTML("afterend", `<p><br></p>`);
+          moveCaretAfter(subBlock);
+        }
+      }
+    }
+  });
+}
+document.addEventListener("DOMContentLoaded", () => {
+  // ...your existing code...
+  initSubheadingLineBehavior();
+});
 
 
 
