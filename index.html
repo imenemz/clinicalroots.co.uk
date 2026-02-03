@@ -461,15 +461,15 @@
         }
 
         .category-icon.medical {
-            color: #dc2626;
+            color: #16352E;
         }
 
         .category-icon.surgical {
-            color: #2563eb;
+            color: #16352E;
         }
 
         .category-icon.specialty {
-            color: #7c3aed;
+            color: #16352E;
         }
 
         .category-card h3 {
@@ -587,6 +587,24 @@
         [data-theme="dark"] .note-header {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
+
+        /* Published note content container */
+        .note-body {
+            background: #F6F3EE;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            color: #1a1a1a;
+        }
+        
+        /* Keep it readable in dark mode */
+        [data-theme="dark"] .note-body {
+            background: #1a2825; /* dark-friendly instead of beige */
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+        }
+
 
         .progress-bar {
             background: #e5e7eb;
@@ -717,6 +735,8 @@
             color: white;
         }
 
+        
+
         /* Modal */
         .modal {
             display: none;
@@ -785,25 +805,52 @@
             color: white;
         }
         
-        /* Sub-heading block inserted by SH button */
-        .subheading-block{
-          border-left: 4px solid var(--primary);
-          padding-left: 12px;
-          margin: 14px 0;
+        /* ===== HEADINGS ===== */
+        
+        .main-heading {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin: 1.5rem 0 0.5rem;
         }
         
-        .subheading-title{
-          font-weight: 700;
-          font-size: 1rem;          /* smaller than main H */
-          margin-bottom: 6px;
-          color: var(--text-dark);
+        .heading-block {
+            margin-bottom: 1.5rem;
         }
         
-        .subheading-body{
-          font-size: 0.95rem;
-          line-height: 1.5;
-          color: var(--text-dark);
+        /* ===== SUB HEADINGS WITH VERTICAL LINE ===== */
+        
+        .subheading-block {
+            position: relative;
+            margin: 1rem 0 1rem 1.2rem;
+            padding-left: 1.2rem;
         }
+        
+        .subheading-block::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.4rem;
+            bottom: 0.4rem;
+            width: 4px;
+            background-color: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .subheading-title {
+            font-size: 1.4rem; /* same as heading */
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+        
+        .subheading-body {
+            font-size: 1rem;
+        }
+        
+        /* Stop line if empty body */
+        .subheading-body:empty::before {
+            display: none;
+        }
+
         
         /* extra separation between subheading blocks */
         .subheading-block + .subheading-block{
@@ -1204,6 +1251,11 @@
                             <button type="button" class="editor-btn" onclick="insertSubHeading()" title="Insert Sub-heading">
                                 SH
                             </button>
+
+                            <button type="button" class="editor-btn" onclick="toggleFont()" title="Font">
+                                T
+                            </button>
+
 
                             <button type="button" class="editor-btn" onclick="insertList()" title="Insert List">
                                 <i class="fas fa-list-ul"></i>
