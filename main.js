@@ -596,8 +596,19 @@ function formatText(cmd) {
 function insertHeading() {
     const text = prompt("Heading text:");
     if (!text) return;
-    document.execCommand("insertHTML", false, `<h3>${text}</h3>`);
+
+    const html = `
+        <div class="heading-block">
+            <h2 class="main-heading">${text}</h2>
+            <div class="heading-content"></div>
+        </div>
+        <p><br></p>
+    `;
+
+    document.execCommand("insertHTML", false, html);
+    elements.noteFormContent.focus();
 }
+
 
 function insertSubHeading() {
     const text = prompt("Sub-heading text:");
@@ -611,10 +622,9 @@ function insertSubHeading() {
     `;
 
     document.execCommand("insertHTML", false, html);
-
-    // keep focus in editor
-    if (elements.noteFormContent) elements.noteFormContent.focus();
+    elements.noteFormContent.focus();
 }
+
 
 
 function insertList() {
@@ -630,6 +640,46 @@ function insertLink() {
         false,
         `<a href="${url}" target="_blank">${text}</a>`
     );
+}
+
+function changeTextColor() {
+    const color = prompt(
+        "Choose color: red, yellow, blue, green, darkblue, black, white"
+    );
+
+    const map = {
+        red: "red",
+        yellow: "#FACC15",
+        blue: "#2563EB",
+        darkblue: "#1E3A8A",
+        green: "#16A34A",
+        black: "#000000",
+        white: "#ffffff",
+    };
+
+    if (!map[color]) return alert("Invalid color");
+
+    document.execCommand("foreColor", false, map[color]);
+}
+
+
+function insertArrow() {
+    const arrow = prompt("Choose arrow: → ⇒ ⟶ ⮕", "→");
+    if (!arrow) return;
+    document.execCommand("insertText", false, arrow + " ");
+}
+
+let currentFontMode = "default"; // "default" | "times"
+
+function toggleFont() {
+    currentFontMode = currentFontMode === "default" ? "times" : "default";
+
+    // execCommand uses limited font names, Times New Roman usually works as "Times New Roman"
+    const font = currentFontMode === "times" ? "Times New Roman" : "Arial";
+
+    // Apply to selected text (or affects typing at caret)
+    document.execCommand("fontName", false, font);
+    elements.noteFormContent.focus();
 }
 
 function insertImage() {
