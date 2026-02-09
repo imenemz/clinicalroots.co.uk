@@ -423,15 +423,224 @@ async function openCategoryById(catId) {
     }
 }
 
+let searchIndex = {
+  categories: [], // {id, name, path}
+  notes: [],      // {id, title, category_id}
+  ready: false,
+};
+
+async function buildSearchIndex() {
+  if (!flatCategories.length) await fetchCategoriesTree();
+
+  // Categories
+  searchIndex.categories = flatCategories.map(c => ({
+    id: c.id,
+    name: c.name,
+    path: c.path,
+  }));
+
+  // Notes (needs category_id from backend — see app.py patch below)
+  try {
+    const notes = await api("/api/notes");
+    searchIndex.notes = notes.map(n => ({
+      id: n.id,
+      title: n.title,
+      category_id: n.category_id,
+    }));
+  } catch (e) {
+    console.warn("Search notes fetch failed:", e);
+    searchIndex.notes = [];
+  }
+
+  searchIndex.ready = true;
+}
+
+function highlightMatch(text, q) {
+  const idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if (idx < 0) return text;
+  return (
+    text.slice(0, idx) +
+    `<span class="suggestion-highlight">${text.slice(idx, idx + q.length)}</span>` +
+    text.slice(idx + q.length)
+  );
+}
+
+function setupSearch(inputEl, suggEl) {
+  if (!inputEl || !suggEl) return;
+
+  let selectedIndex = -1;
+  let lastItems = [];
+
+  function close() {
+    suggEl.classList.add("hidden");
+    suggEl.innerHTML = "";
+    selectedIndex = -1;
+    lastItems = [];
+  }
+
+  function open(items) {
+    lastItems = items;
+    suggEl.classList.toggle("hidden", items.length === 0);
+
+    suggEl.innerHTML = items
+      .map((it, i) => `
+        <div class="suggestion-item" data-idx="${i}">
+          <div class="suggestion-title">${it.titleHtml}</div>
+          <div class="suggestion-meta">${it.meta}</div>
+        </div>
+      `)
+      .join("");
+
+    suggEl.querySelectorAll(".suggestion-item").forEach((row) => {
+      row.addEventListener("mouseenter", () => {
+        selectedIndex = parseInt(row.dataset.idx, 10);
+        renderSelected();
+      });
+      row.addEventListener("click", () => {
+        const it = lastItems[parseInt(row.dataset.idx, 10)];
+        if (it) it.onPick();
+        close();
+        inputEl.value = "";
+      });
+    });
+  }
+
+  function renderSelected() {
+    suggEl.querySelectorAll(".suggestion-item").forEach((row) => {
+      row.classList.toggle(
+        "selected",
+        parseInt(row.dataset.idx, 10) === selectedIndex
+      );
+    });
+  }
+
+  async function search(q) {
+    if (!q || q.trim().length < 2) return open([]);
+    if (!searchIndex.ready) await buildSearchIndex();
+
+    const query = q.trim().toLowerCase();
+    const out = [];
+
+    // Notes first
+    for (const n of searchIndex.notes) {
+      if (n.title.toLowerCase().includes(query)) {
+        const cat = getCategoryById(n.category_id);
+        const meta = cat ? cat.path.replaceAll(" :: ", " | ") : "Note";
+        out.push({
+          titleHtml: highlightMatch(n.title, query),
+          meta,
+          onPick: () => showNoteView(n.id),
+        });
+      }
+      if (out.length >= 6) break;
+    }
+
+    // Then categories
+    for (const c of searchIndex.categories) {
+      if (c.name.toLowerCase().includes(query)) {
+        out.push({
+          titleHtml: highlightMatch(c.name, query),
+          meta: c.path.replaceAll(" :: ", " | "),
+          onPick: () => openCategoryById(c.id),
+        });
+      }
+      if (out.length >= 10) break;
+    }
+
+    open(out);
+  }
+
+  let t = null;
+  inputEl.addEventListener("input", () => {
+    clearTimeout(t);
+    t = setTimeout(() => search(inputEl.value), 150);
+  });
+
+  inputEl.addEventListener("keydown", (e) => {
+    if (suggEl.classList.contains("hidden")) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      selectedIndex = Math.min(selectedIndex + 1, lastItems.length - 1);
+      renderSelected();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      selectedIndex = Math.max(selectedIndex - 1, 0);
+      renderSelected();
+    } else if (e.key === "Enter") {
+      if (selectedIndex >= 0 && lastItems[selectedIndex]) {
+        e.preventDefault();
+        lastItems[selectedIndex].onPick();
+        close();
+        inputEl.value = "";
+      }
+    } else if (e.key === "Escape") {
+      close();
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!inputEl.contains(e.target) && !suggEl.contains(e.target)) close();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupSearch(qs("searchInput"), qs("searchSuggestions"));
+  setupSearch(qs("navSearchInput"), qs("navSearchSuggestions"));
+
+  // Build index early (so first search feels instant)
+  buildSearchIndex().catch(() => {});
+});
+
+
+function initCollapsibleHeadings(container) {
+  if (!container) return;
+
+  const headings = Array.from(container.querySelectorAll(".heading-block"));
+
+  headings.forEach((hb, i) => {
+    const title = hb.querySelector(".main-heading");
+    if (!title) return;
+
+    title.style.cursor = "pointer";
+
+    // everything after this heading until the next heading-block
+    const contentNodes = [];
+    let node = hb.nextElementSibling;
+    while (node && !node.classList.contains("heading-block")) {
+      contentNodes.push(node);
+      node = node.nextElementSibling;
+    }
+
+    // start collapsed by default (auto collapsing)
+    contentNodes.forEach((n) => n.classList.add("collapsed-section"));
+
+    title.addEventListener("click", () => {
+      const isCollapsed = contentNodes.length
+        ? contentNodes[0].classList.contains("collapsed-section")
+        : false;
+      contentNodes.forEach((n) =>
+        n.classList.toggle("collapsed-section", !isCollapsed)
+      );
+      hb.classList.toggle("heading-collapsed", isCollapsed);
+    });
+  });
+}
+
+
 
 async function showNoteView(noteId) {
-    switchView("noteView");
-    const note = await api(`/api/note/${noteId}`);
+  switchView("noteView");
+  const note = await api(`/api/note/${noteId}`);
 
-    elements.noteTitle.textContent = note.title;
-    elements.noteBody.innerHTML = note.content;
-    const cat = getCategoryById(note.category_id);
-    elements.noteMeta.textContent = cat ? cat.path : "";
+  elements.noteTitle.textContent = note.title;
+  elements.noteBody.innerHTML = note.content;
+
+  const cat = getCategoryById(note.category_id);
+  const path = cat ? cat.path.replaceAll(" :: ", " | ") : "";
+  elements.noteMeta.textContent = path;
+
+  initCollapsibleHeadings(elements.noteBody);
 }
 
 // --------------------------
@@ -768,6 +977,44 @@ function initSubheadingLineBehavior() {
     }
   });
 }
+
+function initTabBulletBehavior() {
+  const editor = elements.noteFormContent;
+  if (!editor) return;
+
+  editor.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab") return;
+
+    // Only affect the editor
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    const range = sel.getRangeAt(0);
+    if (!editor.contains(range.commonAncestorContainer)) return;
+
+    e.preventDefault();
+
+    const li = (range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer)
+      .closest("li");
+
+    if (li) {
+      // already in a list -> indent/outdent like Word
+      document.execCommand(e.shiftKey ? "outdent" : "indent", false, null);
+      return;
+    }
+
+    // not in list -> create bullet list (Tab makes first bullet)
+    document.execCommand("insertUnorderedList", false, null);
+
+    // If Shift+Tab on a fresh bullet, outdent immediately
+    if (e.shiftKey) document.execCommand("outdent", false, null);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initSubheadingLineBehavior();
+  initTabBulletBehavior();
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   // ...your existing code...
   initSubheadingLineBehavior();
