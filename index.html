@@ -12,7 +12,7 @@
             --secondary: #15342e;
             --dark: #193e37;
             --light: #d4f1e8;
-            --card-bg: #f2f1ee;
+            --card-bg: #E3D8B7;
             --text-dark: #1a1a1a;
             --text-light: #4a5568;
             --success: #193e37;
@@ -31,9 +31,9 @@
 
         /* Dark Mode Variables */
         [data-theme="dark"] {
-            --primary: #3dd68c;
-            --secondary: #2fb574;
-            --dark: #000000;
+            --primary: #0f2613;
+            --secondary: #17331c;
+            --dark: #120f0a;
             --light: #1a2825;
             --card-bg: #1a2825;
             --text-dark: #ffffff;
@@ -42,13 +42,13 @@
             --warning: #F59E0B;
             --danger: #ef4444;
             --bg-gradient: linear-gradient(180deg, #091613 30%, #091613 70%);
-            --navbar-bg: #000000;
+            --navbar-bg: #120f0a;
             --footer-bg: #000000;
             --footer-text: #ffffff;
-            --border-color: #2d4a42;
-            --admin-edit: #3b82f6;
-            --admin-add: #10b981;
-            --stethoscope-color: #ffffff;
+            --border-color: #1a2825;
+            --admin-edit: #0f2613;
+            --admin-add: #0f2613;
+            --stethoscope-color: #E3D8B7;
         }
 
         * {
@@ -164,7 +164,7 @@
         }
 
         .signup-btn {
-            background: var(--primary);
+            background:#193e37;
             color: white;
             padding: 0.5rem 1.5rem;
             border: 2px solid var(--primary);
@@ -175,8 +175,8 @@
         }
 
         .signup-btn:hover {
-            background: white;
-            border-color:  var(--secondary) ;
+            background:#ffffff ;
+            border-color:#193e37 ;
         }
 
         .user-dropdown {
@@ -236,12 +236,12 @@
         }
 
         .hero-banner{
-          background:#e6e4df;
+          background: var(--card-bg);
           width:100vw;
           margin-left: calc(50% - 50vw);
-          padding: 2.2rem 2rem;
+          padding: 1.2rem 2rem;
           border-radius: 0;
-          margin-bottom: 1.5rem; /* stops before search bar */
+          margin-bottom: 1.2rem; /* stops before search bar */
         }
 
 
@@ -251,7 +251,7 @@
             left: 0;
             right: 0;
             background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            border: 1px solid #162e1f;
             border-radius: 8px;
             margin-top: 0.25rem;
             max-height: 300px;
