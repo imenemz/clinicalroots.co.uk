@@ -12,7 +12,7 @@
             --secondary: #15342e;
             --dark: #193e37;
             --light: #d4f1e8;
-            --card-bg: #ffffff;
+            --card-bg: #f2f1ee;
             --text-dark: #1a1a1a;
             --text-light: #4a5568;
             --success: #193e37;
@@ -176,7 +176,7 @@
 
         .signup-btn:hover {
             background: var(--secondary);
-            border-color: var(--secondary);
+            border-color: white;
         }
 
         .user-dropdown {
@@ -234,6 +234,16 @@
             border-bottom-left-radius: 8px;
             border-bottom-right-radius: 8px;
         }
+
+        .hero-banner{
+          background:#e6e4df;
+          width:100vw;
+          margin-left: calc(50% - 50vw);
+          padding: 2.2rem 2rem;
+          border-radius: 0;
+          margin-bottom: 1.5rem; /* stops before search bar */
+        }
+
 
         .search-suggestions {
             position: absolute;
@@ -570,7 +580,7 @@
 
         /* Note Content */
         .note-content {
-            max-width: 800px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 2rem;
         }
@@ -592,7 +602,7 @@
         .note-body {
             background: #F6F3EE;
             border-radius: 16px;
-            padding: 2rem;
+            padding: 2.5rem;
             margin-top: 1.5rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.06);
             color: #1a1a1a;
@@ -925,6 +935,10 @@
             color: rgba(255, 255, 255, 0.6);
         }
 
+        .collapsed-section { display: none !important; }
+        .heading-collapsed .main-heading { opacity: 0.9; }
+
+
         /* Utilities */
         .hidden {
             display: none !important;
@@ -954,6 +968,46 @@
             color: var(--secondary);
         }
 
+        .search-container { position: relative; }
+        .search-icon {
+          position: absolute;
+          left: 16px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--text-light);
+          pointer-events: none;
+        }
+        .search-input { padding-left: 44px; }
+        
+        /* Navbar search */
+        .nav-search { display: flex; align-items: center; }
+        .nav-search-wrap { position: relative; width: 240px; }
+        .nav-search-icon {
+          position: absolute;
+          left: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--text-light);
+          pointer-events: none;
+        }
+        .nav-search-input {
+          width: 100%;
+          padding: 0.55rem 0.75rem 0.55rem 2.1rem;
+          border: 2px solid rgba(13, 148, 136, 0.2);
+          border-radius: 10px;
+          font-size: 0.95rem;
+          background: white;
+        }
+        .nav-search-input:focus { outline: none; border-color: var(--primary); }
+        
+        @media (max-width: 900px) {
+          .nav-search-wrap { width: 160px; }
+        }
+        @media (max-width: 768px) {
+          .nav-search { display: none; } /* optional: hide on mobile */
+        }
+
+
         /* Responsive */
         @media (max-width: 768px) {
             .hero h1 {
@@ -982,9 +1036,16 @@
                 <a href="#" class="logo" onclick="showHome()">ClinicalRoots</a>
             </div>
             <ul class="nav-links">
+                <li class="nav-search">
+                  <div class="nav-search-wrap">
+                    <i class="fas fa-magnifying-glass nav-search-icon"></i>
+                    <input id="navSearchInput" class="nav-search-input" type="text" placeholder="Search..." autocomplete="off" />
+                    <div class="search-suggestions hidden" id="navSearchSuggestions"></div>
+                  </div>
+                </li>
                 <li><a href="#" onclick="showHome()">Home</a></li>
                 <li><a href="#" onclick="showLibrary()">Library</a></li>
-                <li><a href="#" onclick="showTools()">Tools</a></li>
+                <li><a href="#" onclick="showTools()">Guide</a></li>
                 <li><a href="#" onclick="showIA()">IA</a></li>
                 <li><a href="#" onclick="showAbout()">About</a></li>
                 <li id="authButtons">
@@ -1015,16 +1076,18 @@
         <!-- Home Page -->
         <div id="homePage" class="page">
             <div class="hero">
-             <h1>Deepen your roots in medical knowledge to grow your branches in clinical practice</h1>
-<p>A concept-first learning platform for medical students and early doctors. Understand the why behind every condition to think and act clinically.</p>
-
-
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Search medical topics, conditions, procedures..." id="searchInput">
-                    <div class="search-suggestions hidden" id="searchSuggestions"></div>
+                <div class="hero-banner">
+                  <h1>Deepen your roots in medical knowledge to grow your branches in clinical practice</h1>
+                  <p>A concept-first learning platform for medical students and early doctors. Understand the why behind every condition to think and act clinically.</p>
                 </div>
+                
+            <div class="search-container">
+              <i class="fas fa-magnifying-glass search-icon"></i>
+              <input type="text" class="search-input" placeholder="Search medical topics, conditions, procedures..." id="searchInput" autocomplete="off">
+              <div class="search-suggestions hidden" id="searchSuggestions"></div>
             </div>
-
+            
+            
             <div class="categories">
                 <div class="category-card" onclick="openRootCategory('Medical')">
                     <div class="admin-controls" id="medicalAdminControls">
@@ -1291,7 +1354,7 @@
         </div>
 
         <!-- Tools Page -->
-        <div id="toolsPage" class="page hidden">
+        <div id="Guide" class="page hidden">
             <div class="hero">
                 <button class="back-btn" onclick="showHome()">← Back to Home</button>
                 <div class="admin-controls" id="toolsAdminControls" style="position: absolute; top: 1rem; right: 2rem;">
@@ -1299,8 +1362,8 @@
                         <i class="fas fa-edit"></i>
                     </button>
                 </div>
-                <h1>Study Tools</h1>
-                <p>Interactive tools to enhance your medical learning experience</p>
+                <h1>Study Guide</h1>
+                <p>Study Guide secttion "zain tell me what to put"</p>
             </div>
             <div class="categories">
                 <div class="category-card">
@@ -1308,7 +1371,7 @@
                         <i class="fas fa-book" style="color: #0d9488;"></i>
                     </div>
                     <h3>Study Guide Generator</h3>
-                    <p>Coming Soon - Generate personalized study guides from your notes</p>
+                    <p>Coming Soon - Generate personalized study guides from your notes "should i keep this ??"</p>
                 </div>
                 <div class="category-card">
                     <div class="category-icon">
