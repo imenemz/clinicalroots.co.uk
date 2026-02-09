@@ -594,18 +594,49 @@ function formatText(cmd) {
 }
 
 function insertHeading() {
-  const text = prompt("Heading text:");
-  if (!text) return;
+  const editor = elements.noteFormContent;
+  if (!editor) return;
 
-  const html = `
-    <div class="heading-block">
-      <div class="main-heading">${text}</div>
-    </div>
-    <p><br></p>
-  `;
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
 
-  document.execCommand("insertHTML", false, html);
-  elements.noteFormContent.focus();
+  const range = sel.getRangeAt(0);
+
+  // If selection is outside editor, focus editor and insert at end
+  if (!editor.contains(range.commonAncestorContainer)) {
+    editor.focus();
+  }
+
+  const selectedText = sel.toString().trim();
+
+  // If user selected text -> wrap it as a heading block
+  if (selectedText) {
+    document.execCommand(
+      "insertHTML",
+      false,
+      `<div class="heading-block"><div class="main-heading">${escapeHtml(selectedText)}</div></div><p><br></p>`
+    );
+  } else {
+    // No selection -> create an empty heading that user can type into
+    document.execCommand(
+      "insertHTML",
+      false,
+      `<div class="heading-block"><div class="main-heading" contenteditable="true">Heading</div></div><p><br></p>`
+    );
+  }
+
+  editor.focus();
+}
+
+// helper (safe for headings)
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
+  }[m]));
 }
 
 
