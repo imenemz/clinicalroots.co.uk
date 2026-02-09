@@ -290,7 +290,7 @@ async function fetchAndRenderTopCategories() {
         div.className = "subcategory-card category-card";
         div.style.cursor = "pointer";
         div.onclick = () => openCategoryById(c.id);
-        div.innerHTML = `<h4>${c.name}</h4><p>${c.path}</p>`;
+        div.innerHTML = `<h4>${c.name}</h4>`;
         grid.appendChild(div);
     });
 }
@@ -360,7 +360,6 @@ async function openCategoryById(catId) {
                 card.innerHTML = `
                     ${adminControlsHtml}
                     <h4>${ch.name}</h4>
-                    <p>${ch.path}</p>
                 `;
                 subcontainer.appendChild(card);
             });
@@ -1475,7 +1474,6 @@ async function showManageCategories() {
         card.innerHTML = `
             ${adminControlsHtml}
             <h4>${r.name}</h4>
-            <p>${r.path}</p>
         `;
         subcontainer.appendChild(card);
     });
