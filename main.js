@@ -83,7 +83,7 @@ const elements = {
         admin: qs("adminDashboard"),
         adminNotes: qs("adminNotesPage"),
         addNote: qs("addNotePage"),
-        tools: qs("toolsPage"),
+        tools: qs("Guide "),
         ia: qs("iaPage"),
         about: qs("aboutPage"),
     },
