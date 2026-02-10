@@ -1,7 +1,7 @@
 // --------------------------
 // BASIC API HELPER
 // --------------------------
-alert("main.js is running");
+
 
 const API_BASE = "https://imeneee.pythonanywhere.com";
 
