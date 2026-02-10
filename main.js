@@ -1404,10 +1404,12 @@ function hideAllPages() {
 }
 
 function switchView(name) {
-    hideAllPages();
-    const pageEl = elements.pages[name];
-    if (pageEl) pageEl.classList.remove("hidden");
+  hideAllPages();
+  const pageEl = elements.pages[name];
+  console.log("switchView =>", name, pageEl);
+  if (pageEl) pageEl.classList.remove("hidden");
 }
+
 
 function showHome() {
     switchView("home");      // no more dynamic fetch here
