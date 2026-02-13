@@ -1406,19 +1406,51 @@ function hideAllPages() {
 function switchView(name) {
   hideAllPages();
   const pageEl = elements.pages[name];
-  console.log("switchView =>", name, pageEl);
-  if (pageEl) pageEl.classList.remove("hidden");
+
+  if (!pageEl) {
+    console.error("❌ switchView missing page:", name, elements.pages);
+
+    // Never blank screen again:
+    elements.pages.home?.classList.remove("hidden");
+
+    // Visible error banner on screen
+    document.body.insertAdjacentHTML(
+      "afterbegin",
+      `<div style="position:fixed;top:80px;left:0;right:0;z-index:9999;background:#ffeded;color:#7a0000;padding:10px 14px;border-bottom:1px solid #ffb3b3;font-family:sans-serif;">
+        Missing page element for <b>${name}</b>. Check the HTML id and elements.pages mapping.
+      </div>`
+    );
+    return;
+  }
+
+  pageEl.classList.remove("hidden");
 }
+
 
 
 function showHome() {
     switchView("home");      // no more dynamic fetch here
 }
 
+
 function showLibrary() {
-    switchView("library");
-    fetchAndRenderTopCategories();
+  switchView("library");
+
+  fetchAndRenderTopCategories().catch(err => {
+    console.error("❌ Library load failed:", err);
+    const grid = qs("subcategoriesGrid");
+    if (grid) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">⚠️</div>
+          <p>Could not load categories.</p>
+          <p style="font-size:0.9rem;opacity:0.8;">${err.message}</p>
+        </div>
+      `;
+    }
+  });
 }
+
 
 function showTools() {
     switchView("tools");
