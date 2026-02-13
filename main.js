@@ -117,6 +117,27 @@ let flatCategories = [];   // {id, name, parent_id, path}
 let adminNoteCache = {};   // id -> note
 let editingNoteId = null;  // null = create mode
 
+let navStack = []; // stores view names like "library", "category", "subcategory", "noteView"
+
+function pushView(name) {
+  const last = navStack[navStack.length - 1];
+  if (last !== name) navStack.push(name);
+}
+
+function goBack(fallback = "library") {
+  // remove current view
+  navStack.pop();
+
+  // go to previous view
+  const prev = navStack[navStack.length - 1] || fallback;
+
+  if (prev === "library") showLibrary();
+  else if (prev === "category") switchView("category");
+  else if (prev === "subcategory") switchView("subcategory");
+  else if (prev === "noteView") switchView("noteView");
+  else showLibrary();
+}
+
 // --------------------------
 // THEME
 // --------------------------
