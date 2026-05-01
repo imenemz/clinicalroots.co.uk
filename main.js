@@ -734,7 +734,13 @@ function initCollapsibleHeadings(container) {
 
 async function showNoteView(noteId) {
   switchView("noteView");
+
   const note = await api(`/api/note/${noteId}`);
+
+  const noteBackBtn = qs("noteBackBtn");
+  if (noteBackBtn) {
+    noteBackBtn.onclick = () => openCategoryById(note.category_id);
+  }
 
   elements.noteTitle.textContent = note.title;
   elements.noteBody.innerHTML = note.content;
