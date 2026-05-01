@@ -322,59 +322,103 @@ async function openCategoryById(catId) {
     if (!flatCategories.length) {
         await fetchCategoriesTree();
     }
+
     currentCategoryId = catId;
 
     const cat = getCategoryById(catId);
+    const parentId = cat ? cat.parent_id : null;
+
     const children = flatCategories.filter((c) => c.parent_id === catId);
 
-    // Decide which page to show
+    // =========================
+    // CATEGORY PAGE
+    // =========================
     if (children.length > 0) {
-        // Parent category => show subcategories
+
         switchView("category");
+
+        // Back button
+        const categoryBackBtn = document.querySelector("#categoryPage .back-btn");
+        if (categoryBackBtn) {
+            categoryBackBtn.onclick = () => {
+                if (parentId) openCategoryById(parentId);
+                else showLibrary();
+            };
+        }
 
         const header = qs("categoryTitle");
         const desc = qs("categoryDescription");
-        if (header) header.textContent = cat ? cat.name : "Category";
-        if (desc) desc.textContent = cat ? cat.path : "";
+
+        if (header) {
+            header.textContent = cat ? cat.name : "Category";
+        }
+
+        if (desc) {
+            desc.textContent = cat
+                ? cat.path.replaceAll(" :: ", " | ")
+                : "";
+        }
 
         const subcontainer = qs("subcategoriesContainer");
-        if (subcontainer) subcontainer.innerHTML = "";
 
-        // Admin button to add subcategory under this category
+        if (subcontainer) {
+            subcontainer.innerHTML = "";
+        }
+
+        // Admin add button
         if (currentUser && currentUser.role === "admin" && cat && subcontainer) {
+
             const btnWrap = document.createElement("div");
             btnWrap.style.marginBottom = "1rem";
 
             const btn = document.createElement("button");
             btn.className = "btn btn-success";
             btn.textContent = `+ Add subcategory under "${cat.name}"`;
+
             btn.onclick = () => promptAddSubcategory(catId);
 
             btnWrap.appendChild(btn);
             subcontainer.appendChild(btnWrap);
         }
 
-        // Render child categories
+        // Render subcategories
         if (subcontainer) {
+
             children.forEach((ch) => {
+
                 const card = document.createElement("div");
+
                 card.className = "subcategory-card";
+
                 card.onclick = () => openCategoryById(ch.id);
 
                 let adminControlsHtml = "";
+
                 if (currentUser && currentUser.role === "admin") {
+
                     const isRoot = !ch.parent_id;
+
                     if (!isRoot) {
+
                         adminControlsHtml = `
                             <div class="admin-controls">
-                                <button class="admin-btn edit" title="Rename"
-                                    onclick="event.stopPropagation(); promptRenameCategory(${ch.id})">
+
+                                <button
+                                    class="admin-btn edit"
+                                    title="Rename"
+                                    onclick="event.stopPropagation(); promptRenameCategory(${ch.id})"
+                                >
                                     <i class="fas fa-pen"></i>
                                 </button>
-                                <button class="admin-btn delete" title="Delete"
-                                    onclick="event.stopPropagation(); promptDeleteCategory(${ch.id})">
+
+                                <button
+                                    class="admin-btn delete"
+                                    title="Delete"
+                                    onclick="event.stopPropagation(); promptDeleteCategory(${ch.id})"
+                                >
                                     <i class="fas fa-trash"></i>
                                 </button>
+
                             </div>
                         `;
                     }
@@ -384,57 +428,95 @@ async function openCategoryById(catId) {
                     ${adminControlsHtml}
                     <h4>${ch.name}</h4>
                 `;
+
                 subcontainer.appendChild(card);
             });
         }
 
-        // IMPORTANT:
-        // Don’t render notes on the category page (because your notes list is on subcategoryPage)
         return;
     }
 
-    // Leaf category => show notes list (subcategory page)
+    // =========================
+    // LEAF CATEGORY / NOTES PAGE
+    // =========================
+
     switchView("subcategory");
+
+    // Back button
+    const subcategoryBackBtn = qs("subcategoryBackBtn");
+
+    if (subcategoryBackBtn) {
+        subcategoryBackBtn.onclick = () => {
+            if (parentId) openCategoryById(parentId);
+            else showLibrary();
+        };
+    }
 
     const subTitle = qs("subcategoryTitle");
     const subDesc = qs("subcategoryDescription");
-    if (subTitle) subTitle.textContent = cat ? cat.name : "Subcategory";
-    if (subDesc) subDesc.textContent = cat ? cat.path : "";
 
-    // Fetch notes for this leaf
+    if (subTitle) {
+        subTitle.textContent = cat ? cat.name : "Subcategory";
+    }
+
+    if (subDesc) {
+        subDesc.textContent = cat
+            ? cat.path.replaceAll(" :: ", " | ")
+            : "";
+    }
+
+    // Fetch notes
     const notes = await api(`/api/notes?category=${catId}`);
-    const notesContainer = qs("notesContainer");
-    if (notesContainer) notesContainer.innerHTML = "";
 
-    // Admin "add note" button for this subcategory
+    const notesContainer = qs("notesContainer");
+
+    if (notesContainer) {
+        notesContainer.innerHTML = "";
+    }
+
+    // Admin add note button
     if (currentUser && currentUser.role === "admin" && cat && notesContainer) {
+
         const btnWrap = document.createElement("div");
+
         btnWrap.style.marginBottom = "1rem";
 
         const btn = document.createElement("button");
+
         btn.className = "btn btn-primary";
+
         btn.textContent = `+ Add note in "${cat.name}"`;
+
         btn.onclick = () => showAddNote(catId);
 
         btnWrap.appendChild(btn);
+
         notesContainer.appendChild(btnWrap);
     }
 
+    // Render notes
     if (notesContainer) {
+
         notes.forEach((n) => {
+
             const card = document.createElement("div");
+
             card.className = "note-item";
+
             card.onclick = () => showNoteView(n.id);
+
             card.innerHTML = `
                 <div class="note-info">
                     <h4>${n.title}</h4>
                     <div class="note-meta">${n.views} views</div>
                 </div>
             `;
+
             notesContainer.appendChild(card);
         });
 
         if (!notes.length) {
+
             notesContainer.innerHTML += `
                 <div class="empty-state">
                     <div class="empty-state-icon">📝</div>
@@ -444,7 +526,6 @@ async function openCategoryById(catId) {
         }
     }
 }
-
 let searchIndex = {
   categories: [], // {id, name, path}
   notes: [],      // {id, title, category_id}
