@@ -1110,6 +1110,23 @@ function insertImage() {
     );
 }
 
+function initCleanPasteBehavior() {
+  const editor = elements.noteFormContent;
+  if (!editor) return;
+
+  editor.addEventListener("paste", (e) => {
+    e.preventDefault();
+
+    const text = (e.clipboardData || window.clipboardData).getData("text/plain");
+
+    document.execCommand(
+      "insertHTML",
+      false,
+      `<span style="color:#000000; font-family: inherit;">${escapeHtml(text).replace(/\n/g, "<br>")}</span>`
+    );
+  });
+}
+
 async function saveNote(isDraft) {
     if (!currentUser || currentUser.role !== "admin") {
         alert("Admin only");
