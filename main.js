@@ -1651,18 +1651,19 @@ document.addEventListener("DOMContentLoaded", () => {
         elements.loginForm.addEventListener("submit", handleLogin);
     }
 
-    // clicking outside login modal closes it
     window.addEventListener("click", (e) => {
         if (e.target === elements.loginModal) {
             closeLogin();
         }
     });
 
-    // Preload categories (for later) but don't touch DOM yet
     fetchCategoriesTree().catch((err) =>
         console.error("Error fetching categories:", err)
     );
 
-    // Show static home content
+    initSubheadingLineBehavior();
+    initTabBulletBehavior();
+    initCleanPasteBehavior();
+
     showHome();
 });
