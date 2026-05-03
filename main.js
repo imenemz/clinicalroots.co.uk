@@ -492,7 +492,7 @@ async function openCategoryById(catId) {
 
         btn.textContent = `+ Add note in "${cat.name}"`;
 
-        btn.onclick = () => showAddNote(catId);
+        btn.onclick = () => e(catId);
 
         btnWrap.appendChild(btn);
 
@@ -894,7 +894,7 @@ function fillNoteFormSelects(preselectedCategoryId = null) {
     }
 }
 
-function showAddNote(categoryId = null) {
+function e(categoryId = null) {
     if (!currentUser || currentUser.role !== "admin") {
         alert("Admin only");
         return;
@@ -1668,9 +1668,13 @@ function hideAllPages() {
 }
 
 function switchView(name) {
-    if (
+    const currentlyEditingNote =
+    !elements.pages.addNote.classList.contains("hidden");
+
+if (
+    currentlyEditingNote &&
     hasUnsavedChanges &&
-    !["addNote"].includes(name)
+    name !== "addNote"
 ) {
     const ok = confirmLeaveEditor();
 
