@@ -116,6 +116,7 @@ let categoriesTree = [];
 let flatCategories = [];   // {id, name, parent_id, path}
 let adminNoteCache = {};   // id -> note
 let editingNoteId = null;  // null = create mode
+let hasUnsavedChanges = false;
 
 let navStack = []; // stores view names like "library", "category", "subcategory", "noteView"
 
@@ -1267,6 +1268,48 @@ function handleImageUpload(event) {
     event.target.value = "";
 }
 
+// ==========================
+// UNSAVED CHANGES WARNING
+// ==========================
+
+function initUnsavedChangesWarning() {
+
+    const editor = elements.noteFormContent;
+    const title = elements.noteFormTitle;
+
+    if (editor) {
+        editor.addEventListener("input", () => {
+            hasUnsavedChanges = true;
+        });
+    }
+
+    if (title) {
+        title.addEventListener("input", () => {
+            hasUnsavedChanges = true;
+        });
+    }
+
+    // Browser/tab close warning
+    window.addEventListener("beforeunload", (e) => {
+
+        if (!hasUnsavedChanges) return;
+
+        e.preventDefault();
+        e.returnValue = "";
+
+    });
+}
+
+// Custom warning before leaving editor pages
+function confirmLeaveEditor() {
+
+    if (!hasUnsavedChanges) return true;
+
+    return confirm(
+        "You sure u dont want to save it zainy? 😭"
+    );
+}
+
 function initCleanPasteBehavior() {
   const editor = elements.noteFormContent;
   if (!editor) return;
@@ -1346,6 +1389,8 @@ async function saveNote(isDraft) {
                 body: JSON.stringify(payload),
             });
             alert(isDraft ? "Draft saved." : "Note published.");
+
+            hasUnsavedChanges = false;
         }
 
         await fetchCategoriesTree();
@@ -1623,6 +1668,15 @@ function hideAllPages() {
 }
 
 function switchView(name) {
+    if (
+    hasUnsavedChanges &&
+    !["addNote"].includes(name)
+) {
+    const ok = confirmLeaveEditor();
+
+    if (!ok) return;
+}
+    
   hideAllPages();
   const pageEl = elements.pages[name];
 
@@ -1740,6 +1794,8 @@ async function showManageCategories() {
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
     updateLoginUI();
+
+    initUnsavedChangesWarning();
 
     if (elements.loginForm) {
         elements.loginForm.addEventListener("submit", handleLogin);
