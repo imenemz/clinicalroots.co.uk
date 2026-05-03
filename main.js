@@ -234,12 +234,16 @@ function closeLogin() {
 function toggleUserMenu() {
     const dd = qs("userDropdownContent");
     if (!dd) return;
-    dd.style.display = dd.style.display === "block" ? "none" : "block";
+
+    dd.style.display =
+        dd.style.display === "block" ? "none" : "block";
 }
 
 function hideUserMenu() {
     const dd = qs("userDropdownContent");
-    if (dd) dd.style.display = "none";
+    if (dd) {
+        dd.style.display = "none";
+    }
 }
 
 // --------------------------
