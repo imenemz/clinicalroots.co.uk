@@ -703,34 +703,38 @@ document.addEventListener("DOMContentLoaded", () => {
 function initCollapsibleHeadings(container) {
   if (!container) return;
 
-  const headings = Array.from(container.querySelectorAll(".heading-block"));
+  const headingSelector = ".heading-block, .main-heading, h1, h2";
 
-  headings.forEach((hb, i) => {
-    const title = hb.querySelector(".main-heading");
+  const headings = Array.from(container.querySelectorAll(headingSelector));
+
+  headings.forEach((heading) => {
+    const title = heading.classList.contains("heading-block")
+      ? heading.querySelector(".main-heading")
+      : heading;
+
     if (!title) return;
 
     title.style.cursor = "pointer";
 
-    // everything after this heading until the next heading-block
     const contentNodes = [];
-    let node = hb.nextElementSibling;
-    while (node && !node.classList.contains("heading-block")) {
+    let node = heading.nextElementSibling;
+
+    while (node && !node.matches(headingSelector)) {
       contentNodes.push(node);
       node = node.nextElementSibling;
     }
 
-    // start collapsed by default (auto collapsing)
     contentNodes.forEach((n) => n.classList.add("collapsed-section"));
 
-    title.addEventListener("click", () => {
-      const isCollapsed = contentNodes.length
-        ? contentNodes[0].classList.contains("collapsed-section")
-        : false;
-      contentNodes.forEach((n) =>
-        n.classList.toggle("collapsed-section", !isCollapsed)
-      );
-      hb.classList.toggle("heading-collapsed", isCollapsed);
-    });
+    title.onclick = () => {
+      const isCollapsed =
+        contentNodes.length > 0 &&
+        contentNodes[0].classList.contains("collapsed-section");
+
+      contentNodes.forEach((n) => {
+        n.classList.toggle("collapsed-section", !isCollapsed);
+      });
+    };
   });
 }
 
