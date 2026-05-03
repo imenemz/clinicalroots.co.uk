@@ -900,19 +900,26 @@ function showAddNote(categoryId = null) {
         alert("Admin only");
         return;
     }
+
     switchView("addNote");
+
     editingNoteId = null;
+    hasUnsavedChanges = false;
 
     qs("addNoteTitle").textContent = "Add New Note";
 
     elements.noteFormTitle.value = "";
     elements.noteFormContent.innerHTML = "";
+
     const sources = qs("noteFormSources");
     const tags = qs("noteFormTags");
+
     if (sources) sources.value = "";
     if (tags) tags.value = "";
 
     fillNoteFormSelects(categoryId);
+
+    hasUnsavedChanges = false;
 }
 
 function formatText(cmd) {
@@ -1360,7 +1367,6 @@ async function saveNote(isDraft) {
 
     const title = elements.noteFormTitle.value.trim();
     const content = elements.noteFormContent.innerHTML.trim();
-    const rootId = elements.noteFormCategory.value;
     const leafId = elements.noteFormSubcategory.value;
 
     const categoryId = leafId || null;
@@ -1383,16 +1389,18 @@ async function saveNote(isDraft) {
                 method: "PUT",
                 body: JSON.stringify(payload),
             });
+
             alert("Note updated.");
         } else {
             await api("/api/note", {
                 method: "POST",
                 body: JSON.stringify(payload),
             });
-            alert(isDraft ? "Draft saved." : "Note published.");
 
-            hasUnsavedChanges = false;
+            alert(isDraft ? "Draft saved." : "Note published.");
         }
+
+        hasUnsavedChanges = false;
 
         await fetchCategoriesTree();
         showAdminDashboard();
@@ -1492,6 +1500,8 @@ function editNote(id) {
 
     elements.noteFormTitle.value = note.title;
     elements.noteFormContent.innerHTML = note.content || "";
+
+    hasUnsavedChanges = false;
 
     fillNoteFormSelects(note.category_id);
 }
