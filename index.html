@@ -1404,6 +1404,13 @@
                             </button>
                         </div>
                         <div class="rich-editor" id="noteFormContent" contenteditable="true" data-placeholder="Enter the medical note content..."></div>
+                        <input
+                            type="file"
+                            id="imageUploadInput"
+                            accept="image/*"
+                            style="display: none;"
+                            onchange="handleImageUpload(event)"
+                        >
                     </div>
 
                     <div class="form-group">
