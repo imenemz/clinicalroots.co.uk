@@ -837,7 +837,57 @@
             background: var(--primary);
             color: white;
         }
+
+        .key-concept-card {
+        position: relative;
+        display: inline-block;
+        margin: 0.75rem 0;
+        max-width: 100%;
+        }
         
+        .key-concept-toggle {
+            background: #d4f1e8;
+            color: #193e37;
+            border: 1px solid rgba(25, 62, 55, 0.15);
+            border-radius: 8px;
+            padding: 0.45rem 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .key-concept-popup {
+            display: none;
+            position: absolute;
+            top: 115%;
+            left: 0;
+            width: 520px;
+            max-width: 85vw;
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid rgba(25, 62, 55, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+            z-index: 20;
+        }
+        
+        .key-concept-card:hover .key-concept-popup {
+            display: block;
+        }
+        
+        .rich-editor .key-concept-popup {
+            display: block;
+            position: static;
+            width: 100%;
+            max-width: 620px;
+            margin-top: 0.5rem;
+        }
+        
+        .key-concept-title {
+            font-weight: 800;
+            color: #193e37;
+            margin-bottom: 0.35rem;
+        }
         /* ===== HEADINGS ===== */
         
         .main-heading {
