@@ -1130,6 +1130,29 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+function initEditorShortcuts() {
+  const editor = elements.noteFormContent;
+  if (!editor) return;
+
+  editor.addEventListener("keydown", (e) => {
+    const isCmdOrCtrl = e.metaKey || e.ctrlKey;
+
+    if (!isCmdOrCtrl) return;
+
+    // Cmd/Ctrl + H = main heading
+    if (e.key.toLowerCase() === "h") {
+      e.preventDefault();
+      insertHeading();
+    }
+
+    // Cmd/Ctrl + S = subheading
+    if (e.key.toLowerCase() === "s") {
+      e.preventDefault();
+      insertSubHeading();
+    }
+  });
+}
+
 
 function insertList() {
     document.execCommand("insertUnorderedList", false, null);
@@ -1664,6 +1687,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initSubheadingLineBehavior();
     initTabBulletBehavior();
     initCleanPasteBehavior();
+    initEditorShortcuts();
 
     showHome();
 });
