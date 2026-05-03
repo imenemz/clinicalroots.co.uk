@@ -1214,14 +1214,54 @@ function toggleFont() {
 }
 
 function insertImage() {
-    const url = prompt("Image URL:");
-    if (!url) return;
-    const alt = prompt("Description:") || "";
-    document.execCommand(
-        "insertHTML",
-        false,
-        `<img src="${url}" alt="${alt}" style="max-width:100%;height:auto;">`
-    );
+    const choice = prompt("Type 1 for image URL, or 2 to upload from device:");
+
+    if (choice === "1") {
+        const url = prompt("Image URL:");
+        if (!url) return;
+
+        const alt = prompt("Description:") || "";
+
+        document.execCommand(
+            "insertHTML",
+            false,
+            `<img src="${url}" alt="${escapeHtml(alt)}" style="max-width:100%;height:auto;">`
+        );
+
+        return;
+    }
+
+    if (choice === "2") {
+        const input = qs("imageUploadInput");
+        if (input) input.click();
+        return;
+    }
+
+    alert("Invalid choice.");
+}
+
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        alert("Please upload an image file.");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        document.execCommand(
+            "insertHTML",
+            false,
+            `<img src="${e.target.result}" alt="Uploaded image" style="max-width:100%;height:auto;">`
+        );
+    };
+
+    reader.readAsDataURL(file);
+
+    event.target.value = "";
 }
 
 function initCleanPasteBehavior() {
@@ -1239,6 +1279,30 @@ function initCleanPasteBehavior() {
       `<span style="color:#000000; font-family: inherit;">${escapeHtml(text).replace(/\n/g, "<br>")}</span>`
     );
   });
+}
+
+function insertKeyConcept() {
+  const editor = elements.noteFormContent;
+  if (!editor) return;
+
+  const html = `
+    <div class="key-concept-card">
+      <div class="key-concept-toggle">
+        💡 Key Concept: <span contenteditable="true">What is this?</span> ⌄
+      </div>
+
+      <div class="key-concept-popup">
+        <div class="key-concept-title" contenteditable="true">Key Concept</div>
+        <div contenteditable="true">
+          Write the key concept explanation here...
+        </div>
+      </div>
+    </div>
+    <p><br></p>
+  `;
+
+  document.execCommand("insertHTML", false, html);
+  editor.focus();
 }
 
 async function saveNote(isDraft) {
