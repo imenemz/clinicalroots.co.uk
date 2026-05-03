@@ -492,7 +492,7 @@ async function openCategoryById(catId) {
 
         btn.textContent = `+ Add note in "${cat.name}"`;
 
-        btn.onclick = () => e(catId);
+        btn.onclick = () => showAddnote(catId);
 
         btnWrap.appendChild(btn);
 
