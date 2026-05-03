@@ -1,4 +1,5 @@
 // --------------------------
+
 // BASIC API HELPER
 // --------------------------
 
@@ -894,7 +895,7 @@ function fillNoteFormSelects(preselectedCategoryId = null) {
     }
 }
 
-function e(categoryId = null) {
+function showAddNote(categoryId = null) {
     if (!currentUser || currentUser.role !== "admin") {
         alert("Admin only");
         return;
