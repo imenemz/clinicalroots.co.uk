@@ -890,10 +890,40 @@
         }
         /* ===== HEADINGS ===== */
         
-        .main-heading {
-            font-size: 1.9rem;
-            font-weight: 700;
-            margin: 1.5rem 0 0.5rem;
+        .main-heading,
+        h1,
+        h2 {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        
+        /* Hover effect */
+        .main-heading:hover,
+        h1:hover,
+        h2:hover {
+            color: #193E37;
+            transform: translateY(-2px);
+            text-shadow: 0 4px 12px rgba(25, 62, 55, 0.18);
+        }
+        
+        /* Arrow icon */
+        .main-heading::after,
+        h1::after,
+        h2::after {
+            content: "⌄";
+            font-size: 0.9em;
+            margin-left: 12px;
+            opacity: 0;
+            transition: all 0.25s ease;
+            color: #193E37;
+        }
+        
+        /* Show arrow on hover */
+        .main-heading:hover::after,
+        h1:hover::after,
+        h2:hover::after {
+            opacity: 1;
         }
         
         .heading-block {
