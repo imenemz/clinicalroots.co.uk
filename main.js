@@ -704,7 +704,6 @@ function initCollapsibleHeadings(container) {
   if (!container) return;
 
   const headingSelector = ".heading-block, .main-heading, h1, h2";
-
   const headings = Array.from(container.querySelectorAll(headingSelector));
 
   headings.forEach((heading) => {
@@ -724,15 +723,15 @@ function initCollapsibleHeadings(container) {
       node = node.nextElementSibling;
     }
 
+    if (!contentNodes.length) return;
+
     contentNodes.forEach((n) => n.classList.add("collapsed-section"));
 
     title.onclick = () => {
-      const isCollapsed =
-        contentNodes.length > 0 &&
-        contentNodes[0].classList.contains("collapsed-section");
+      const shouldOpen = contentNodes[0].classList.contains("collapsed-section");
 
       contentNodes.forEach((n) => {
-        n.classList.toggle("collapsed-section", !isCollapsed);
+        n.classList.toggle("collapsed-section", !shouldOpen);
       });
     };
   });
