@@ -1340,24 +1340,26 @@ function insertKeyConcept() {
   if (!editor) return;
 
   const html = `
-    <div class="key-concept-card">
-      <div class="key-concept-toggle">
-    💡 Key Concept: <span contenteditable="true">What is this?</span> ⌄
-      </div>
+<div class="key-concept-card">
+<div class="key-concept-toggle">💡 Key Concept: <span contenteditable="true">What is this?</span> ⌄</div>
 
-      <div class="key-concept-popup">
-        <div class="key-concept-title" contenteditable="true">Key Concept</div>
-        <div contenteditable="true">
-          .
-        </div>
-      </div>
-    </div>
-    <p><br></p>
-  `;
+<div class="key-concept-popup">
+<div class="key-concept-title" contenteditable="true">Key Concept</div>
+
+<div contenteditable="true">
+
+</div>
+
+</div>
+</div>
+
+<p><br></p>
+`;
 
   document.execCommand("insertHTML", false, html);
   editor.focus();
 }
+
 
 async function saveNote(isDraft) {
     if (!currentUser || currentUser.role !== "admin") {
