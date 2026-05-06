@@ -1342,13 +1342,13 @@ function insertKeyConcept() {
   const html = `
     <div class="key-concept-card">
       <div class="key-concept-toggle">
-        💡 Key Concept: <span contenteditable="true">What is this?</span> ⌄
+    💡 Key Concept: <span contenteditable="true">What is this?</span> ⌄
       </div>
 
       <div class="key-concept-popup">
         <div class="key-concept-title" contenteditable="true">Key Concept</div>
         <div contenteditable="true">
-          Write the key concept explanation here...
+          .
         </div>
       </div>
     </div>
