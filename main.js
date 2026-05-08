@@ -149,6 +149,33 @@ function restoreEditorSelection() {
 
     return true;
 }
+function initToolbarSelectionProtection() {
+    const toolbar = document.querySelector(".editor-toolbar");
+    if (!toolbar) return;
+
+    toolbar.addEventListener("mousedown", (e) => {
+        const target = e.target;
+
+        // Let inputs/selects work normally
+        if (
+            target.tagName === "INPUT" ||
+            target.tagName === "SELECT" ||
+            target.tagName === "TEXTAREA" ||
+            target.closest("input") ||
+            target.closest("select") ||
+            target.closest("textarea")
+        ) {
+            saveEditorSelection();
+            return;
+        }
+
+        // Buttons should not steal focus from the editor
+        if (target.closest("button")) {
+            e.preventDefault();
+            saveEditorSelection();
+        }
+    });
+}
 
 function pushView(name) {
   const last = navStack[navStack.length - 1];
@@ -1241,6 +1268,7 @@ function applyPickedColor(color = null) {
 
     document.execCommand("foreColor", false, picked);
 
+    savedEditorSelectionRange = null;
     hasUnsavedChanges = true;
 
     if (elements.noteFormContent) {
@@ -2037,6 +2065,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initTabBulletBehavior();
     initCleanPasteBehavior();
     initEditorShortcuts();
+    initToolbarSelectionProtection();
     renderSavedColors();
 
     if (elements.noteFormContent) {
