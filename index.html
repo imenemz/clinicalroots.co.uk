@@ -599,7 +599,7 @@
         }
 
         /* Published note content container */
-        ..note-body * {
+        .note-body * {
         max-width: 100%;
         box-sizing: border-box;
         overflow-wrap: break-word;
@@ -897,6 +897,101 @@
             color: var(--text-light);
         }
 
+        .section-title-tool {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title-panel {
+            position: absolute;
+            top: 120%;
+            left: 0;
+            width: 240px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.75rem;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+            z-index: 220;
+        }
+        
+        .section-title-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--text-dark);
+        }
+        
+        .section-title-input {
+            width: 100%;
+            padding: 0.55rem 0.7rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            background: white;
+            color: #111;
+        }
+        
+        .section-title-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        [data-theme="dark"] .section-title-input {
+            background: var(--light);
+            color: var(--text-dark);
+            border-color: var(--border-color);
+        }
+        
+        /* Final styled line inserted into the editor / published note */
+        .styled-section-line {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .styled-section-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 0.65rem;
+            border-radius: 8px;
+            background: #193e37;
+            color: #ffffff;
+            font-weight: 800;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        
+        .styled-section-text {
+            color: #193e37;
+            font-weight: 800;
+            font-size: 1rem; /* same size, just bolder */
+            line-height: 1.2;
+        }
+        
+        /* keep it nice in editor */
+        .rich-editor .styled-section-line {
+            width: 100%;
+        }
+        
+        /* dark mode */
+        [data-theme="dark"] .styled-section-number {
+            background: #d4f1e8;
+            color: #193e37;
+        }
+        
+        [data-theme="dark"] .styled-section-text {
+            color: #d4f1e8;
+        }
+        
+
         .editor-btn {
             background: white;
             border: 1px solid #ddd;
@@ -910,6 +1005,28 @@
         .editor-btn:hover {
             background: var(--primary);
             color: white;
+        }
+        .editor-size-select {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 0.25rem 0.4rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .editor-size-select:hover,
+        .editor-size-select:focus {
+            background: var(--primary);
+            color: white;
+            outline: none;
+        }
+        
+        [data-theme="dark"] .editor-size-select {
+            background: var(--card-bg);
+            color: var(--text-dark);
+            border-color: var(--border-color);
         }
 
         .key-concept-card {
@@ -1536,9 +1653,55 @@
                             <button type="button" class="editor-btn" onclick="insertArrow()" title="Insert Arrow">
                                 →
                             </button>
+                        
                             <button type="button" class="editor-btn" onclick="toggleFont()" title="Font">
                                 T
                             </button>
+                            
+                            <select class="editor-size-select" onchange="changeWritingSize(this.value)" title="Text Size">
+                                <option value="">Size</option>
+                                <option value="12px">12</option>
+                                <option value="14px">14</option>
+                                <option value="16px">16</option>
+                                <option value="18px">18</option>
+                                <option value="20px">20</option>
+                                <option value="24px">24</option>
+                                <option value="28px">28</option>
+                                <option value="32px">32</option>
+                                <option value="40px">40</option>
+                            </select>
+                            
+                            <div class="section-title-tool">
+                                <button
+                                    type="button"
+                                    class="editor-btn"
+                                    onclick="toggleSectionTitlePanel()"
+                                    title="Styled Section Title"
+                                >
+                                    <i class="fas fa-list-ol"></i>
+                                </button>
+                            
+                                <div id="sectionTitlePanel" class="section-title-panel hidden">
+                                    <label class="section-title-label" for="sectionTitleNumberInput">
+                                        Number / label
+                                    </label>
+                            
+                                    <input
+                                        type="text"
+                                        id="sectionTitleNumberInput"
+                                        class="section-title-input"
+                                        placeholder="Type 1, 2, 3..."
+                                    >
+                            
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary color-action-btn"
+                                        onclick="applyStyledSectionTitle()"
+                                    >
+                                        Apply to selected text
+                                    </button>
+                                </div>
+                            </div>
                             <button type="button" class="editor-btn" onclick="insertList()" title="Insert List">
                                 <i class="fas fa-list-ul"></i>
                             </button>
