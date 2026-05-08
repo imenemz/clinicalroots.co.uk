@@ -1905,6 +1905,19 @@ document.addEventListener("DOMContentLoaded", () => {
     initTabBulletBehavior();
     initCleanPasteBehavior();
     initEditorShortcuts();
+    renderSavedColors();
 
+    document.addEventListener("click", (e) => {
+        const panel = qs("colorPickerPanel");
+        const tool = document.querySelector(".color-tool");
+    
+        if (!panel || !tool) return;
+    
+        if (!tool.contains(e.target)) {
+            panel.classList.add("hidden");
+        }
+    });
+    
     showHome();
+    
 });
