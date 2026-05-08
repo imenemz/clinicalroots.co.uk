@@ -1185,26 +1185,99 @@ function insertLink() {
     );
 }
 
-function changeTextColor() {
-    const color = prompt(
-        "Choose color: red, yellow, blue, green, darkblue, black, white"
-    );
+const SAVED_COLORS_KEY = "clinicalrootsSavedTextColors";
+const MAX_SAVED_COLORS = 8;
 
-    const map = {
-        red: "red",
-        yellow: "#FACC15",
-        blue: "#2563EB",
-        darkblue: "#1E3A8A",
-        green: "#16A34A",
-        black: "#000000",
-        white: "#ffffff",
-    };
-
-    if (!map[color]) return alert("Invalid color");
-
-    document.execCommand("foreColor", false, map[color]);
+function getSavedColors() {
+    try {
+        return JSON.parse(localStorage.getItem(SAVED_COLORS_KEY)) || [];
+    } catch (e) {
+        return [];
+    }
 }
 
+function setSavedColors(colors) {
+    localStorage.setItem(SAVED_COLORS_KEY, JSON.stringify(colors));
+}
+
+function toggleColorPicker() {
+    const panel = qs("colorPickerPanel");
+    if (!panel) return;
+
+    panel.classList.toggle("hidden");
+    renderSavedColors();
+}
+
+function previewPickedColor(color) {
+    const picker = qs("textColorPicker");
+    if (picker) picker.value = color;
+}
+
+function applyPickedColor(color = null) {
+    const picked = color || qs("textColorPicker")?.value;
+
+    if (!picked) return;
+
+    document.execCommand("foreColor", false, picked);
+
+    if (elements.noteFormContent) {
+        elements.noteFormContent.focus();
+    }
+}
+
+function savePickedColor() {
+    const picked = qs("textColorPicker")?.value;
+
+    if (!picked) return;
+
+    let colors = getSavedColors();
+
+    // Remove duplicate first, so saving an existing color moves it to the front
+    colors = colors.filter((c) => c.toLowerCase() !== picked.toLowerCase());
+
+    colors.unshift(picked);
+
+    if (colors.length > MAX_SAVED_COLORS) {
+        colors = colors.slice(0, MAX_SAVED_COLORS);
+    }
+
+    setSavedColors(colors);
+    renderSavedColors();
+}
+
+function renderSavedColors() {
+    const bar = qs("savedColorsBar");
+    if (!bar) return;
+
+    const colors = getSavedColors();
+
+    if (!colors.length) {
+        bar.innerHTML = `<span class="saved-color-empty">No saved colors yet</span>`;
+        return;
+    }
+
+    bar.innerHTML = "";
+
+    colors.forEach((color) => {
+        const swatch = document.createElement("button");
+        swatch.type = "button";
+        swatch.className = "saved-color-swatch";
+        swatch.style.backgroundColor = color;
+        swatch.title = color;
+
+        swatch.onclick = () => {
+            previewPickedColor(color);
+            applyPickedColor(color);
+        };
+
+        bar.appendChild(swatch);
+    });
+}
+
+// Keep the old function name so any old onclick still works
+function changeTextColor() {
+    toggleColorPicker();
+}
 
 function insertArrow() {
     const arrow = prompt("add arrow: ⟶ , ⮕ ", "⮕ , ⟶");
