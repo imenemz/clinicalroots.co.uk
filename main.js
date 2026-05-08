@@ -121,6 +121,35 @@ let hasUnsavedChanges = false;
 
 let navStack = []; // stores view names like "library", "category", "subcategory", "noteView"
 
+
+let savedEditorSelectionRange = null;
+
+function saveEditorSelection() {
+    const editor = elements.noteFormContent;
+    const selection = window.getSelection();
+
+    if (!editor || !selection.rangeCount) return;
+
+    const range = selection.getRangeAt(0);
+
+    if (editor.contains(range.commonAncestorContainer)) {
+        savedEditorSelectionRange = range.cloneRange();
+    }
+}
+
+function restoreEditorSelection() {
+    const editor = elements.noteFormContent;
+    const selection = window.getSelection();
+
+    if (!editor || !savedEditorSelectionRange) return false;
+
+    selection.removeAllRanges();
+    selection.addRange(savedEditorSelectionRange);
+    editor.focus();
+
+    return true;
+}
+
 function pushView(name) {
   const last = navStack[navStack.length - 1];
   if (last !== name) navStack.push(name);
@@ -1135,17 +1164,6 @@ function initTabBulletBehavior() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  initSubheadingLineBehavior();
-  initTabBulletBehavior();
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  // ...your existing code...
-  initSubheadingLineBehavior();
-});
-
-
 function initEditorShortcuts() {
   const editor = elements.noteFormContent;
   if (!editor) return;
@@ -1201,13 +1219,14 @@ function setSavedColors(colors) {
 }
 
 function toggleColorPicker() {
+    saveEditorSelection();
+
     const panel = qs("colorPickerPanel");
     if (!panel) return;
 
     panel.classList.toggle("hidden");
     renderSavedColors();
 }
-
 function previewPickedColor(color) {
     const picker = qs("textColorPicker");
     if (picker) picker.value = color;
@@ -1218,7 +1237,11 @@ function applyPickedColor(color = null) {
 
     if (!picked) return;
 
+    restoreEditorSelection();
+
     document.execCommand("foreColor", false, picked);
+
+    hasUnsavedChanges = true;
 
     if (elements.noteFormContent) {
         elements.noteFormContent.focus();
@@ -1304,7 +1327,7 @@ function changeWritingSize(size) {
     const editor = elements.noteFormContent;
     if (!editor) return;
 
-    editor.focus();
+    restoreEditorSelection();
 
     const selection = window.getSelection();
 
@@ -1312,10 +1335,8 @@ function changeWritingSize(size) {
 
     const range = selection.getRangeAt(0);
 
-    // If the selection/cursor is not inside the editor, stop
     if (!editor.contains(range.commonAncestorContainer)) return;
 
-    // If text is selected, wrap selected text in a span with font-size
     if (!selection.isCollapsed) {
         const selectedContent = range.extractContents();
 
@@ -1325,43 +1346,47 @@ function changeWritingSize(size) {
 
         range.insertNode(span);
 
-        // Move cursor after the new span
         range.setStartAfter(span);
         range.collapse(true);
         selection.removeAllRanges();
         selection.addRange(range);
 
+        savedEditorSelectionRange = null;
         hasUnsavedChanges = true;
+        editor.focus();
         return;
     }
 
-    // If no text is selected, insert an empty span so the next typed text uses that size
-    const span = document.createElement("span");
-    span.style.fontSize = size;
-    span.innerHTML = "&#8203;";
-
-    range.insertNode(span);
-
-    range.setStart(span, 1);
-    range.collapse(true);
-    selection.removeAllRanges();
-    selection.addRange(range);
+    document.execCommand(
+        "insertHTML",
+        false,
+        `<span style="font-size:${size};">&#8203;</span>`
+    );
 
     hasUnsavedChanges = true;
+    editor.focus();
 }
 
 function toggleSectionTitlePanel() {
+    saveEditorSelection();
+
     const panel = qs("sectionTitlePanel");
     if (!panel) return;
 
     panel.classList.toggle("hidden");
+
+    const input = qs("sectionTitleNumberInput");
+    if (input) setTimeout(() => input.focus(), 0);
 }
 
 function applyStyledSectionTitle() {
     const editor = elements.noteFormContent;
     if (!editor) return;
 
+    restoreEditorSelection();
+
     const selection = window.getSelection();
+
     if (!selection.rangeCount) {
         alert("Please select the text first.");
         return;
@@ -1385,23 +1410,22 @@ function applyStyledSectionTitle() {
     const rawNumber = numberInput ? numberInput.value.trim() : "";
     const safeNumber = rawNumber ? escapeHtml(rawNumber) : "&nbsp;";
 
-    document.execCommand(
-        "insertHTML",
-        false,
-        `
+    const html = `
         <div class="styled-section-line">
             <span class="styled-section-number" contenteditable="true">${safeNumber}</span>
             <span class="styled-section-text">${escapeHtml(selectedText)}</span>
         </div>
         <p><br></p>
-        `
-    );
+    `;
+
+    document.execCommand("insertHTML", false, html);
 
     if (numberInput) numberInput.value = "";
 
     const panel = qs("sectionTitlePanel");
     if (panel) panel.classList.add("hidden");
 
+    savedEditorSelectionRange = null;
     hasUnsavedChanges = true;
     editor.focus();
 }
@@ -2014,6 +2038,11 @@ document.addEventListener("DOMContentLoaded", () => {
     initCleanPasteBehavior();
     initEditorShortcuts();
     renderSavedColors();
+
+    if (elements.noteFormContent) {
+        elements.noteFormContent.addEventListener("mouseup", saveEditorSelection);
+        elements.noteFormContent.addEventListener("keyup", saveEditorSelection);
+    }
 
     document.addEventListener("click", (e) => {
         const colorPanel = qs("colorPickerPanel");
