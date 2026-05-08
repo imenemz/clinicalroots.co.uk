@@ -493,7 +493,7 @@ async function openCategoryById(catId) {
 
         btn.textContent = `+ Add note in "${cat.name}"`;
 
-        btn.onclick = () => showAddnote(catId);
+        btn.onclick = () => showAddNote(catId);
 
         btnWrap.appendChild(btn);
 
@@ -1298,6 +1298,114 @@ function toggleFont() {
     elements.noteFormContent.focus();
 }
 
+function changeWritingSize(size) {
+    if (!size) return;
+
+    const editor = elements.noteFormContent;
+    if (!editor) return;
+
+    editor.focus();
+
+    const selection = window.getSelection();
+
+    if (!selection.rangeCount) return;
+
+    const range = selection.getRangeAt(0);
+
+    // If the selection/cursor is not inside the editor, stop
+    if (!editor.contains(range.commonAncestorContainer)) return;
+
+    // If text is selected, wrap selected text in a span with font-size
+    if (!selection.isCollapsed) {
+        const selectedContent = range.extractContents();
+
+        const span = document.createElement("span");
+        span.style.fontSize = size;
+        span.appendChild(selectedContent);
+
+        range.insertNode(span);
+
+        // Move cursor after the new span
+        range.setStartAfter(span);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        hasUnsavedChanges = true;
+        return;
+    }
+
+    // If no text is selected, insert an empty span so the next typed text uses that size
+    const span = document.createElement("span");
+    span.style.fontSize = size;
+    span.innerHTML = "&#8203;";
+
+    range.insertNode(span);
+
+    range.setStart(span, 1);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    hasUnsavedChanges = true;
+}
+
+function toggleSectionTitlePanel() {
+    const panel = qs("sectionTitlePanel");
+    if (!panel) return;
+
+    panel.classList.toggle("hidden");
+}
+
+function applyStyledSectionTitle() {
+    const editor = elements.noteFormContent;
+    if (!editor) return;
+
+    const selection = window.getSelection();
+    if (!selection.rangeCount) {
+        alert("Please select the text first.");
+        return;
+    }
+
+    const range = selection.getRangeAt(0);
+
+    if (!editor.contains(range.commonAncestorContainer)) {
+        alert("Please select text inside the editor.");
+        return;
+    }
+
+    const selectedText = selection.toString().trim();
+
+    if (!selectedText) {
+        alert("Please select the line/text you want to style.");
+        return;
+    }
+
+    const numberInput = qs("sectionTitleNumberInput");
+    const rawNumber = numberInput ? numberInput.value.trim() : "";
+    const safeNumber = rawNumber ? escapeHtml(rawNumber) : "&nbsp;";
+
+    document.execCommand(
+        "insertHTML",
+        false,
+        `
+        <div class="styled-section-line">
+            <span class="styled-section-number" contenteditable="true">${safeNumber}</span>
+            <span class="styled-section-text">${escapeHtml(selectedText)}</span>
+        </div>
+        <p><br></p>
+        `
+    );
+
+    if (numberInput) numberInput.value = "";
+
+    const panel = qs("sectionTitlePanel");
+    if (panel) panel.classList.add("hidden");
+
+    hasUnsavedChanges = true;
+    editor.focus();
+}
+
 function insertImage() {
     const choice = prompt("Type 1 for image URL, or 2 to upload from device:");
 
@@ -1908,13 +2016,18 @@ document.addEventListener("DOMContentLoaded", () => {
     renderSavedColors();
 
     document.addEventListener("click", (e) => {
-        const panel = qs("colorPickerPanel");
-        const tool = document.querySelector(".color-tool");
+        const colorPanel = qs("colorPickerPanel");
+        const colorTool = document.querySelector(".color-tool");
     
-        if (!panel || !tool) return;
+        if (colorPanel && colorTool && !colorTool.contains(e.target)) {
+            colorPanel.classList.add("hidden");
+        }
     
-        if (!tool.contains(e.target)) {
-            panel.classList.add("hidden");
+        const sectionPanel = qs("sectionTitlePanel");
+        const sectionTool = document.querySelector(".section-title-tool");
+    
+        if (sectionPanel && sectionTool && !sectionTool.contains(e.target)) {
+            sectionPanel.classList.add("hidden");
         }
     });
     
