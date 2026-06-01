@@ -123,6 +123,8 @@ let navStack = []; // stores view names like "library", "category", "subcategory
 
 
 let savedEditorSelectionRange = null;
+let styledSectionCounter = 1;
+let activeSectionNumberElement = null;
 
 function saveEditorSelection() {
     const editor = elements.noteFormContent;
@@ -1081,6 +1083,8 @@ function insertSubHeading() {
   const text = prompt("Sub-heading text:");
   if (!text) return;
 
+  styledSectionCounter = 1;
+    
   const editor = elements.noteFormContent;
   const sel = window.getSelection();
   if (!sel.rangeCount) return;
@@ -1454,10 +1458,59 @@ function toggleSectionTitlePanel() {
     if (input) setTimeout(() => input.focus(), 0);
 }
 
+function openSectionNumberEdit(numberElement) {
+    activeSectionNumberElement = numberElement;
+
+    const panel = qs("sectionTitlePanel");
+    const input = qs("sectionTitleNumberInput");
+
+    if (!panel || !input) return;
+
+    input.value = numberElement.textContent.trim();
+
+    panel.classList.remove("hidden");
+
+    setTimeout(() => {
+        input.focus();
+        input.select();
+    }, 0);
+}
+
 function applyStyledSectionTitle() {
     const editor = elements.noteFormContent;
     if (!editor) return;
 
+    const numberInput = qs("sectionTitleNumberInput");
+    const panel = qs("sectionTitlePanel");
+
+    // If admin double-clicked an existing number box, edit that number
+    if (activeSectionNumberElement) {
+        const rawNumber = numberInput ? numberInput.value.trim() : "";
+
+        if (!rawNumber) {
+            alert("Please enter a number or label.");
+            return;
+        }
+
+        activeSectionNumberElement.textContent = rawNumber;
+
+        const numericValue = parseInt(rawNumber, 10);
+
+        if (!isNaN(numericValue)) {
+            styledSectionCounter = numericValue + 1;
+        }
+
+        activeSectionNumberElement = null;
+
+        if (numberInput) numberInput.value = "";
+        if (panel) panel.classList.add("hidden");
+
+        hasUnsavedChanges = true;
+        editor.focus();
+        return;
+    }
+
+    // Normal click: automatically apply the next number
     restoreEditorSelection();
 
     const selection = window.getSelection();
@@ -1481,13 +1534,12 @@ function applyStyledSectionTitle() {
         return;
     }
 
-    const numberInput = qs("sectionTitleNumberInput");
-    const rawNumber = numberInput ? numberInput.value.trim() : "";
-    const safeNumber = rawNumber ? escapeHtml(rawNumber) : "&nbsp;";
+    const currentNumber = styledSectionCounter;
+    styledSectionCounter++;
 
     const html = `
         <div class="styled-section-line">
-            <span class="styled-section-number" contenteditable="true">${safeNumber}</span>
+            <span class="styled-section-number" contenteditable="true">${currentNumber}</span>
             <span class="styled-section-text">${escapeHtml(selectedText)}</span>
         </div>
         <p><br></p>
@@ -1496,8 +1548,6 @@ function applyStyledSectionTitle() {
     document.execCommand("insertHTML", false, html);
 
     if (numberInput) numberInput.value = "";
-
-    const panel = qs("sectionTitlePanel");
     if (panel) panel.classList.add("hidden");
 
     savedEditorSelectionRange = null;
@@ -2118,6 +2168,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (elements.noteFormContent) {
         elements.noteFormContent.addEventListener("mouseup", saveEditorSelection);
         elements.noteFormContent.addEventListener("keyup", saveEditorSelection);
+    
+        elements.noteFormContent.addEventListener("dblclick", (e) => {
+            const numberBox = e.target.closest(".styled-section-number");
+    
+            if (!numberBox) return;
+    
+            e.preventDefault();
+            openSectionNumberEdit(numberBox);
+        });
     }
 
     document.addEventListener("click", (e) => {
