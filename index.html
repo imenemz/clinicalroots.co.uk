@@ -562,6 +562,27 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+
+        /* ===== DRAG NOTE ORDERING ===== */
+        
+        .note-item[draggable="true"] {
+            cursor: grab;
+        }
+        
+        .note-item[draggable="true"]:active {
+            cursor: grabbing;
+        }
+        
+        .dragging-note {
+            opacity: 0.45;
+            transform: scale(0.98);
+        }
+        
+        .note-drag-hint {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
         
         .note-order-controls {
             position: absolute;
