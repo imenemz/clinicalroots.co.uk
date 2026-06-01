@@ -844,6 +844,26 @@ async function showNoteView(noteId) {
   initCollapsibleHeadings(elements.noteBody);
 }
 
+async function moveNoteOrder(noteId, direction) {
+    if (!currentUser || currentUser.role !== "admin") {
+        alert("Admin only");
+        return;
+    }
+
+    try {
+        await api(`/api/note/${noteId}/move`, {
+            method: "POST",
+            body: JSON.stringify({ direction }),
+        });
+
+        if (currentCategoryId) {
+            await openCategoryById(currentCategoryId);
+        }
+    } catch (err) {
+        alert("Error moving note: " + err.message);
+    }
+}
+
 // --------------------------
 // ADMIN – CATEGORIES
 // --------------------------
