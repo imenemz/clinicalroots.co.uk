@@ -558,27 +558,54 @@ async function openCategoryById(catId) {
 
     // Render notes
     if (notesContainer) {
-
-        notes.forEach((n) => {
-
+    
+        notes.forEach((n, index) => {
+    
             const card = document.createElement("div");
-
+    
             card.className = "note-item";
-
+    
             card.onclick = () => showNoteView(n.id);
-
+    
+            const isAdmin = currentUser && currentUser.role === "admin";
+    
+            const orderControlsHtml = isAdmin
+                ? `
+                    <div class="note-order-controls">
+                        <button
+                            class="note-order-btn"
+                            title="Move note up"
+                            ${index === 0 ? "disabled" : ""}
+                            onclick="event.stopPropagation(); moveNoteOrder(${n.id}, 'up')"
+                        >
+                            ⌃
+                        </button>
+    
+                        <button
+                            class="note-order-btn"
+                            title="Move note down"
+                            ${index === notes.length - 1 ? "disabled" : ""}
+                            onclick="event.stopPropagation(); moveNoteOrder(${n.id}, 'down')"
+                        >
+                            ⌄
+                        </button>
+                    </div>
+                `
+                : "";
+    
             card.innerHTML = `
                 <div class="note-info">
                     <h4>${n.title}</h4>
                     <div class="note-meta">${n.views} views</div>
                 </div>
+    
+                ${orderControlsHtml}
             `;
-
+    
             notesContainer.appendChild(card);
         });
-
+    
         if (!notes.length) {
-
             notesContainer.innerHTML += `
                 <div class="empty-state">
                     <div class="empty-state-icon">📝</div>
