@@ -564,13 +564,14 @@ async function openCategoryById(catId) {
         notes.forEach((n, index) => {
     
             const card = document.createElement("div");
-    
             card.className = "note-item";
-    
-            card.onclick = () => showNoteView(n.id);
-    
+            card.dataset.noteId = n.id;
+            
             const isAdmin = currentUser && currentUser.role === "admin";
-    
+            card.draggable = isAdmin;
+            
+            card.onclick = () => showNoteView(n.id);
+                
             const orderControlsHtml = isAdmin
                 ? `
                     <div class="note-order-controls">
@@ -599,13 +600,18 @@ async function openCategoryById(catId) {
                 <div class="note-info">
                     <h4>${n.title}</h4>
                     <div class="note-meta">${n.views} views</div>
+                    ${isAdmin ? `<div class="note-drag-hint">Hold and drag to reorder</div>` : ""}
                 </div>
-    
+            
                 ${orderControlsHtml}
             `;
     
             notesContainer.appendChild(card);
         });
+
+        if (currentUser && currentUser.role === "admin") {
+            initNoteDragOrdering(notesContainer);
+        }
     
         if (!notes.length) {
             notesContainer.innerHTML += `
@@ -866,6 +872,86 @@ async function moveNoteOrder(noteId, direction) {
     }
 }
 
+function initNoteDragOrdering(container) {
+    let draggedCard = null;
+
+    container.querySelectorAll(".note-item").forEach((card) => {
+        card.addEventListener("dragstart", (e) => {
+            draggedCard = card;
+            card.classList.add("dragging-note");
+            e.dataTransfer.effectAllowed = "move";
+        });
+
+        card.addEventListener("dragend", async () => {
+            if (!draggedCard) return;
+
+            draggedCard.classList.remove("dragging-note");
+            draggedCard = null;
+
+            await saveDraggedNoteOrder(container);
+        });
+
+        card.addEventListener("dragover", (e) => {
+            e.preventDefault();
+
+            const dragging = container.querySelector(".dragging-note");
+            if (!dragging) return;
+
+            const afterElement = getDragAfterElement(container, e.clientY);
+
+            if (afterElement == null) {
+                container.appendChild(dragging);
+            } else {
+                container.insertBefore(dragging, afterElement);
+            }
+        });
+    });
+}
+
+function getDragAfterElement(container, y) {
+    const draggableElements = [
+        ...container.querySelectorAll(".note-item:not(.dragging-note)")
+    ];
+
+    return draggableElements.reduce(
+        (closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+
+            if (offset < 0 && offset > closest.offset) {
+                return {
+                    offset: offset,
+                    element: child,
+                };
+            }
+
+            return closest;
+        },
+        {
+            offset: Number.NEGATIVE_INFINITY,
+            element: null,
+        }
+    ).element;
+}
+
+async function saveDraggedNoteOrder(container) {
+    const noteIds = [...container.querySelectorAll(".note-item")]
+        .map((card) => parseInt(card.dataset.noteId, 10))
+        .filter(Boolean);
+
+    try {
+        await api("/api/notes/reorder", {
+            method: "POST",
+            body: JSON.stringify({ note_ids: noteIds }),
+        });
+
+        if (currentCategoryId) {
+            await openCategoryById(currentCategoryId);
+        }
+    } catch (err) {
+        alert("Error saving note order: " + err.message);
+    }
+}
 // --------------------------
 // ADMIN – CATEGORIES
 // --------------------------
