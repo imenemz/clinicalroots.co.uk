@@ -1545,6 +1545,9 @@ function toggleSectionTitlePanel() {
 }
 
 function openSectionNumberEdit(numberElement) {
+    const savedScrollY = window.scrollY;
+    const savedScrollX = window.scrollX;
+
     activeSectionNumberElement = numberElement;
 
     const panel = qs("sectionTitlePanel");
@@ -1556,10 +1559,17 @@ function openSectionNumberEdit(numberElement) {
 
     panel.classList.remove("hidden");
 
-    setTimeout(() => {
-        input.focus();
+    requestAnimationFrame(() => {
+        try {
+            input.focus({ preventScroll: true });
+        } catch (e) {
+            input.focus();
+        }
+
         input.select();
-    }, 0);
+
+        window.scrollTo(savedScrollX, savedScrollY);
+    });
 }
 
 function applyStyledSectionTitle() {
@@ -1592,44 +1602,42 @@ function applyStyledSectionTitle() {
         if (panel) panel.classList.add("hidden");
 
         hasUnsavedChanges = true;
-        editor.focus();
+
+        try {
+            editor.focus({ preventScroll: true });
+        } catch (e) {
+            editor.focus();
+        }
+
         return;
     }
 
-    // Normal click: automatically apply the next number
+    // Normal click: insert number box at cursor.
+    // If text is selected, put the number before the selected text.
     restoreEditorSelection();
 
     const selection = window.getSelection();
-
-    if (!selection.rangeCount) {
-        alert("Please select the text first.");
-        return;
-    }
-
-    const range = selection.getRangeAt(0);
-
-    if (!editor.contains(range.commonAncestorContainer)) {
-        alert("Please select text inside the editor.");
-        return;
-    }
-
-    const selectedText = selection.toString().trim();
-
-    if (!selectedText) {
-        alert("Please select the line/text you want to style.");
-        return;
-    }
-
     const currentNumber = styledSectionCounter;
     styledSectionCounter++;
 
-    const html = `
-        <div class="styled-section-line">
+    let selectedText = "";
+
+    if (selection.rangeCount) {
+        selectedText = selection.toString().trim();
+    }
+
+    let html = "";
+
+    if (selectedText) {
+        html = `
             <span class="styled-section-number" contenteditable="true">${currentNumber}</span>
-            <span class="styled-section-text">${escapeHtml(selectedText)}</span>
-        </div>
-        <p><br></p>
-    `;
+            <span class="styled-section-text">${escapeHtml(selectedText)}</span>&nbsp;
+        `;
+    } else {
+        html = `
+            <span class="styled-section-number" contenteditable="true">${currentNumber}</span>&nbsp;
+        `;
+    }
 
     document.execCommand("insertHTML", false, html);
 
@@ -1638,7 +1646,12 @@ function applyStyledSectionTitle() {
 
     savedEditorSelectionRange = null;
     hasUnsavedChanges = true;
-    editor.focus();
+
+    try {
+        editor.focus({ preventScroll: true });
+    } catch (e) {
+        editor.focus();
+    }
 }
 
 function insertImage() {
@@ -2257,10 +2270,12 @@ document.addEventListener("DOMContentLoaded", () => {
     
         elements.noteFormContent.addEventListener("dblclick", (e) => {
             const numberBox = e.target.closest(".styled-section-number");
-    
+        
             if (!numberBox) return;
-    
+        
             e.preventDefault();
+            e.stopPropagation();
+        
             openSectionNumberEdit(numberBox);
         });
     }
