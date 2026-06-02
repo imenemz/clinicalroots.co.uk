@@ -1303,6 +1303,9 @@ function initTabBulletBehavior() {
   editor.addEventListener("keydown", (e) => {
     if (e.key !== "Tab") return;
 
+    // Let Cmd/Ctrl + Tab be used for the numbered box shortcut
+    if (e.metaKey || e.ctrlKey) return;
+
     // Only affect the editor
     const sel = window.getSelection();
     if (!sel.rangeCount) return;
