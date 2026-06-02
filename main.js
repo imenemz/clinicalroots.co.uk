@@ -1348,6 +1348,12 @@ function initEditorShortcuts() {
       e.preventDefault();
       insertSubHeading();
     }
+      
+    // Cmd/Ctrl + Tab = numbered box
+    if (e.key === "Tab") {
+      e.preventDefault();
+      applyStyledSectionTitle();
+    }
   });
 }
 
