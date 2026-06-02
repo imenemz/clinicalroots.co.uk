@@ -1,7 +1,5 @@
-// --------------------------
+//BASIC API HELPER
 
-// BASIC API HELPER
-// --------------------------
 
 
 const API_BASE = "https://imeneee.pythonanywhere.com";
