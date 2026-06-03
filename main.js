@@ -1348,7 +1348,7 @@ function initEditorShortcuts() {
     // Cmd/Ctrl + S = subheading
     if (e.key.toLowerCase() === "s") {
       e.preventDefault();
-      insertSubHeading();
+      applyStyledSectionTitle();
     }
   
   });
