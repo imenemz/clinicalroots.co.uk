@@ -1344,17 +1344,13 @@ function initEditorShortcuts() {
       insertHeading();
     }
 
+      
     // Cmd/Ctrl + S = subheading
     if (e.key.toLowerCase() === "s") {
       e.preventDefault();
       insertSubHeading();
     }
-      
-    // Cmd/Ctrl + Tab = numbered box
-    if (e.key === "Tab") {
-      e.preventDefault();
-      applyStyledSectionTitle();
-    }
+  
   });
 }
 
