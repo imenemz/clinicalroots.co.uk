@@ -203,13 +203,11 @@
         
         /* Hero banner with soft texture */
         .hero-banner {
-            position: relative;
-            overflow: hidden;
-            background:
-                radial-gradient(circle at 12% 40%, rgba(212, 241, 232, 0.72), transparent 34%),
-                radial-gradient(circle at 88% 35%, rgba(25, 62, 55, 0.10), transparent 30%),
-                linear-gradient(135deg, #ffffff 0%, #f8faf9 45%, #eef4f1 100%);
-            border-bottom: 1px solid rgba(25, 62, 55, 0.08);
+            width: 100%;
+            margin-left: 0;
+            padding: 4rem 1.5rem 3rem;
+            border-radius: 0;
+            margin-bottom: 1rem;
         }
         
         [data-theme="dark"] .hero-banner {
@@ -1703,10 +1701,91 @@
         @media (max-width: 900px) {
           .nav-search-wrap { width: 160px; }
         }
+
+        /* ===== FIX HOME HERO SEARCH POSITION ===== */
+        
+        body {
+            overflow-x: hidden;
+        }
+        
+        /* Only affects the homepage hero, not note pages */
+        #homePage .hero {
+            max-width: none;
+            width: 100%;
+            padding: 0 0 4rem;
+        }
+        
+        /* Full-width hero banner without creating horizontal scroll */
+        #homePage .hero-banner {
+            width: 100%;
+            margin-left: 0;
+            padding: 4rem 2rem 3rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Put the big search bar back in the middle */
+        #homePage .search-container {
+            max-width: 600px;
+            width: calc(100% - 2rem);
+            margin: 1.25rem auto 3.5rem;
+        }
+        
+        /* Make sure the big search input is centered and clean */
+        #homePage .search-input {
+            width: 100%;
+        }
         @media (max-width: 768px) {
           .nav-search { display: none; } /* optional: hide on mobile */
         }
 
+                /* ===== FIX DARK MODE NOTE TEXT VISIBILITY ===== */
+        
+        [data-theme="dark"] .note-body {
+            color: #D7E3DE;
+        }
+        
+        [data-theme="dark"] .note-body p,
+        [data-theme="dark"] .note-body li,
+        [data-theme="dark"] .note-body span,
+        [data-theme="dark"] .note-body div {
+            color: inherit;
+        }
+        
+        /* Fix big note headings that were hardcoded black */
+        [data-theme="dark"] .note-body .main-heading,
+        [data-theme="dark"] .note-body h1,
+        [data-theme="dark"] .note-body h2 {
+            color: #F5F7F6;
+        }
+        
+        [data-theme="dark"] .note-body .main-heading:hover,
+        [data-theme="dark"] .note-body h1:hover,
+        [data-theme="dark"] .note-body h2:hover {
+            color: #7AD7A3;
+            text-shadow: 0 4px 18px rgba(122, 215, 163, 0.18);
+        }
+        
+        /* Fix the small arrow next to collapsible headings */
+        [data-theme="dark"] .note-body .main-heading::after,
+        [data-theme="dark"] .note-body h1::after,
+        [data-theme="dark"] .note-body h2::after {
+            color: #7AD7A3;
+        }
+        
+        /* Fix note title card */
+        [data-theme="dark"] .note-header h1,
+        [data-theme="dark"] #noteTitle {
+            color: #F5F7F6;
+        }
+        
+        /* Fix subheading titles */
+        [data-theme="dark"] .subheading-title {
+            color: #F5F7F6;
+        }
+        
+        [data-theme="dark"] .subheading-body {
+            color: #D7E3DE;
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
