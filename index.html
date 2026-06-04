@@ -9,23 +9,32 @@
     <style>
         :root {
             --primary: #193e37;
-            --secondary: #15342e;
+            --secondary: #245348;
             --dark: #193e37;
-            --light: #d4f1e8;
-            --card-bg: #f2f1ee;
-            --text-dark: #1a1a1a;
-            --text-light: #4a5568;
+            --light: #dff4ed;
+            --card-bg: #f4f2ee;
+        
+            --text-dark: #17211e;
+            --text-light: #536862;
+        
             --success: #193e37;
             --warning: #F59E0B;
             --danger: #EF4444;
-            --bg-gradient: linear-gradient(180deg, #ffffff 19%, #f8f9fa 81%);
-            --navbar-bg: #ffffff;
+        
+            --bg-gradient:
+                radial-gradient(circle at 12% 22%, rgba(212, 241, 232, 0.55), transparent 30%),
+                radial-gradient(circle at 88% 18%, rgba(25, 62, 55, 0.08), transparent 28%),
+                linear-gradient(180deg, #ffffff 0%, #f8faf9 42%, #eef4f1 100%);
+        
+            --navbar-bg: rgba(255, 255, 255, 0.94);
             --footer-bg: #193e37;
             --footer-text: #ffffff;
+        
             --admin-edit: #3b82f6;
             --admin-delete: #ef4444;
             --admin-add: #10b981;
-            --border-color: rgba(25, 62, 55, 0.2);
+        
+            --border-color: rgba(25, 62, 55, 0.14);
             --stethoscope-color: #193e37;
         }
 
@@ -44,14 +53,12 @@
             --warning: #F59E0B;
             --danger: #ef4444;
         
-            --bg-gradient: linear-gradient(
-                180deg,
-                #07110F 0%,
-                #081917 45%,
-                #07110F 100%
-            );
+            --bg-gradient:
+                radial-gradient(circle at 12% 18%, rgba(122, 215, 163, 0.10), transparent 30%),
+                radial-gradient(circle at 88% 12%, rgba(122, 215, 163, 0.08), transparent 28%),
+                linear-gradient(180deg, #07110F 0%, #081917 45%, #07110F 100%);
         
-            --navbar-bg: #08110F;
+            --navbar-bg: rgba(8, 17, 15, 0.96);
             --footer-bg: #050B09;
             --footer-text: #F5F7F6;
         
@@ -157,6 +164,222 @@
             color: #7AD7A3;
         }
         
+        [data-theme="dark"] .user-btn:hover,
+        [data-theme="dark"] .btn-primary:hover {
+            background: #193E37;
+        }
+
+        /* ===== THEME POLISH: LIGHT + DARK ===== */
+
+        body {
+            background: var(--bg-gradient);
+        }
+        
+        /* Main page background */
+        .main-content {
+            background:
+                radial-gradient(circle at 10% 15%, rgba(212, 241, 232, 0.42), transparent 28%),
+                radial-gradient(circle at 90% 20%, rgba(25, 62, 55, 0.06), transparent 28%),
+                linear-gradient(180deg, #ffffff 0%, #f8faf9 45%, #eef4f1 100%);
+        }
+        
+        [data-theme="dark"] .main-content {
+            background:
+                radial-gradient(circle at 12% 18%, rgba(122, 215, 163, 0.08), transparent 30%),
+                radial-gradient(circle at 88% 12%, rgba(122, 215, 163, 0.06), transparent 28%),
+                linear-gradient(180deg, #07110F 0%, #081917 45%, #07110F 100%);
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: var(--navbar-bg);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 8px 24px rgba(25, 62, 55, 0.05);
+        }
+        
+        [data-theme="dark"] .navbar {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        }
+        
+        /* Hero banner with soft texture */
+        .hero-banner {
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 12% 40%, rgba(212, 241, 232, 0.72), transparent 34%),
+                radial-gradient(circle at 88% 35%, rgba(25, 62, 55, 0.10), transparent 30%),
+                linear-gradient(135deg, #ffffff 0%, #f8faf9 45%, #eef4f1 100%);
+            border-bottom: 1px solid rgba(25, 62, 55, 0.08);
+        }
+        
+        [data-theme="dark"] .hero-banner {
+            background:
+                radial-gradient(circle at 12% 38%, rgba(122, 215, 163, 0.14), transparent 34%),
+                radial-gradient(circle at 88% 35%, rgba(122, 215, 163, 0.10), transparent 30%),
+                linear-gradient(135deg, #07110F 0%, #0B2A22 48%, #081917 100%);
+            border-bottom: 1px solid rgba(122, 215, 163, 0.12);
+        }
+        
+        /* Decorative texture layer */
+        .hero-banner::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.55;
+            background:
+                radial-gradient(circle at 18% 45%, rgba(25, 62, 55, 0.08) 0 1px, transparent 2px),
+                radial-gradient(circle at 82% 42%, rgba(25, 62, 55, 0.08) 0 1px, transparent 2px);
+            background-size: 42px 42px, 56px 56px;
+        }
+        
+        [data-theme="dark"] .hero-banner::before {
+            opacity: 0.65;
+            background:
+                radial-gradient(circle at 18% 45%, rgba(122, 215, 163, 0.16) 0 1px, transparent 2px),
+                radial-gradient(circle at 82% 42%, rgba(122, 215, 163, 0.12) 0 1px, transparent 2px);
+            background-size: 42px 42px, 56px 56px;
+        }
+        
+        /* Keep hero text above texture */
+        .hero-banner h1,
+        .hero-banner p {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Accent one phrase in the hero title */
+        .hero-banner h1 strong,
+        .hero-banner h1 .hero-accent {
+            color: #193e37;
+        }
+        
+        [data-theme="dark"] .hero-banner h1 strong,
+        [data-theme="dark"] .hero-banner h1 .hero-accent {
+            color: #7AD7A3;
+        }
+        
+        /* Hero text */
+        .hero h1 {
+            color: var(--text-dark);
+            letter-spacing: -0.045em;
+        }
+        
+        [data-theme="dark"] .hero h1 {
+            color: #F5F7F6;
+            text-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+        }
+        
+        .hero p {
+            color: var(--text-light);
+        }
+        
+        [data-theme="dark"] .hero p {
+            color: #D7E3DE;
+        }
+        
+        /* Search inputs */
+        .search-input,
+        .nav-search-input {
+            background: rgba(255, 255, 255, 0.82);
+            color: #17211e;
+            border: 1px solid rgba(25, 62, 55, 0.18);
+            box-shadow: 0 8px 24px rgba(25, 62, 55, 0.06);
+        }
+        
+        [data-theme="dark"] .search-input,
+        [data-theme="dark"] .nav-search-input {
+            background: rgba(8, 17, 15, 0.78);
+            color: #F5F7F6;
+            border: 1px solid rgba(122, 215, 163, 0.35);
+            box-shadow: 0 0 20px rgba(44, 142, 104, 0.10);
+        }
+        
+        .search-input::placeholder,
+        .nav-search-input::placeholder {
+            color: #71817b;
+        }
+        
+        [data-theme="dark"] .search-input::placeholder,
+        [data-theme="dark"] .nav-search-input::placeholder {
+            color: #8FA49C;
+        }
+        
+        /* Cards */
+        .category-card,
+        .subcategory-card,
+        .note-item,
+        .note-header,
+        .stat-card {
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.82), rgba(244,242,238,0.92));
+            border: 1px solid rgba(25, 62, 55, 0.10);
+            box-shadow: 0 16px 35px rgba(25, 62, 55, 0.08);
+        }
+        
+        [data-theme="dark"] .category-card,
+        [data-theme="dark"] .subcategory-card,
+        [data-theme="dark"] .note-item,
+        [data-theme="dark"] .note-header,
+        [data-theme="dark"] .stat-card {
+            background:
+                linear-gradient(180deg, rgba(20, 35, 31, 0.96), rgba(10, 20, 18, 0.96));
+            border: 1px solid rgba(122, 215, 163, 0.16);
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+        }
+        
+        .category-card:hover,
+        .subcategory-card:hover,
+        .note-item:hover {
+            border-color: rgba(25, 62, 55, 0.24);
+            box-shadow: 0 22px 45px rgba(25, 62, 55, 0.12);
+        }
+        
+        [data-theme="dark"] .category-card:hover,
+        [data-theme="dark"] .subcategory-card:hover,
+        [data-theme="dark"] .note-item:hover {
+            border-color: rgba(122, 215, 163, 0.38);
+            box-shadow:
+                0 22px 55px rgba(0, 0, 0, 0.45),
+                0 0 24px rgba(122, 215, 163, 0.08);
+        }
+        
+        /* Category icons */
+        .category-icon.medical,
+        .category-icon.surgical,
+        .category-icon.specialty {
+            color: #193e37;
+        }
+        
+        [data-theme="dark"] .category-icon.medical,
+        [data-theme="dark"] .category-icon.surgical,
+        [data-theme="dark"] .category-icon.specialty {
+            color: #7AD7A3;
+        }
+        
+        /* Buttons */
+        .login-btn {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .signup-btn,
+        .user-btn,
+        .btn-primary {
+            background: #193e37;
+            color: #ffffff;
+            border: 1px solid rgba(25, 62, 55, 0.25);
+        }
+        
+        [data-theme="dark"] .signup-btn,
+        [data-theme="dark"] .user-btn,
+        [data-theme="dark"] .btn-primary {
+            background: #123D33;
+            color: #F5F7F6;
+            border: 1px solid rgba(122, 215, 163, 0.35);
+        }
+        
+        [data-theme="dark"] .signup-btn:hover,
         [data-theme="dark"] .user-btn:hover,
         [data-theme="dark"] .btn-primary:hover {
             background: #193E37;
@@ -341,15 +564,13 @@
             border-bottom-right-radius: 8px;
         }
 
-        .hero-banner{
-          background: var(--card-bg);
-          width:100vw;
-          margin-left: calc(50% - 50vw);
-          padding: 0.5rem 1.5rem;
-          border-radius: 0;
-          margin-bottom: 1rem; /* stops before search bar */
+        .hero-banner {
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            padding: 4rem 1.5rem 3rem;
+            border-radius: 0;
+            margin-bottom: 1rem;
         }
-
 
         .search-suggestions {
             position: absolute;
@@ -431,7 +652,7 @@
 
         .search-container {
             max-width: 500px;
-            margin: 0 auto 3rem;
+             0 auto 3rem;
             position: relative;
         }
 
@@ -1556,7 +1777,7 @@
         <div id="homePage" class="page">
             <div class="hero">
                 <div class="hero-banner">
-                  <h1>Deepen your roots in medical knowledge to grow your branches in clinical practice</h1>
+                  <h1> Deepen your roots in medical knowledge to <span class="hero-accent">grow your branches</span> in clinical practice </h1>
                   <p>A concept-first learning platform for medical students and early doctors. Understand the why behind every condition to think and act clinically.</p>
                 </div>
                 
