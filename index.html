@@ -203,19 +203,39 @@
         
         /* Hero banner with soft texture */
         .hero-banner {
-            width: 100%;
-            margin-left: 0;
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
             padding: 4rem 1.5rem 3rem;
             border-radius: 0;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        
+            background:
+                linear-gradient(
+                    rgba(255, 255, 255, 0.18),
+                    rgba(255, 255, 255, 0.18)
+                ),
+                url("images/hero-light-bg.png");
+        
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        
+            border-bottom: 1px solid rgba(25, 62, 55, 0.08);
         }
         
         [data-theme="dark"] .hero-banner {
             background:
-                radial-gradient(circle at 12% 38%, rgba(122, 215, 163, 0.14), transparent 34%),
-                radial-gradient(circle at 88% 35%, rgba(122, 215, 163, 0.10), transparent 30%),
-                linear-gradient(135deg, #07110F 0%, #0B2A22 48%, #081917 100%);
-            border-bottom: 1px solid rgba(122, 215, 163, 0.12);
+                linear-gradient(
+                    rgba(7, 17, 15, 0.18),
+                    rgba(7, 17, 15, 0.18)
+                ),
+                url("images/hero-dark-bg.png");
+        
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        
+            border-bottom: 1px solid rgba(122, 215, 163, 0.14);
         }
         
         /* Decorative texture layer */
@@ -1734,6 +1754,45 @@
         #homePage .search-input {
             width: 100%;
         }
+
+        /* ===== FINAL LIGHT THEME BOX POLISH ===== */
+
+        body:not([data-theme="dark"]) .category-card,
+        body:not([data-theme="dark"]) .subcategory-card,
+        body:not([data-theme="dark"]) .note-item,
+        body:not([data-theme="dark"]) .note-header,
+        body:not([data-theme="dark"]) .stat-card,
+        body:not([data-theme="dark"]) .note-editor {
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.92), rgba(246,244,239,0.96));
+            border: 1px solid rgba(25, 62, 55, 0.12);
+            box-shadow:
+                0 18px 38px rgba(25, 62, 55, 0.08),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+        
+        body:not([data-theme="dark"]) .category-card:hover,
+        body:not([data-theme="dark"]) .subcategory-card:hover,
+        body:not([data-theme="dark"]) .note-item:hover {
+            border-color: rgba(25, 62, 55, 0.25);
+            box-shadow:
+                0 24px 50px rgba(25, 62, 55, 0.13),
+                inset 0 1px 0 rgba(255,255,255,0.9);
+        }
+        
+        body:not([data-theme="dark"]) .category-card h3,
+        body:not([data-theme="dark"]) .subcategory-card h4,
+        body:not([data-theme="dark"]) .note-info h4,
+        body:not([data-theme="dark"]) .stat-number {
+            color: #193e37;
+        }
+        
+        body:not([data-theme="dark"]) .category-card p,
+        body:not([data-theme="dark"]) .note-meta,
+        body:not([data-theme="dark"]) .note-views,
+        body:not([data-theme="dark"]) .stat-label {
+            color: #536862;
+        }
         @media (max-width: 768px) {
           .nav-search { display: none; } /* optional: hide on mobile */
         }
@@ -1784,6 +1843,26 @@
         }
         
         [data-theme="dark"] .subheading-body {
+            color: #D7E3DE;
+        }
+
+        /* ===== HERO TEXT FIX ===== */
+
+        .hero-banner h1 {
+            color: #17211e;
+            text-shadow: 0 2px 14px rgba(255,255,255,0.55);
+        }
+        
+        .hero-banner p {
+            color: #536862;
+        }
+        
+        [data-theme="dark"] .hero-banner h1 {
+            color: #F5F7F6;
+            text-shadow: 0 12px 34px rgba(0, 0, 0, 0.55);
+        }
+        
+        [data-theme="dark"] .hero-banner p {
             color: #D7E3DE;
         }
 
