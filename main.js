@@ -81,6 +81,7 @@ const elements = {
         category: qs("categoryPage"),
         subcategory: qs("subcategoryPage"),
         noteView: qs("notePage"),
+        highYield: qs("highYieldPage"),
         admin: qs("adminDashboard"),
         adminNotes: qs("adminNotesPage"),
         addNote: qs("addNotePage"),
@@ -949,6 +950,226 @@ async function saveDraggedNoteOrder(container) {
     } catch (err) {
         alert("Error saving note order: " + err.message);
     }
+}
+
+// --------------------------
+// HIGH-YIELD PAGE
+// --------------------------
+
+let highYieldRootId = null;
+let highYieldSelectedNoteId = null;
+
+function normalizeName(name) {
+    return String(name || "").toLowerCase().replace(/\s+/g, "").replace(/-/g, "");
+}
+
+async function getHighYieldRoot() {
+    if (!flatCategories.length) {
+        await fetchCategoriesTree();
+    }
+
+    const root = flatCategories.find(
+        (c) => !c.parent_id && normalizeName(c.name) === "highyield"
+    );
+
+    if (!root) {
+        alert('High-Yield root category not found. Check app.py seed and reload PythonAnywhere.');
+        return null;
+    }
+
+    highYieldRootId = root.id;
+    return root;
+}
+
+function getDirectChildren(parentId) {
+    return flatCategories.filter((c) => c.parent_id === parentId);
+}
+
+async function showHighYieldPage() {
+    switchView("highYield");
+
+    await fetchCategoriesTree();
+
+    const root = await getHighYieldRoot();
+    if (!root) return;
+
+    await renderHighYieldSidebar(root.id);
+
+    qs("highYieldBreadcrumb").textContent = "High-Yield Facts";
+    qs("highYieldNoteTitle").textContent = "High-Yield Facts";
+    qs("highYieldNoteBody").innerHTML = `
+        <p>Select a topic from the left menu.</p>
+    `;
+    qs("highYieldAtGlance").innerHTML = `
+        <p>Select a note to see a quick summary.</p>
+    `;
+    qs("highYieldKeyPoint").classList.add("hidden");
+}
+
+async function renderHighYieldSidebar(rootId) {
+    const sidebar = qs("highYieldSidebar");
+    if (!sidebar) return;
+
+    sidebar.innerHTML = "";
+
+    const categories = getDirectChildren(rootId);
+
+    if (!categories.length) {
+        sidebar.innerHTML = `
+            <div class="empty-state" style="color: rgba(255,255,255,0.75); padding: 1rem 0;">
+                <p>No High-Yield categories yet.</p>
+            </div>
+        `;
+        return;
+    }
+
+    for (const cat of categories) {
+        const notes = await api(`/api/notes?category=${cat.id}`);
+
+        const group = document.createElement("div");
+        group.className = "hy-menu-category";
+
+        const notesHtml = notes.length
+            ? notes.map((note) => `
+                <button class="hy-menu-note" onclick="openHighYieldNote(${note.id})">
+                    ${escapeHtml(note.title)}
+                </button>
+            `).join("")
+            : `<div style="color: rgba(255,255,255,0.55); font-size: 0.85rem; padding: 0.5rem 0.65rem;">No notes yet</div>`;
+
+        group.innerHTML = `
+            <button class="hy-menu-category-title" onclick="toggleHighYieldCategory(this)">
+                <span>
+                    <i class="fas fa-stethoscope"></i>
+                    ${escapeHtml(cat.name)}
+                </span>
+
+                <span class="hy-category-admin">
+                    <span class="hy-mini-btn" title="Rename" onclick="event.stopPropagation(); promptRenameHighYieldCategory(${cat.id})">
+                        <i class="fas fa-pen"></i>
+                    </span>
+                    <span class="hy-mini-btn" title="Delete" onclick="event.stopPropagation(); promptDeleteHighYieldCategory(${cat.id})">
+                        <i class="fas fa-trash"></i>
+                    </span>
+                </span>
+
+                <span>⌄</span>
+            </button>
+
+            <div class="hy-menu-notes">
+                ${notesHtml}
+            </div>
+        `;
+
+        sidebar.appendChild(group);
+    }
+
+    // Open the first category by default
+    const firstGroup = sidebar.querySelector(".hy-menu-category");
+    if (firstGroup) firstGroup.classList.add("open");
+}
+
+function toggleHighYieldCategory(button) {
+    const group = button.closest(".hy-menu-category");
+    if (!group) return;
+    group.classList.toggle("open");
+}
+
+async function openHighYieldNote(noteId) {
+    highYieldSelectedNoteId = noteId;
+
+    const note = await api(`/api/note/${noteId}`);
+
+    qs("highYieldNoteTitle").textContent = note.title;
+    qs("highYieldNoteBody").innerHTML = note.content;
+
+    const cat = getCategoryById(note.category_id);
+    const path = cat ? cat.path.replaceAll(" :: ", " › ") : "High-Yield Facts";
+    qs("highYieldBreadcrumb").textContent = path;
+
+    renderHighYieldAtGlance(note.content);
+
+    document.querySelectorAll(".hy-menu-note").forEach((btn) => {
+        btn.classList.toggle(
+            "active",
+            btn.textContent.trim() === note.title.trim()
+        );
+    });
+}
+
+function renderHighYieldAtGlance(content) {
+    const glance = qs("highYieldAtGlance");
+    const keyBox = qs("highYieldKeyPoint");
+    const keyText = qs("highYieldKeyPointText");
+
+    if (!glance) return;
+
+    const temp = document.createElement("div");
+    temp.innerHTML = content;
+
+    const plainText = temp.textContent.trim();
+
+    // Key point: first useful sentence from the note
+    const firstSentence = plainText.split(". ").find((s) => s.trim().length > 30);
+
+    if (firstSentence && keyBox && keyText) {
+        keyText.textContent = firstSentence.trim() + ".";
+        keyBox.classList.remove("hidden");
+    } else if (keyBox) {
+        keyBox.classList.add("hidden");
+    }
+
+    // At a glance: use headings/subheadings first
+    const headings = [...temp.querySelectorAll(".main-heading, .subheading-title, h2, h3")]
+        .map((h) => h.textContent.trim())
+        .filter(Boolean)
+        .slice(0, 4);
+
+    if (!headings.length) {
+        glance.innerHTML = `
+            <p>No summary headings detected yet.</p>
+        `;
+        return;
+    }
+
+    const icons = ["fa-user-group", "fa-gear", "fa-triangle-exclamation", "fa-shield-halved"];
+
+    glance.innerHTML = headings.map((h, index) => `
+        <div class="hy-glance-item">
+            <i class="fas ${icons[index] || "fa-circle-info"}"></i>
+            <div>
+                <strong>${escapeHtml(h)}</strong>
+            </div>
+        </div>
+    `).join("");
+}
+
+async function addHighYieldCategory() {
+    const root = await getHighYieldRoot();
+    if (!root) return;
+
+    await promptAddSubcategory(root.id);
+    await fetchCategoriesTree();
+    await showHighYieldPage();
+}
+
+async function promptRenameHighYieldCategory(catId) {
+    await promptRenameCategory(catId);
+    await fetchCategoriesTree();
+    await showHighYieldPage();
+}
+
+async function promptDeleteHighYieldCategory(catId) {
+    await promptDeleteCategory(catId);
+    await fetchCategoriesTree();
+    await showHighYieldPage();
+}
+
+async function showHighYieldAdmin() {
+    const root = await getHighYieldRoot();
+    if (!root) return;
+
+    openCategoryById(root.id);
 }
 // --------------------------
 // ADMIN – CATEGORIES
