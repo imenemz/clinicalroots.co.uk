@@ -2216,6 +2216,205 @@
                 padding: 1rem;
             }
         }
+
+        /* Surgical scalpel icon */
+        .scalpel-icon {
+            width: 2.8rem;
+            height: 2.8rem;
+            stroke: var(--primary);
+            stroke-width: 7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+        
+        [data-theme="dark"] .scalpel-icon {
+            stroke: #7AD7A3;
+        }
+        
+        .scalpel-icon .dash {
+            stroke-dasharray: 10 8;
+        }
+
+        /* Guide book icon */
+        .guide-book-icon {
+            color: var(--primary);
+            font-size: 2.6rem;
+            line-height: 1;
+            font-family: Georgia, "Times New Roman", serif;
+            font-weight: 700;
+        }
+        
+        [data-theme="dark"] .guide-book-icon {
+            color: #7AD7A3;
+        }
+
+        /* =========================================================
+           GLOBAL 80% SIZE REDUCTION
+           Makes the whole website feel smaller and cleaner
+        ========================================================= */
+        
+        html {
+            font-size: 80%;
+        }
+        
+        /* Keep the navbar compact */
+        .navbar {
+            padding: 0.8rem 0;
+        }
+        
+        .navbar-container {
+            max-width: 1050px;
+            padding: 0 1.6rem;
+        }
+        
+        .logo {
+            font-size: 1.3rem;
+        }
+        
+        .nav-links {
+            gap: 1.4rem;
+        }
+        
+        .nav-links a {
+            font-size: 0.95rem;
+        }
+        
+        .nav-search-wrap {
+            width: 210px;
+        }
+        
+        /* Reduce main page spacing */
+        .main-content {
+            margin-top: 70px;
+        }
+        
+        .hero {
+            max-width: 1050px;
+            padding: 3rem 1.6rem;
+        }
+        
+        #homePage .hero {
+            padding: 0 0 3rem;
+        }
+        
+        #homePage .hero-banner {
+            padding: 3rem 1.6rem 2.4rem;
+        }
+        
+        .hero h1 {
+            font-size: 2.35rem;
+        }
+        
+        .hero p {
+            font-size: 1rem;
+        }
+        
+        /* Make cards smaller */
+        .categories {
+            max-width: 1050px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.4rem;
+            padding: 1.6rem;
+        }
+        
+        .category-card {
+            padding: 1.5rem;
+            border-radius: 14px;
+        }
+        
+        .category-icon {
+            font-size: 2.35rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .category-card h3 {
+            font-size: 1.25rem;
+        }
+        
+        .category-card p {
+            font-size: 0.85rem;
+        }
+        
+        /* Smaller library/category/note pages */
+        .subcategories {
+            max-width: 1050px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            padding: 1.6rem;
+        }
+        
+        .subcategory-card {
+            padding: 1.2rem;
+        }
+        
+        .notes-list,
+        .admin-dashboard {
+            max-width: 1050px;
+            padding: 1.6rem;
+        }
+        
+        .note-content {
+            max-width: 980px;
+            padding: 1.6rem;
+        }
+        
+        .note-header {
+            padding: 1.6rem;
+        }
+        
+        /* Published note writing size */
+        .note-body {
+            font-size: 0.95rem;
+            line-height: 1.65;
+        }
+        
+        .note-body p,
+        .note-body li {
+            font-size: 0.95rem;
+        }
+        
+        .note-body .main-heading,
+        .note-body h1,
+        .note-body h2 {
+            font-size: 1.75rem;
+        }
+        
+        .subheading-title {
+            font-size: 1.25rem;
+        }
+        
+        /* High-Yield page smaller */
+        .high-yield-layout {
+            max-width: 1250px;
+            grid-template-columns: 245px minmax(0, 1fr) 240px;
+            gap: 1.5rem;
+            padding: 1.6rem;
+        }
+        
+        .hy-sidebar,
+        .hy-note-card,
+        .hy-glance {
+            border-radius: 14px;
+        }
+        
+        .hy-sidebar {
+            padding: 1.2rem;
+        }
+        
+        .hy-note-card {
+            padding: 2rem;
+        }
+        
+        .hy-note-card h1 {
+            font-size: 1.9rem;
+        }
+        
+        .hy-note-body {
+            font-size: 0.95rem;
+        }
+
+        
     </style>
 </head>
 <body>
@@ -2309,7 +2508,16 @@
                         </button>
                     </div>
                     <div class="category-icon surgical">
-                        <i class="fas fa-user-md"></i>
+                        <svg class="scalpel-icon" viewBox="0 0 120 120" aria-hidden="true">
+                            <path d="M23 86 L68 41" />
+                            <path d="M68 41 L89 20 C96 13 108 25 101 32 L80 53 Z" />
+                            <path d="M23 86 C17 92 19 101 28 103 L48 108" />
+                            <path d="M36 73 L49 86" />
+                            <path d="M45 64 L58 77" />
+                            <path d="M54 55 L67 68" />
+                            <path d="M55 98 H84" class="dash" />
+                            <path d="M92 98 H102" class="dash" />
+                        </svg>
                     </div>
                     <h3>Surgical</h3>
                     <p>Surgical procedures, techniques, and perioperative care</p>
@@ -2324,14 +2532,14 @@
                         </button>
                     </div>
                     <div class="category-icon specialty">
-                        <i class="fas fa-user-md"></i>
+                        <i class="fas fa-notes-medical"></i>
                     </div>
                     <h3>Specialty</h3>
                     <p>Specialized medical fields and advanced practice areas</p>
                 </div>
                 <div class="category-card" onclick="showTools()">
-                    <div class="category-icon">
-                        <i class="fas fa-route" style="color: var(--primary);"></i>
+                    <div class="category-icon guide-book-icon">
+                        🕮
                     </div>
                     <h3>Guide</h3>
                     <p>Guide on how to use the website to study effectively.</p>
