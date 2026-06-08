@@ -2692,6 +2692,75 @@
             }
         }
 
+        /* =========================================================
+           HIGH-YIELD KEY POINT + AT A GLANCE EDITOR
+        ========================================================= */
+        
+        .hy-key-point-text {
+            margin-top: 0.25rem;
+        }
+        
+        .hy-key-point-text p,
+        .hy-key-point-text div,
+        .hy-key-point-text ul,
+        .hy-key-point-text ol {
+            margin: 0.35rem 0;
+        }
+        
+        .hy-glance-editor-wrap {
+            margin-top: 1rem;
+        }
+        
+        .hy-glance-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            padding: 0.45rem;
+            background: rgba(212, 241, 232, 0.55);
+            border-radius: 8px;
+            margin-bottom: 0.6rem;
+        }
+        
+        .hy-glance-editor {
+            min-height: 180px;
+            padding: 0.9rem;
+            border: 2px solid rgba(25, 62, 55, 0.16);
+            border-radius: 10px;
+            background: #ffffff;
+            color: #111111;
+            outline: none;
+            line-height: 1.6;
+        }
+        
+        .hy-glance-editor:focus {
+            border-color: var(--primary);
+        }
+        
+        .hy-glance-save-btn {
+            width: 100%;
+            margin-top: 0.75rem;
+        }
+        
+        .hy-glance-view {
+            line-height: 1.6;
+        }
+        
+        .hy-glance-view p,
+        .hy-glance-view ul,
+        .hy-glance-view ol {
+            margin: 0.45rem 0;
+        }
+        
+        [data-theme="dark"] .hy-glance-toolbar {
+            background: rgba(122, 215, 163, 0.10);
+        }
+        
+        [data-theme="dark"] .hy-glance-editor {
+            background: #07110F;
+            color: #F5F7F6;
+            border-color: rgba(122, 215, 163, 0.25);
+        }
+
         
     </style>
 </head>
@@ -2863,7 +2932,7 @@
                             </div>
                             <div>
                                 <strong>Key Point</strong>
-                                <p id="highYieldKeyPointText"></p>
+                                <div id="highYieldKeyPointText" class="hy-key-point-text"></div>
                             </div>
                         </div>
         
