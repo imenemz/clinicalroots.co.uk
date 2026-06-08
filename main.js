@@ -514,69 +514,79 @@ async function openCategoryById(catId) {
     // =====================================================
     if (isEmpty) {
         switchView("subcategory");
-
+    
         const subcategoryBackBtn = qs("subcategoryBackBtn");
-
+    
         if (subcategoryBackBtn) {
             subcategoryBackBtn.onclick = () => {
                 if (parentId) openCategoryById(parentId);
                 else showLibrary();
             };
-
+    
             subcategoryBackBtn.textContent = parentId
                 ? "← Back"
                 : "← Back to Library";
         }
-
+    
         const subTitle = qs("subcategoryTitle");
         const subDesc = qs("subcategoryDescription");
-
+    
         if (subTitle) {
             subTitle.textContent = cat ? cat.name : "Subcategory";
         }
-
+    
         if (subDesc) {
             subDesc.textContent = cat
                 ? cat.path.replaceAll(" :: ", " | ")
                 : "";
         }
-
+    
         const notesContainer = qs("notesContainer");
-
+    
         if (notesContainer) {
             notesContainer.innerHTML = "";
-
+    
             if (currentUser && currentUser.role === "admin" && cat) {
                 const choiceWrap = document.createElement("div");
                 choiceWrap.className = "admin-category-action-row two-actions";
-
+    
                 const addSubBtn = document.createElement("button");
+                addSubBtn.type = "button";
                 addSubBtn.className = "btn btn-success admin-choice-btn";
                 addSubBtn.textContent = `+ Add subcategory under "${cat.name}"`;
-                addSubBtn.onclick = () => promptAddSubcategory(catId);
-
+    
+                addSubBtn.addEventListener("click", async () => {
+                    await promptAddSubcategory(catId);
+                });
+    
                 const addNoteBtn = document.createElement("button");
+                addNoteBtn.type = "button";
                 addNoteBtn.className = "btn btn-primary admin-choice-btn";
                 addNoteBtn.textContent = `+ Add note in "${cat.name}"`;
-                addNoteBtn.onclick = () => showAddNote(catId);
-
+    
+                addNoteBtn.addEventListener("click", () => {
+                    showAddNote(catId);
+                });
+    
                 choiceWrap.appendChild(addSubBtn);
                 choiceWrap.appendChild(addNoteBtn);
-
+    
                 notesContainer.appendChild(choiceWrap);
             }
-
-            notesContainer.innerHTML += `
-                <div class="empty-state">
-                    <div class="empty-state-icon">📝</div>
-                    <p>This category is empty.</p>
-                    <p style="font-size: 0.9rem; opacity: 0.8;">
-                        Add notes directly, or create subcategories to organize it further.
-                    </p>
-                </div>
+    
+            const emptyState = document.createElement("div");
+            emptyState.className = "empty-state";
+            emptyState.innerHTML = `
+                <div class="empty-state-icon">📝</div>
+                <p>This category is empty.</p>
+                <p style="font-size: 0.9rem; opacity: 0.8;">
+                    Add notes directly, or create subcategories to organize it further.
+                </p>
             `;
+    
+            notesContainer.appendChild(emptyState);
         }
-
+    
         return;
     }
 
