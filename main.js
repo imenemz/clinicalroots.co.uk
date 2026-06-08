@@ -1077,7 +1077,7 @@ async function showHighYieldPage() {
         <p>Select a topic from the left menu.</p>
     `;
     qs("highYieldAtGlance").innerHTML = `
-        <p>Select a note to see a quick summary.</p>
+        <p>Select a note to edit or view its At a Glance summary.</p>
     `;
     qs("highYieldKeyPoint").classList.add("hidden");
 }
@@ -1157,13 +1157,13 @@ async function openHighYieldNote(noteId) {
     const note = await api(`/api/note/${noteId}`);
 
     qs("highYieldNoteTitle").textContent = note.title;
-    qs("highYieldNoteBody").innerHTML = note.content;
 
     const cat = getCategoryById(note.category_id);
     const path = cat ? cat.path.replaceAll(" :: ", " › ") : "High-Yield Facts";
     qs("highYieldBreadcrumb").textContent = path;
 
-    renderHighYieldAtGlance(note.content);
+    renderHighYieldNoteContent(note.content);
+    renderHighYieldAtGlance(note.high_yield_glance || "", note.id);
 
     document.querySelectorAll(".hy-menu-note").forEach((btn) => {
         btn.classList.toggle(
@@ -1173,51 +1173,161 @@ async function openHighYieldNote(noteId) {
     });
 }
 
-function renderHighYieldAtGlance(content) {
-    const glance = qs("highYieldAtGlance");
+function isHighYieldHeadingElement(el) {
+    if (!el || el.nodeType !== 1) return false;
+
+    return (
+        el.matches(".heading-block, .main-heading, h1, h2, h3") ||
+        !!el.querySelector(".main-heading")
+    );
+}
+
+function htmlHasRealContent(html) {
+    const temp = document.createElement("div");
+    temp.innerHTML = html || "";
+
+    const text = temp.textContent.replace(/\u00A0/g, " ").trim();
+    const hasMedia = temp.querySelector("img, table, iframe");
+
+    return text.length > 0 || !!hasMedia;
+}
+
+function renderHighYieldNoteContent(content) {
+    const body = qs("highYieldNoteBody");
     const keyBox = qs("highYieldKeyPoint");
     const keyText = qs("highYieldKeyPointText");
 
-    if (!glance) return;
+    if (!body || !keyBox || !keyText) return;
 
     const temp = document.createElement("div");
-    temp.innerHTML = content;
+    temp.innerHTML = content || "";
 
-    const plainText = temp.textContent.trim();
+    const nodes = Array.from(temp.childNodes);
 
-    // Key point: first useful sentence from the note
-    const firstSentence = plainText.split(". ").find((s) => s.trim().length > 30);
+    const firstHeadingIndex = nodes.findIndex((node) => {
+        if (node.nodeType !== 1) return false;
+        return isHighYieldHeadingElement(node);
+    });
 
-    if (firstSentence && keyBox && keyText) {
-        keyText.textContent = firstSentence.trim() + ".";
-        keyBox.classList.remove("hidden");
-    } else if (keyBox) {
+    // If there is no heading, keep the note normal and hide Key Point
+    if (firstHeadingIndex === -1) {
+        keyText.innerHTML = "";
         keyBox.classList.add("hidden");
-    }
-
-    // At a glance: use headings/subheadings first
-    const headings = [...temp.querySelectorAll(".main-heading, .subheading-title, h2, h3")]
-        .map((h) => h.textContent.trim())
-        .filter(Boolean)
-        .slice(0, 4);
-
-    if (!headings.length) {
-        glance.innerHTML = `
-            <p>No summary headings detected yet.</p>
-        `;
+        body.innerHTML = content || `<p>No content yet.</p>`;
         return;
     }
 
-    const icons = ["fa-user-group", "fa-gear", "fa-triangle-exclamation", "fa-shield-halved"];
+    const keyNodes = nodes.slice(0, firstHeadingIndex);
+    const bodyNodes = nodes.slice(firstHeadingIndex);
 
-    glance.innerHTML = headings.map((h, index) => `
-        <div class="hy-glance-item">
-            <i class="fas ${icons[index] || "fa-circle-info"}"></i>
-            <div>
-                <strong>${escapeHtml(h)}</strong>
+    const keyContainer = document.createElement("div");
+    keyNodes.forEach((node) => keyContainer.appendChild(node.cloneNode(true)));
+
+    const bodyContainer = document.createElement("div");
+    bodyNodes.forEach((node) => bodyContainer.appendChild(node.cloneNode(true)));
+
+    const keyHtml = keyContainer.innerHTML.trim();
+    const bodyHtml = bodyContainer.innerHTML.trim();
+
+    if (htmlHasRealContent(keyHtml)) {
+        keyText.innerHTML = keyHtml;
+        keyBox.classList.remove("hidden");
+    } else {
+        keyText.innerHTML = "";
+        keyBox.classList.add("hidden");
+    }
+
+    body.innerHTML = bodyHtml || `<p>No note body after the first heading yet.</p>`;
+}
+
+function renderHighYieldAtGlance(glanceContent = "", noteId = null) {
+    const glance = qs("highYieldAtGlance");
+    if (!glance) return;
+
+    const isAdmin = currentUser && currentUser.role === "admin";
+
+    if (isAdmin && noteId) {
+        glance.innerHTML = `
+            <div class="hy-glance-editor-wrap">
+                <div class="hy-glance-toolbar">
+                    <button type="button" class="editor-btn" onclick="formatHighYieldGlanceText('bold')" title="Bold">
+                        <i class="fas fa-bold"></i>
+                    </button>
+
+                    <button type="button" class="editor-btn" onclick="formatHighYieldGlanceText('italic')" title="Italic">
+                        <i class="fas fa-italic"></i>
+                    </button>
+
+                    <button type="button" class="editor-btn" onclick="formatHighYieldGlanceText('underline')" title="Underline">
+                        <i class="fas fa-underline"></i>
+                    </button>
+
+                    <button type="button" class="editor-btn" onclick="formatHighYieldGlanceText('insertUnorderedList')" title="List">
+                        <i class="fas fa-list-ul"></i>
+                    </button>
+                </div>
+
+                <div
+                    id="highYieldGlanceEditor"
+                    class="hy-glance-editor"
+                    contenteditable="true"
+                    data-note-id="${noteId}"
+                >${glanceContent || ""}</div>
+
+                <button
+                    type="button"
+                    class="btn btn-primary hy-glance-save-btn"
+                    onclick="saveHighYieldGlance()"
+                >
+                    Save At a Glance
+                </button>
             </div>
-        </div>
-    `).join("");
+        `;
+
+        return;
+    }
+
+    if (htmlHasRealContent(glanceContent)) {
+        glance.innerHTML = `
+            <div class="hy-glance-view">
+                ${glanceContent}
+            </div>
+        `;
+    } else {
+        glance.innerHTML = `
+            <p>No At a Glance summary yet.</p>
+        `;
+    }
+}
+
+function formatHighYieldGlanceText(cmd) {
+    const editor = qs("highYieldGlanceEditor");
+    if (!editor) return;
+
+    editor.focus();
+    document.execCommand(cmd, false, null);
+}
+
+async function saveHighYieldGlance() {
+    const editor = qs("highYieldGlanceEditor");
+
+    if (!editor || !highYieldSelectedNoteId) {
+        alert("No High-Yield note selected.");
+        return;
+    }
+
+    try {
+        await api(`/api/note/${highYieldSelectedNoteId}/high_yield_glance`, {
+            method: "PUT",
+            body: JSON.stringify({
+                high_yield_glance: editor.innerHTML.trim(),
+            }),
+        });
+
+        alert("At a Glance saved.");
+    } catch (err) {
+        alert("Error saving At a Glance: " + err.message);
+    }
 }
 
 async function addHighYieldCategory() {
