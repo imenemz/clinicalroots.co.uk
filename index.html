@@ -2235,7 +2235,258 @@
            GLOBAL 80% SIZE REDUCTION
            Makes the whole website feel smaller and cleaner
         ========================================================= */
+        /* RESPONSIVE ZOOM-SAFE LAYOUT
+           Makes the website adapt when browser zoom changes */
         
+        /* Better than only using fixed 80%.
+           It stays small on large screens but grows safely on smaller/zoomed screens. */
+        html {
+            font-size: clamp(12px, 0.8vw + 4px, 16px);
+        }
+        
+        /* Prevent hidden horizontal overflow when zoom changes */
+        html,
+        body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Make all big layout containers fluid instead of fixed */
+        .navbar-container,
+        .hero,
+        .categories,
+        .subcategories,
+        .notes-list,
+        .admin-dashboard,
+        .note-content,
+        .footer-content {
+            width: min(100% - 3rem, 1400px);
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Navbar: flexible so it does not break when zoomed in */
+        .navbar-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        /* Logo stays left */
+        .navbar-container > div:first-child {
+            flex: 0 0 auto;
+        }
+        
+        /* Right menu can shrink */
+        .nav-links {
+            flex: 1 1 auto;
+            justify-content: flex-end;
+            min-width: 0;
+            gap: clamp(0.8rem, 1.2vw, 1.8rem);
+        }
+        
+        /* Search bar adapts instead of staying fixed */
+        .nav-search-wrap {
+            width: clamp(160px, 18vw, 280px) !important;
+        }
+        
+        /* Buttons should not stretch weirdly */
+        #authButtons,
+        #userMenu {
+            flex: 0 0 auto;
+        }
+        
+        /* Hero title adjusts instead of overflowing */
+        .hero h1,
+        .hero-banner h1 {
+            font-size: clamp(2rem, 2.8vw, 3.4rem);
+            line-height: 1.15;
+            max-width: min(100%, 1200px);
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero p,
+        .hero-banner p {
+            font-size: clamp(1rem, 1vw, 1.2rem);
+        }
+        
+        /* Home search adjusts with zoom */
+        #homePage .search-container {
+            width: min(100% - 2rem, 650px);
+        }
+        
+        /* Cards automatically adjust based on available space */
+        .categories {
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+            gap: clamp(1rem, 1.5vw, 2rem);
+        }
+        
+        .subcategories {
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+            gap: clamp(1rem, 1.4vw, 1.6rem);
+        }
+        
+        /* Note page uses more width but stays readable */
+        .note-content {
+            width: min(100% - 4rem, 1400px) !important;
+            max-width: 1400px !important;
+        }
+        
+        .note-header {
+            width: 100%;
+        }
+        
+        .note-body {
+            width: 100%;
+            max-width: none;
+            font-size: clamp(0.95rem, 0.95vw, 1.05rem);
+        }
+        
+        .note-body > * {
+            max-width: 1280px;
+        }
+        
+        /* High-yield page adapts */
+        .high-yield-layout {
+            width: min(100% - 3rem, 1500px);
+            max-width: 1500px;
+            grid-template-columns:
+                minmax(220px, 0.8fr)
+                minmax(0, 2.4fr)
+                minmax(220px, 0.8fr);
+            gap: clamp(1rem, 1.5vw, 2rem);
+        }
+        
+        /* Images/tables never force the page wider */
+        img,
+        table,
+        pre,
+        code {
+            max-width: 100%;
+        }
+        
+        /* Medium screens or zoomed-in desktop */
+        @media (max-width: 1150px) {
+            .navbar {
+                padding: 0.75rem 0;
+            }
+        
+            .navbar-container {
+                width: min(100% - 2rem, 100%);
+            }
+        
+            .nav-links {
+                gap: 0.9rem;
+            }
+        
+            .nav-search-wrap {
+                width: 180px !important;
+            }
+        
+            .categories,
+            .subcategories {
+                width: min(100% - 2rem, 100%);
+            }
+        
+            .note-content {
+                width: min(100% - 2rem, 100%) !important;
+            }
+        
+            .high-yield-layout {
+                grid-template-columns: 1fr;
+                width: min(100% - 2rem, 100%);
+            }
+        
+            .hy-sidebar,
+            .hy-glance {
+                position: relative;
+                top: auto;
+                height: auto;
+            }
+        }
+        
+        /* Small screens or very zoomed-in browser */
+        @media (max-width: 850px) {
+            .navbar-container {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        
+            .navbar-container > div:first-child {
+                width: 100%;
+                justify-content: center;
+            }
+        
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        
+            .nav-search {
+                order: -1;
+                width: 100%;
+                display: flex !important;
+                justify-content: center;
+            }
+        
+            .nav-search-wrap {
+                width: min(100%, 420px) !important;
+            }
+        
+            #authButtons {
+                width: 100%;
+                justify-content: center;
+                display: flex;
+                gap: 0.75rem;
+            }
+        
+            .hero {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        
+            #homePage .hero-banner {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        
+            .category-card,
+            .subcategory-card,
+            .note-item,
+            .note-header {
+                padding: 1.2rem;
+            }
+        }
+        
+        /* Very small screens */
+        @media (max-width: 520px) {
+            html {
+                font-size: 13px;
+            }
+        
+            .login-btn,
+            .signup-btn,
+            .user-btn {
+                padding: 0.55rem 0.9rem;
+            }
+        
+            .categories,
+            .subcategories,
+            .notes-list,
+            .admin-dashboard,
+            .note-content {
+                width: calc(100% - 1rem) !important;
+            }
+        
+            .hero h1,
+            .hero-banner h1 {
+                font-size: 1.8rem;
+            }
+        }
         html {
             font-size: 80%;
         }
@@ -2394,6 +2645,51 @@
         
         .hy-note-body {
             font-size: 0.95rem;
+        }
+
+        /* =========================================================
+           ADMIN CATEGORY ACTION BUTTONS
+           Empty category = Add subcategory + Add note
+        ========================================================= */
+        
+        .admin-category-action-row {
+            width: 100%;
+            display: flex;
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .admin-category-action-row.two-actions {
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-category-action-row.single-action {
+            justify-content: flex-start;
+        }
+        
+        .admin-choice-btn {
+            min-width: 240px;
+            padding: 0.85rem 1.2rem;
+            font-weight: 700;
+            border-radius: 10px;
+        }
+        
+        .admin-category-action-row.two-actions .admin-choice-btn {
+            width: calc(50% - 0.6rem);
+        }
+        
+        @media (max-width: 768px) {
+            .admin-category-action-row,
+            .admin-category-action-row.two-actions {
+                flex-direction: column;
+            }
+        
+            .admin-category-action-row.two-actions .admin-choice-btn,
+            .admin-choice-btn {
+                width: 100%;
+                min-width: 0;
+            }
         }
 
         
