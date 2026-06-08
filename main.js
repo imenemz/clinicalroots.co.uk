@@ -1088,7 +1088,8 @@ async function renderHighYieldSidebar(rootId) {
 
     sidebar.innerHTML = "";
 
-    const categories = getDirectChildren(rootId);
+    // High-Yield categories only: alphabetical order
+    const categories = getDirectChildren(rootId, true);
 
     if (!categories.length) {
         sidebar.innerHTML = `
@@ -1100,7 +1101,13 @@ async function renderHighYieldSidebar(rootId) {
     }
 
     for (const cat of categories) {
-        const notes = await api(`/api/notes?category=${cat.id}`);
+        // High-Yield notes only: alphabetical order
+        const notes = (await api(`/api/notes?category=${cat.id}`)).sort((a, b) =>
+            a.title.localeCompare(b.title, undefined, {
+                sensitivity: "base",
+                numeric: true,
+            })
+        );
 
         const group = document.createElement("div");
         group.className = "hy-menu-category";
@@ -1140,7 +1147,6 @@ async function renderHighYieldSidebar(rootId) {
         sidebar.appendChild(group);
     }
 
-    // Open the first category by default
     const firstGroup = sidebar.querySelector(".hy-menu-category");
     if (firstGroup) firstGroup.classList.add("open");
 }
