@@ -393,20 +393,38 @@ async function openCategoryById(catId) {
 
     const children = flatCategories.filter((c) => c.parent_id === catId);
 
-    // =========================
-    // CATEGORY PAGE
-    // =========================
-    if (children.length > 0) {
+    let notes = [];
 
+    try {
+        notes = await api(`/api/notes?category=${catId}`);
+    } catch (err) {
+        console.error("Error fetching notes:", err);
+        notes = [];
+    }
+
+    const hasChildren = children.length > 0;
+    const hasNotes = notes.length > 0;
+    const isEmpty = !hasChildren && !hasNotes;
+
+    // =====================================================
+    // CASE 1: CATEGORY HAS CHILDREN
+    // Show only: Add subcategory
+    // Do NOT show add note here
+    // =====================================================
+    if (hasChildren) {
         switchView("category");
 
-        // Back button
         const categoryBackBtn = document.querySelector("#categoryPage .back-btn");
+
         if (categoryBackBtn) {
             categoryBackBtn.onclick = () => {
                 if (parentId) openCategoryById(parentId);
                 else showLibrary();
             };
+
+            categoryBackBtn.textContent = parentId
+                ? "← Back"
+                : "← Back to Library";
         }
 
         const header = qs("categoryTitle");
@@ -428,44 +446,35 @@ async function openCategoryById(catId) {
             subcontainer.innerHTML = "";
         }
 
-        // Admin add button
+        // Admin button: only add subcategory
         if (currentUser && currentUser.role === "admin" && cat && subcontainer) {
-
             const btnWrap = document.createElement("div");
-            btnWrap.style.marginBottom = "1rem";
+            btnWrap.className = "admin-category-action-row single-action";
 
             const btn = document.createElement("button");
-            btn.className = "btn btn-success";
+            btn.className = "btn btn-success admin-choice-btn";
             btn.textContent = `+ Add subcategory under "${cat.name}"`;
-
             btn.onclick = () => promptAddSubcategory(catId);
 
             btnWrap.appendChild(btn);
             subcontainer.appendChild(btnWrap);
         }
 
-        // Render subcategories
+        // Render child subcategories
         if (subcontainer) {
-
             children.forEach((ch) => {
-
                 const card = document.createElement("div");
-
                 card.className = "subcategory-card";
-
                 card.onclick = () => openCategoryById(ch.id);
 
                 let adminControlsHtml = "";
 
                 if (currentUser && currentUser.role === "admin") {
-
                     const isRoot = !ch.parent_id;
 
                     if (!isRoot) {
-
                         adminControlsHtml = `
                             <div class="admin-controls">
-
                                 <button
                                     class="admin-btn edit"
                                     title="Rename"
@@ -481,7 +490,6 @@ async function openCategoryById(catId) {
                                 >
                                     <i class="fas fa-trash"></i>
                                 </button>
-
                             </div>
                         `;
                     }
@@ -499,13 +507,86 @@ async function openCategoryById(catId) {
         return;
     }
 
-    // =========================
-    // LEAF CATEGORY / NOTES PAGE
-    // =========================
+    // =====================================================
+    // CASE 2: EMPTY CATEGORY
+    // Show both buttons:
+    // Add subcategory + Add note
+    // =====================================================
+    if (isEmpty) {
+        switchView("subcategory");
 
+        const subcategoryBackBtn = qs("subcategoryBackBtn");
+
+        if (subcategoryBackBtn) {
+            subcategoryBackBtn.onclick = () => {
+                if (parentId) openCategoryById(parentId);
+                else showLibrary();
+            };
+
+            subcategoryBackBtn.textContent = parentId
+                ? "← Back"
+                : "← Back to Library";
+        }
+
+        const subTitle = qs("subcategoryTitle");
+        const subDesc = qs("subcategoryDescription");
+
+        if (subTitle) {
+            subTitle.textContent = cat ? cat.name : "Subcategory";
+        }
+
+        if (subDesc) {
+            subDesc.textContent = cat
+                ? cat.path.replaceAll(" :: ", " | ")
+                : "";
+        }
+
+        const notesContainer = qs("notesContainer");
+
+        if (notesContainer) {
+            notesContainer.innerHTML = "";
+
+            if (currentUser && currentUser.role === "admin" && cat) {
+                const choiceWrap = document.createElement("div");
+                choiceWrap.className = "admin-category-action-row two-actions";
+
+                const addSubBtn = document.createElement("button");
+                addSubBtn.className = "btn btn-success admin-choice-btn";
+                addSubBtn.textContent = `+ Add subcategory under "${cat.name}"`;
+                addSubBtn.onclick = () => promptAddSubcategory(catId);
+
+                const addNoteBtn = document.createElement("button");
+                addNoteBtn.className = "btn btn-primary admin-choice-btn";
+                addNoteBtn.textContent = `+ Add note in "${cat.name}"`;
+                addNoteBtn.onclick = () => showAddNote(catId);
+
+                choiceWrap.appendChild(addSubBtn);
+                choiceWrap.appendChild(addNoteBtn);
+
+                notesContainer.appendChild(choiceWrap);
+            }
+
+            notesContainer.innerHTML += `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📝</div>
+                    <p>This category is empty.</p>
+                    <p style="font-size: 0.9rem; opacity: 0.8;">
+                        Add notes directly, or create subcategories to organize it further.
+                    </p>
+                </div>
+            `;
+        }
+
+        return;
+    }
+
+    // =====================================================
+    // CASE 3: CATEGORY HAS NOTES
+    // Show only: Add note
+    // Do NOT show add subcategory here
+    // =====================================================
     switchView("subcategory");
 
-    // Back button
     const subcategoryBackBtn = qs("subcategoryBackBtn");
 
     if (subcategoryBackBtn) {
@@ -513,6 +594,10 @@ async function openCategoryById(catId) {
             if (parentId) openCategoryById(parentId);
             else showLibrary();
         };
+
+        subcategoryBackBtn.textContent = parentId
+            ? "← Back"
+            : "← Back to Library";
     }
 
     const subTitle = qs("subcategoryTitle");
@@ -528,49 +613,38 @@ async function openCategoryById(catId) {
             : "";
     }
 
-    // Fetch notes
-    const notes = await api(`/api/notes?category=${catId}`);
-
     const notesContainer = qs("notesContainer");
 
     if (notesContainer) {
         notesContainer.innerHTML = "";
     }
 
-    // Admin add note button
+    // Admin button: only add note
     if (currentUser && currentUser.role === "admin" && cat && notesContainer) {
-
         const btnWrap = document.createElement("div");
-
-        btnWrap.style.marginBottom = "1rem";
+        btnWrap.className = "admin-category-action-row single-action";
 
         const btn = document.createElement("button");
-
-        btn.className = "btn btn-primary";
-
+        btn.className = "btn btn-primary admin-choice-btn";
         btn.textContent = `+ Add note in "${cat.name}"`;
-
         btn.onclick = () => showAddNote(catId);
 
         btnWrap.appendChild(btn);
-
         notesContainer.appendChild(btnWrap);
     }
 
     // Render notes
     if (notesContainer) {
-    
         notes.forEach((n, index) => {
-    
             const card = document.createElement("div");
             card.className = "note-item";
             card.dataset.noteId = n.id;
-            
+
             const isAdmin = currentUser && currentUser.role === "admin";
             card.draggable = isAdmin;
-            
+
             card.onclick = () => showNoteView(n.id);
-                
+
             const orderControlsHtml = isAdmin
                 ? `
                     <div class="note-order-controls">
@@ -582,7 +656,7 @@ async function openCategoryById(catId) {
                         >
                             ⌃
                         </button>
-    
+
                         <button
                             class="note-order-btn"
                             title="Move note down"
@@ -594,34 +668,26 @@ async function openCategoryById(catId) {
                     </div>
                 `
                 : "";
-    
+
             card.innerHTML = `
                 <div class="note-info">
                     <h4>${n.title}</h4>
                     <div class="note-meta">${n.views} views</div>
                     ${isAdmin ? `<div class="note-drag-hint">Hold and drag to reorder</div>` : ""}
                 </div>
-            
+
                 ${orderControlsHtml}
             `;
-    
+
             notesContainer.appendChild(card);
         });
 
         if (currentUser && currentUser.role === "admin") {
             initNoteDragOrdering(notesContainer);
         }
-    
-        if (!notes.length) {
-            notesContainer.innerHTML += `
-                <div class="empty-state">
-                    <div class="empty-state-icon">📝</div>
-                    <p>No notes in this subcategory yet.</p>
-                </div>
-            `;
-        }
     }
 }
+
 let searchIndex = {
   categories: [], // {id, name, path}
   notes: [],      // {id, title, category_id}
