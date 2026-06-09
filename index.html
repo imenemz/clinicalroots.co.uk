@@ -1268,8 +1268,7 @@
             background: var(--light);
             border-radius: 6px;
             flex-wrap: wrap;
-        
-            position: sticky;
+    
             top: 90px;
             z-index: 50;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
@@ -2216,22 +2215,6 @@
                 padding: 1rem;
             }
         }
-
-
-        /* Guide book icon */
-        .guide-book-icon {
-            color: var(--primary);
-            font-size: 2.6rem;
-            line-height: 1;
-            font-family: Georgia, "Times New Roman", serif;
-            font-weight: 700;
-        }
-        
-        [data-theme="dark"] .guide-book-icon {
-            color: #7AD7A3;
-        }
-
-        
         /* RESPONSIVE ZOOM-SAFE LAYOUT
            Makes the website adapt when browser zoom changes */
         
@@ -2602,38 +2585,46 @@
         }
 
         /* =========================================================
-           STICKY EDITOR TOOLBARS
-           Makes note editor toolbar + At a Glance toolbar follow scroll
+           EDITOR TOOLBARS FOLLOW SCROLL
+           Add/Edit Note toolbar + High-Yield At a Glance toolbar
         ========================================================= */
         
         /* Main Add/Edit Note editor toolbar */
         #addNotePage .editor-toolbar {
             position: sticky;
             top: 95px;
-            z-index: 999;
+            z-index: 1500;
+            background: var(--light);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(25, 62, 55, 0.14);
         }
         
-        /* Make sure sticky is not blocked by parent containers */
+        /* Let sticky work properly */
         #addNotePage,
         #addNotePage .note-content,
         #addNotePage .note-editor {
             overflow: visible;
         }
         
-        /* High-Yield At a Glance box follows the page */
+        /* Remove the fake space added for fixed toolbar */
+        #addNotePage .rich-editor {
+            margin-top: 0;
+        }
+        
+        /* High-Yield right box follows */
         .hy-glance {
             position: sticky;
             top: 95px;
             align-self: start;
         }
         
-        /* At a Glance mini-toolbar follows inside the box */
+        /* At a Glance mini toolbar stays at top of its box */
         .hy-glance-toolbar {
             position: sticky;
-            top: 95px;
-            z-index: 999;
+            top: 0;
+            z-index: 1500;
+            background: rgba(212, 241, 232, 0.95);
         }
-
         /* =========================================================
            HOME PAGE ONLY SIZE ADJUSTMENT
            This changes only the main page, not the other pages
@@ -2679,7 +2670,6 @@
         #homePage .category-card p {
             font-size: 0.9rem;
         }
-
         
     </style>
 </head>
