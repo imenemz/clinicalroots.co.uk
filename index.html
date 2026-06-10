@@ -1260,7 +1260,7 @@
         caret-color: #000000;
         }
         
-        .editor-toolbar {
+       .editor-toolbar {
             display: flex;
             gap: 0.5rem;
             margin-bottom: 1rem;
@@ -1268,9 +1268,10 @@
             background: var(--light);
             border-radius: 6px;
             flex-wrap: wrap;
-    
+        
+            position: sticky;
             top: 90px;
-            z-index: 50;
+            z-index: 1500;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
@@ -2584,33 +2585,7 @@
             border-color: rgba(122, 215, 163, 0.25);
         }
 
-        /* =========================================================
-           ADD/EDIT NOTE TOOLBAR
-           Follows only inside the note writing editor area
-        ========================================================= */
         
-        #addNotePage .note-editor {
-            position: relative;
-            overflow: visible;
-        }
-        
-        #addNotePage .editor-toolbar {
-            position: sticky;
-            top: 95px;
-            z-index: 1500;
-        
-            width: 100%;
-            margin-bottom: 1rem;
-        
-            background: var(--light);
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(25, 62, 55, 0.14);
-        }
-        
-        /* Do not add fake spacing */
-        #addNotePage .rich-editor {
-            margin-top: 0;
-        }
         /* =========================================================
            HIGH-YIELD AT A GLANCE TOOLBAR
            Follows only inside the At a Glance box
@@ -2629,7 +2604,7 @@
         
         .hy-glance-toolbar {
             position: sticky;
-            top: 0;
+            top: 90px;
             z-index: 1500;
         
             background: rgba(212, 241, 232, 0.95);
