@@ -2589,27 +2589,25 @@
            Add/Edit Note toolbar + High-Yield At a Glance toolbar
         ========================================================= */
         
-        /* Main Add/Edit Note editor toolbar */
-        #addNotePage .editor-toolbar {
+        /* Main Add/Edit Note toolbar floats while editing */
+        #addNotePage:not(.hidden) .editor-toolbar {
+            position: fixed;
             top: 95px;
-            z-index: 1500;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(100% - 3rem, 1400px);
+            z-index: 2500;
+        
             background: var(--light);
             border-radius: 8px;
             box-shadow: 0 8px 24px rgba(25, 62, 55, 0.14);
         }
         
-        /* Let sticky work properly */
-        #addNotePage,
-        #addNotePage .note-content,
-        #addNotePage .note-editor {
-            overflow: visible;
+        /* Add space so the floating toolbar does not cover the editor */
+        #addNotePage:not(.hidden) .rich-editor {
+            margin-top: 4.5rem;
         }
-        
-        /* Remove the fake space added for fixed toolbar */
-        #addNotePage .rich-editor {
-            margin-top: 0;
-        }
-        
+                
         /* High-Yield right box follows */
         .hy-glance {
             position: sticky;
