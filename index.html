@@ -2585,42 +2585,55 @@
         }
 
         /* =========================================================
-           EDITOR TOOLBARS FOLLOW SCROLL
-           Add/Edit Note toolbar + High-Yield At a Glance toolbar
+           ADD/EDIT NOTE TOOLBAR
+           Follows only inside the note writing editor area
         ========================================================= */
         
-        /* Main Add/Edit Note toolbar floats while editing */
-        #addNotePage:not(.hidden) .editor-toolbar {
-            position: fixed;
+        #addNotePage .note-editor {
+            position: relative;
+            overflow: visible;
+        }
+        
+        #addNotePage .editor-toolbar {
+            position: sticky;
             top: 95px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: min(100% - 3rem, 1400px);
-            z-index: 2500;
+            z-index: 1500;
+        
+            width: 100%;
+            margin-bottom: 1rem;
         
             background: var(--light);
             border-radius: 8px;
             box-shadow: 0 8px 24px rgba(25, 62, 55, 0.14);
         }
         
-        /* Add space so the floating toolbar does not cover the editor */
-        #addNotePage:not(.hidden) .rich-editor {
-            margin-top: 4.5rem;
+        /* Do not add fake spacing */
+        #addNotePage .rich-editor {
+            margin-top: 0;
         }
-                
-        /* High-Yield right box follows */
+        /* =========================================================
+           HIGH-YIELD AT A GLANCE TOOLBAR
+           Follows only inside the At a Glance box
+        ========================================================= */
+        
         .hy-glance {
             position: sticky;
             top: 95px;
             align-self: start;
         }
         
-        /* At a Glance mini toolbar stays at top of its box */
+        .hy-glance-editor-wrap {
+            position: relative;
+            overflow: visible;
+        }
+        
         .hy-glance-toolbar {
             position: sticky;
             top: 0;
             z-index: 1500;
+        
             background: rgba(212, 241, 232, 0.95);
+            border-radius: 8px;
         }
         /* =========================================================
            HOME PAGE ONLY SIZE ADJUSTMENT
