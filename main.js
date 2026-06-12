@@ -2753,7 +2753,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initTabBulletBehavior();
     initCleanPasteBehavior();
     initEditorShortcuts();
-    iinitToolbarSelectionProtection();
+    initToolbarSelectionProtection();
     initNoteToolbarFollow();
     renderSavedColors();
 
