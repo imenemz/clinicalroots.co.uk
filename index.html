@@ -2572,18 +2572,37 @@
             overflow: visible;
         }
         
+        /* =========================================================
+           HIGH-YIELD AT A GLANCE TOOLBAR FOLLOW MODE
+        ========================================================= */
+        
+        .hy-glance-editor-wrap {
+            position: relative;
+            overflow: visible;
+        }
+        
         .hy-glance-toolbar {
-            position: sticky;
-            top: 90px;
-            z-index: 1500;
+            position: relative;
+            z-index: 2500;
         
             display: flex;
             flex-wrap: wrap;
             gap: 0.35rem;
             padding: 0.45rem;
-            background: rgba(212, 241, 232, 0.55);
+            background: rgba(212, 241, 232, 0.95);
             border-radius: 8px;
             margin-bottom: 0.6rem;
+        }
+        
+        .hy-glance-toolbar.hy-toolbar-following {
+            position: fixed !important;
+            top: 115px !important;
+            z-index: 2500 !important;
+        }
+        
+        .hy-glance-toolbar.hy-toolbar-stopped {
+            position: absolute !important;
+            z-index: 2500 !important;
         }
         
         .hy-glance-editor {
