@@ -1282,10 +1282,7 @@
             background: var(--light);
             border-radius: 6px;
             flex-wrap: wrap;
-        
-            position: sticky;
-            top: 95px;
-            z-index: 80;
+    
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
@@ -1294,11 +1291,6 @@
             overflow: visible;
         }
         
-        #addNotePage .editor-toolbar {
-            position: sticky;
-            top: 95px;
-            z-index: 80;
-        }
         [data-theme="dark"] .editor-toolbar {
             background: rgba(122, 215, 163, 0.10);
             border: 1px solid rgba(122, 215, 163, 0.18);
@@ -3073,7 +3065,7 @@
 
                     <div class="note-editor note-editor-content-box">
                         <label class="form-label">Content Editor</label>
-                        <div class="editor-toolbar">
+                        <div class="editor-toolbar note-main-toolbar">
                             <button type="button" class="editor-btn" onclick="formatText('bold')" title="Bold">
                                 <i class="fas fa-bold"></i>
                             </button>
