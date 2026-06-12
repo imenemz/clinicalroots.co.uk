@@ -2650,6 +2650,82 @@ async function showManageCategories() {
     });
 }
 
+function initNoteToolbarFollow() {
+    const editorBox = document.querySelector("#addNotePage .note-editor-content-box");
+    const toolbar = document.querySelector("#addNotePage .note-main-toolbar");
+
+    if (!editorBox || !toolbar) return;
+
+    let placeholder = document.querySelector("#noteToolbarPlaceholder");
+
+    if (!placeholder) {
+        placeholder = document.createElement("div");
+        placeholder.id = "noteToolbarPlaceholder";
+        toolbar.parentNode.insertBefore(placeholder, toolbar);
+    }
+
+    function resetToolbar() {
+        toolbar.classList.remove("toolbar-following", "toolbar-stopped");
+        toolbar.removeAttribute("style");
+        placeholder.style.height = "0px";
+    }
+
+    function updateToolbarPosition() {
+        const addNotePage = document.getElementById("addNotePage");
+
+        if (!addNotePage || addNotePage.classList.contains("hidden")) {
+            resetToolbar();
+            return;
+        }
+
+        const navbar = document.querySelector(".navbar");
+        const topOffset = navbar ? navbar.offsetHeight + 18 : 115;
+
+        const editorRect = editorBox.getBoundingClientRect();
+        const placeholderRect = placeholder.getBoundingClientRect();
+        const toolbarHeight = toolbar.offsetHeight;
+
+        const editorHasReachedTop = editorRect.top <= topOffset;
+        const editorHasEnded = editorRect.bottom <= topOffset + toolbarHeight + 24;
+
+        if (editorHasReachedTop && !editorHasEnded) {
+            toolbar.classList.add("toolbar-following");
+            toolbar.classList.remove("toolbar-stopped");
+
+            toolbar.style.left = `${placeholderRect.left}px`;
+            toolbar.style.width = `${placeholderRect.width}px`;
+            toolbar.style.top = `${topOffset}px`;
+
+            placeholder.style.height = `${toolbarHeight}px`;
+            return;
+        }
+
+        if (editorHasEnded) {
+            toolbar.classList.remove("toolbar-following");
+            toolbar.classList.add("toolbar-stopped");
+
+            toolbar.style.left = "2rem";
+            toolbar.style.right = "2rem";
+            toolbar.style.width = "auto";
+            toolbar.style.top = `${editorBox.offsetHeight - toolbarHeight - 32}px`;
+
+            placeholder.style.height = `${toolbarHeight}px`;
+            return;
+        }
+
+        resetToolbar();
+    }
+
+    window.addEventListener("scroll", updateToolbarPosition);
+    window.addEventListener("resize", updateToolbarPosition);
+
+    if (elements.noteFormContent) {
+        elements.noteFormContent.addEventListener("input", updateToolbarPosition);
+    }
+
+    updateToolbarPosition();
+}
+
 // --------------------------
 // BOOT
 // --------------------------
@@ -2677,7 +2753,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initTabBulletBehavior();
     initCleanPasteBehavior();
     initEditorShortcuts();
-    initToolbarSelectionProtection();
+    iinitToolbarSelectionProtection();
+    initNoteToolbarFollow();
     renderSavedColors();
 
     if (elements.noteFormContent) {
