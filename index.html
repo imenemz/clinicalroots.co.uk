@@ -2698,8 +2698,7 @@
         }
 
         /* =========================================================
-           MAIN ADD/EDIT NOTE TOOLBAR ONLY
-           Same behaviour as old index (4), but isolated
+           MAIN ADD/EDIT NOTE TOOLBAR FOLLOW MODE
         ========================================================= */
         
         #addNotePage .note-editor-content-box {
@@ -2708,8 +2707,18 @@
         }
         
         #addNotePage .note-main-toolbar {
-            position: sticky !important;
+            position: relative;
+            z-index: 3000;
+        }
+        
+        #addNotePage .note-main-toolbar.toolbar-following {
+            position: fixed !important;
             top: 115px !important;
+            z-index: 3000 !important;
+        }
+        
+        #addNotePage .note-main-toolbar.toolbar-stopped {
+            position: absolute !important;
             z-index: 3000 !important;
         }
         
