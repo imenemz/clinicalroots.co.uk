@@ -1310,8 +1310,12 @@ function formatHighYieldGlanceText(cmd) {
     const editor = qs("highYieldGlanceEditor");
     if (!editor) return;
 
+    restoreHighYieldGlanceSelection();
+
     editor.focus();
     document.execCommand(cmd, false, null);
+
+    saveHighYieldGlanceSelection();
 }
 
 async function saveHighYieldGlance() {
@@ -2725,7 +2729,128 @@ function initNoteToolbarFollow() {
 
     updateToolbarPosition();
 }
+let savedHighYieldGlanceRange = null;
 
+function saveHighYieldGlanceSelection() {
+    const editor = qs("highYieldGlanceEditor");
+    const selection = window.getSelection();
+
+    if (!editor || !selection.rangeCount) return;
+
+    const range = selection.getRangeAt(0);
+
+    if (editor.contains(range.commonAncestorContainer)) {
+        savedHighYieldGlanceRange = range.cloneRange();
+    }
+}
+
+function restoreHighYieldGlanceSelection() {
+    const editor = qs("highYieldGlanceEditor");
+    const selection = window.getSelection();
+
+    if (!editor || !savedHighYieldGlanceRange) return false;
+
+    selection.removeAllRanges();
+    selection.addRange(savedHighYieldGlanceRange);
+    editor.focus();
+
+    return true;
+}
+
+function initHighYieldToolbarFollow() {
+    function updateHighYieldToolbarPosition() {
+        const wrap = document.querySelector(".hy-glance-editor-wrap");
+        const toolbar = document.querySelector(".hy-glance-toolbar");
+
+        if (!wrap || !toolbar) return;
+
+        const highYieldPage = qs("highYieldPage");
+
+        if (!highYieldPage || highYieldPage.classList.contains("hidden")) {
+            toolbar.classList.remove("hy-toolbar-following", "hy-toolbar-stopped");
+            toolbar.removeAttribute("style");
+            return;
+        }
+
+        let placeholder = document.querySelector("#hyToolbarPlaceholder");
+
+        if (!placeholder) {
+            placeholder = document.createElement("div");
+            placeholder.id = "hyToolbarPlaceholder";
+            toolbar.parentNode.insertBefore(placeholder, toolbar);
+        }
+
+        const navbar = document.querySelector(".navbar");
+        const topOffset = navbar ? navbar.offsetHeight + 18 : 115;
+
+        const wrapRect = wrap.getBoundingClientRect();
+        const placeholderRect = placeholder.getBoundingClientRect();
+        const toolbarHeight = toolbar.offsetHeight;
+
+        const hasReachedTop = wrapRect.top <= topOffset;
+        const hasEnded = wrapRect.bottom <= topOffset + toolbarHeight + 20;
+
+        if (hasReachedTop && !hasEnded) {
+            toolbar.classList.add("hy-toolbar-following");
+            toolbar.classList.remove("hy-toolbar-stopped");
+
+            toolbar.style.left = `${placeholderRect.left}px`;
+            toolbar.style.width = `${placeholderRect.width}px`;
+            toolbar.style.top = `${topOffset}px`;
+
+            placeholder.style.height = `${toolbarHeight}px`;
+            return;
+        }
+
+        if (hasEnded) {
+            toolbar.classList.remove("hy-toolbar-following");
+            toolbar.classList.add("hy-toolbar-stopped");
+
+            toolbar.style.left = "0";
+            toolbar.style.right = "0";
+            toolbar.style.width = "auto";
+            toolbar.style.top = `${wrap.offsetHeight - toolbarHeight}px`;
+
+            placeholder.style.height = `${toolbarHeight}px`;
+            return;
+        }
+
+        toolbar.classList.remove("hy-toolbar-following", "hy-toolbar-stopped");
+        toolbar.removeAttribute("style");
+        placeholder.style.height = "0px";
+    }
+
+    window.addEventListener("scroll", updateHighYieldToolbarPosition);
+    window.addEventListener("resize", updateHighYieldToolbarPosition);
+
+    document.addEventListener("input", (e) => {
+        if (e.target && e.target.id === "highYieldGlanceEditor") {
+            updateHighYieldToolbarPosition();
+        }
+    });
+
+    document.addEventListener("mouseup", (e) => {
+        if (e.target && e.target.closest("#highYieldGlanceEditor")) {
+            saveHighYieldGlanceSelection();
+        }
+    });
+
+    document.addEventListener("keyup", (e) => {
+        if (e.target && e.target.closest("#highYieldGlanceEditor")) {
+            saveHighYieldGlanceSelection();
+        }
+    });
+
+    document.addEventListener("mousedown", (e) => {
+        const toolbar = e.target.closest(".hy-glance-toolbar");
+        if (!toolbar) return;
+
+        if (e.target.closest("button")) {
+            e.preventDefault();
+            saveHighYieldGlanceSelection();
+        }
+    });
+}
 // --------------------------
 // BOOT
 // --------------------------
@@ -2755,6 +2880,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initEditorShortcuts();
     initToolbarSelectionProtection();
     initNoteToolbarFollow();
+    initHighYieldToolbarFollow();
     renderSavedColors();
 
     if (elements.noteFormContent) {
