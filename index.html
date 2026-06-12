@@ -4,448 +4,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinicalroots</title>
+    <title>Clincalroots</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary: #193e37;
-            --secondary: #245348;
+            --secondary: #15342e;
             --dark: #193e37;
-            --light: #dff4ed;
-            --card-bg: #f4f2ee;
-        
-            --text-dark: #17211e;
-            --text-light: #536862;
-        
+            --light: #d4f1e8;
+            --card-bg: #f2f1ee;
+            --text-dark: #1a1a1a;
+            --text-light: #4a5568;
             --success: #193e37;
             --warning: #F59E0B;
             --danger: #EF4444;
-        
-            --bg-gradient:
-                radial-gradient(circle at 12% 22%, rgba(212, 241, 232, 0.55), transparent 30%),
-                radial-gradient(circle at 88% 18%, rgba(25, 62, 55, 0.08), transparent 28%),
-                linear-gradient(180deg, #ffffff 0%, #f8faf9 42%, #eef4f1 100%);
-        
-            --navbar-bg: rgba(255, 255, 255, 0.94);
+            --bg-gradient: linear-gradient(180deg, #ffffff 19%, #f8f9fa 81%);
+            --navbar-bg: #ffffff;
             --footer-bg: #193e37;
             --footer-text: #ffffff;
-        
             --admin-edit: #3b82f6;
             --admin-delete: #ef4444;
             --admin-add: #10b981;
-        
-            --border-color: rgba(25, 62, 55, 0.14);
+            --border-color: rgba(25, 62, 55, 0.2);
             --stethoscope-color: #193e37;
         }
 
-       /* Dark Mode Variables */
+        /* Dark Mode Variables */
         [data-theme="dark"] {
-            --primary: #7AD7A3;
-            --secondary: #4FB37D;
-            --dark: #07110F;
-            --light: #10231F;
-            --card-bg: #0E1B18;
-        
-            --text-dark: #F5F7F6;
-            --text-light: #B8C9C2;
-        
-            --success: #7AD7A3;
+            --primary: #0f2613;
+            --secondary: #17331c;
+            --dark: #120f0a;
+            --light: #1a2825;
+            --card-bg: #1a2825;
+            --text-dark: #ffffff;
+            --text-light: #e0e0e0;
+            --success: #3dd68c;
             --warning: #F59E0B;
             --danger: #ef4444;
-        
-            --bg-gradient:
-                radial-gradient(circle at 12% 18%, rgba(122, 215, 163, 0.10), transparent 30%),
-                radial-gradient(circle at 88% 12%, rgba(122, 215, 163, 0.08), transparent 28%),
-                linear-gradient(180deg, #07110F 0%, #081917 45%, #07110F 100%);
-        
-            --navbar-bg: rgba(8, 17, 15, 0.96);
-            --footer-bg: #050B09;
-            --footer-text: #F5F7F6;
-        
-            --border-color: rgba(122, 215, 163, 0.18);
-        
-            --admin-edit: #7AD7A3;
-            --admin-add: #7AD7A3;
-            --stethoscope-color: #7AD7A3;
-        }
-
-        /* ===== IMPROVED DARK MODE LOOK ===== */
-
-        [data-theme="dark"] body {
-            background: var(--bg-gradient);
-        }
-        
-        [data-theme="dark"] .navbar {
-            background: rgba(8, 17, 15, 0.96);
-            border-bottom: 1px solid rgba(122, 215, 163, 0.14);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-        }
-        
-        [data-theme="dark"] .main-content {
-            background:
-                radial-gradient(circle at top left, rgba(122, 215, 163, 0.08), transparent 35%),
-                linear-gradient(180deg, #07110F 0%, #081917 45%, #07110F 100%);
-        }
-        
-        [data-theme="dark"] .hero-banner {
-            background:
-                radial-gradient(circle at left, rgba(122, 215, 163, 0.12), transparent 32%),
-                linear-gradient(135deg, #07110F 0%, #0B2A22 48%, #081917 100%);
-            border-bottom: 1px solid rgba(122, 215, 163, 0.12);
-        }
-        
-        [data-theme="dark"] .hero h1 {
-            color: #F5F7F6;
-            text-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
-        }
-        
-        [data-theme="dark"] .hero p {
-            color: #D7E3DE;
-        }
-        
-        [data-theme="dark"] .search-input,
-        [data-theme="dark"] .nav-search-input {
-            background: rgba(8, 17, 15, 0.78);
-            color: #F5F7F6;
-            border: 1px solid rgba(122, 215, 163, 0.35);
-            box-shadow: 0 0 20px rgba(44, 142, 104, 0.10);
-        }
-        
-        [data-theme="dark"] .search-input::placeholder,
-        [data-theme="dark"] .nav-search-input::placeholder {
-            color: #8FA49C;
-        }
-        
-        [data-theme="dark"] .category-card,
-        [data-theme="dark"] .subcategory-card,
-        [data-theme="dark"] .note-item,
-        [data-theme="dark"] .note-header,
-        [data-theme="dark"] .stat-card {
-            background:
-                linear-gradient(180deg, rgba(20, 35, 31, 0.96), rgba(10, 20, 18, 0.96));
-            border: 1px solid rgba(122, 215, 163, 0.16);
-            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
-        }
-        
-        [data-theme="dark"] .category-card:hover,
-        [data-theme="dark"] .subcategory-card:hover,
-        [data-theme="dark"] .note-item:hover {
-            border-color: rgba(122, 215, 163, 0.38);
-            box-shadow: 0 22px 55px rgba(0, 0, 0, 0.45),
-                        0 0 24px rgba(122, 215, 163, 0.08);
-        }
-        
-        [data-theme="dark"] .category-card h3,
-        [data-theme="dark"] .subcategory-card h4,
-        [data-theme="dark"] .note-info h4 {
-            color: #F5F7F6;
-        }
-        
-        [data-theme="dark"] .category-card p,
-        [data-theme="dark"] .note-meta,
-        [data-theme="dark"] .note-views {
-            color: #B8C9C2;
-        }
-        
-        [data-theme="dark"] .category-icon.medical,
-        [data-theme="dark"] .category-icon.surgical,
-        [data-theme="dark"] .category-icon.specialty {
-            color: #7AD7A3;
-        }
-        
-        [data-theme="dark"] .user-btn,
-        [data-theme="dark"] .btn-primary {
-            background: #123D33;
-            color: #F5F7F6;
-            border: 1px solid rgba(122, 215, 163, 0.35);
-        }
-
-        [data-theme="dark"] .note-order-btn {
-            color: #7AD7A3;
-        }
-        
-        [data-theme="dark"] .user-btn:hover,
-        [data-theme="dark"] .btn-primary:hover {
-            background: #193E37;
-        }
-
-        /* ===== THEME POLISH: LIGHT + DARK ===== */
-
-        body {
-            background: var(--bg-gradient);
-        }
-        
-        /* Main page background */
-        .main-content {
-            background:
-                radial-gradient(circle at 10% 15%, rgba(212, 241, 232, 0.42), transparent 28%),
-                radial-gradient(circle at 90% 20%, rgba(25, 62, 55, 0.06), transparent 28%),
-                linear-gradient(180deg, #ffffff 0%, #f8faf9 45%, #eef4f1 100%);
-        }
-        
-        [data-theme="dark"] .main-content {
-            background:
-                radial-gradient(circle at 12% 18%, rgba(122, 215, 163, 0.08), transparent 30%),
-                radial-gradient(circle at 88% 12%, rgba(122, 215, 163, 0.06), transparent 28%),
-                linear-gradient(180deg, #07110F 0%, #081917 45%, #07110F 100%);
-        }
-        
-        /* Navbar */
-        .navbar {
-            background: var(--navbar-bg);
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 8px 24px rgba(25, 62, 55, 0.05);
-        }
-        
-        [data-theme="dark"] .navbar {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-        }
-        
-        /* Hero banner with soft texture */
-        .hero-banner {
-            width: 100vw;
-            margin-left: calc(50% - 50vw);
-            padding: 4rem 1.5rem 3rem;
-            border-radius: 0;
-            margin-bottom: 1.5rem;
-        
-            background:
-                linear-gradient(
-                    rgba(255, 255, 255, 0.18),
-                    rgba(255, 255, 255, 0.18)
-                ),
-                url("images/hero-light-bg.png");
-        
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        
-            border-bottom: 1px solid rgba(25, 62, 55, 0.08);
-        }
-        
-        [data-theme="dark"] .hero-banner {
-            background:
-                linear-gradient(
-                    rgba(7, 17, 15, 0.18),
-                    rgba(7, 17, 15, 0.18)
-                ),
-                url("images/hero-dark-bg.png");
-        
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        
-            border-bottom: 1px solid rgba(122, 215, 163, 0.14);
-        }
-        
-        /* Decorative texture layer */
-        .hero-banner::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            opacity: 0.55;
-            background:
-                radial-gradient(circle at 18% 45%, rgba(25, 62, 55, 0.08) 0 1px, transparent 2px),
-                radial-gradient(circle at 82% 42%, rgba(25, 62, 55, 0.08) 0 1px, transparent 2px);
-            background-size: 42px 42px, 56px 56px;
-        }
-        
-        [data-theme="dark"] .hero-banner::before {
-            opacity: 0.65;
-            background:
-                radial-gradient(circle at 18% 45%, rgba(122, 215, 163, 0.16) 0 1px, transparent 2px),
-                radial-gradient(circle at 82% 42%, rgba(122, 215, 163, 0.12) 0 1px, transparent 2px);
-            background-size: 42px 42px, 56px 56px;
-        }
-
-        /* ===== HERO KITTY DECORATION ===== */
-
-        .hero-kitty {
-            position: absolute;
-            left: 1.4rem;
-            bottom: -0.2rem;
-        
-            width: 92px;
-            height: auto;
-        
-            z-index: 3;
-            pointer-events: none;
-            user-select: none;
-        }
-        
-        /* Light theme: show white kitty */
-        .kitty-light {
-            display: block;
-        }
-        
-        .kitty-dark {
-            display: none;
-        }
-        
-        /* Dark theme: show black kitty */
-        [data-theme="dark"] .kitty-light {
-            display: none;
-        }
-        
-        [data-theme="dark"] .kitty-dark {
-            display: block;
-        }
-        
-        /* Optional: slightly soften kitty in dark mode */
-        [data-theme="dark"] .hero-kitty {
-            opacity: 0.9;
-        }
-        
-        /* Make sure title appears above background */
-        #homePage .hero-banner h1,
-        #homePage .hero-banner p {
-            position: relative;
-            z-index: 2;
-        }
-                
-        /* Keep hero text above texture */
-        .hero-banner h1,
-        .hero-banner p {
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* Accent one phrase in the hero title */
-        .hero-banner h1 strong,
-        .hero-banner h1 .hero-accent {
-            color: #193e37;
-        }
-        
-        [data-theme="dark"] .hero-banner h1 strong,
-        [data-theme="dark"] .hero-banner h1 .hero-accent {
-            color: #7AD7A3;
-        }
-        
-        /* Hero text */
-        .hero h1 {
-            color: var(--text-dark);
-            letter-spacing: -0.045em;
-        }
-        
-        [data-theme="dark"] .hero h1 {
-            color: #F5F7F6;
-            text-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
-        }
-        
-        .hero p {
-            color: var(--text-light);
-        }
-        
-        [data-theme="dark"] .hero p {
-            color: #D7E3DE;
-        }
-        
-        /* Search inputs */
-        .search-input,
-        .nav-search-input {
-            background: rgba(255, 255, 255, 0.82);
-            color: #17211e;
-            border: 1px solid rgba(25, 62, 55, 0.18);
-            box-shadow: 0 8px 24px rgba(25, 62, 55, 0.06);
-        }
-        
-        [data-theme="dark"] .search-input,
-        [data-theme="dark"] .nav-search-input {
-            background: rgba(8, 17, 15, 0.78);
-            color: #F5F7F6;
-            border: 1px solid rgba(122, 215, 163, 0.35);
-            box-shadow: 0 0 20px rgba(44, 142, 104, 0.10);
-        }
-        
-        .search-input::placeholder,
-        .nav-search-input::placeholder {
-            color: #71817b;
-        }
-        
-        [data-theme="dark"] .search-input::placeholder,
-        [data-theme="dark"] .nav-search-input::placeholder {
-            color: #8FA49C;
-        }
-        
-        /* Cards */
-        .category-card,
-        .subcategory-card,
-        .note-item,
-        .note-header,
-        .stat-card {
-            background:
-                linear-gradient(180deg, rgba(255,255,255,0.82), rgba(244,242,238,0.92));
-            border: 1px solid rgba(25, 62, 55, 0.10);
-            box-shadow: 0 16px 35px rgba(25, 62, 55, 0.08);
-        }
-        
-        [data-theme="dark"] .category-card,
-        [data-theme="dark"] .subcategory-card,
-        [data-theme="dark"] .note-item,
-        [data-theme="dark"] .note-header,
-        [data-theme="dark"] .stat-card {
-            background:
-                linear-gradient(180deg, rgba(20, 35, 31, 0.96), rgba(10, 20, 18, 0.96));
-            border: 1px solid rgba(122, 215, 163, 0.16);
-            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
-        }
-        
-        .category-card:hover,
-        .subcategory-card:hover,
-        .note-item:hover {
-            border-color: rgba(25, 62, 55, 0.24);
-            box-shadow: 0 22px 45px rgba(25, 62, 55, 0.12);
-        }
-        
-        [data-theme="dark"] .category-card:hover,
-        [data-theme="dark"] .subcategory-card:hover,
-        [data-theme="dark"] .note-item:hover {
-            border-color: rgba(122, 215, 163, 0.38);
-            box-shadow:
-                0 22px 55px rgba(0, 0, 0, 0.45),
-                0 0 24px rgba(122, 215, 163, 0.08);
-        }
-        
-        /* Category icons */
-        .category-icon.medical,
-        .category-icon.surgical,
-        .category-icon.specialty {
-            color: #193e37;
-        }
-        
-        [data-theme="dark"] .category-icon.medical,
-        [data-theme="dark"] .category-icon.surgical,
-        [data-theme="dark"] .category-icon.specialty {
-            color: #7AD7A3;
-        }
-        
-        /* Buttons */
-        .login-btn {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-        
-        .signup-btn,
-        .user-btn,
-        .btn-primary {
-            background: #193e37;
-            color: #ffffff;
-            border: 1px solid rgba(25, 62, 55, 0.25);
-        }
-        
-        [data-theme="dark"] .signup-btn,
-        [data-theme="dark"] .user-btn,
-        [data-theme="dark"] .btn-primary {
-            background: #123D33;
-            color: #F5F7F6;
-            border: 1px solid rgba(122, 215, 163, 0.35);
-        }
-        
-        [data-theme="dark"] .signup-btn:hover,
-        [data-theme="dark"] .user-btn:hover,
-        [data-theme="dark"] .btn-primary:hover {
-            background: #193E37;
+            --bg-gradient: linear-gradient(180deg, #091613 30%, #091613 70%);
+            --navbar-bg: #120f0a;
+            --footer-bg: #000000;
+            --footer-text: #ffffff;
+            --border-color: #1a2825;
+            --admin-edit: #0f2613;
+            --admin-add: #0f2613;
+            --stethoscope-color: #E3D8B7;
         }
 
         * {
@@ -462,6 +65,11 @@
             min-height: 100vh;
         }
 
+        /* Dark mode specific main content background */
+        [data-theme="dark"] .main-content {
+            background: #091613;
+            min-height: calc(100vh - 160px);
+        }
 
         /* Navigation */
         .navbar {
@@ -627,13 +235,15 @@
             border-bottom-right-radius: 8px;
         }
 
-        .hero-banner {
-            width: 100vw;
-            margin-left: calc(50% - 50vw);
-            padding: 4rem 1.5rem 3rem;
-            border-radius: 0;
-            margin-bottom: 1rem;
+        .hero-banner{
+          background: var(--card-bg);
+          width:100vw;
+          margin-left: calc(50% - 50vw);
+          padding: 0.5rem 1.5rem;
+          border-radius: 0;
+          margin-bottom: 1rem; /* stops before search bar */
         }
+
 
         .search-suggestions {
             position: absolute;
@@ -715,7 +325,7 @@
 
         .search-container {
             max-width: 500px;
-             0 auto 3rem;
+            margin: 0 auto 3rem;
             position: relative;
         }
 
@@ -1238,40 +848,26 @@
             margin: 1rem 0;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
-        
+
         [data-theme="dark"] .note-editor {
-            background: #0E1B18;
-            border: 1px solid rgba(122, 215, 163, 0.16);
-            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-        
+
         .rich-editor {
-            min-height: 400px;
-            border: 2px solid var(--light);
-            border-radius: 8px;
-            padding: 1rem;
-            background: var(--card-bg);
-        
-            color: #000000;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        
-            overflow-wrap: break-word;
-            word-break: break-word;
-            overflow-x: hidden;
-        
-            caret-color: #000000;
-        }
-        
-        [data-theme="dark"] .rich-editor {
-            background: #07110F;
-            color: #F5F7F6;
-            border-color: rgba(122, 215, 163, 0.25);
-            caret-color: #F5F7F6;
-        }
-        
-       .note-editor {
-            position: relative;
-            overflow: visible;
+        min-height: 400px;
+        border: 2px solid var(--light);
+        border-radius: 8px;
+        padding: 1rem;
+        background: var(--card-bg);
+    
+        color: #000000;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    
+        overflow-wrap: break-word;
+        word-break: break-word;
+        overflow-x: hidden;
+    
+        caret-color: #000000;
         }
         
         .editor-toolbar {
@@ -1282,33 +878,11 @@
             background: var(--light);
             border-radius: 6px;
             flex-wrap: wrap;
-    
+        
+            position: sticky;
+            top: 90px;
+            z-index: 50;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        #addNotePage .note-editor {
-            position: relative;
-            overflow: visible;
-        }
-        
-        [data-theme="dark"] .editor-toolbar {
-            background: rgba(122, 215, 163, 0.10);
-            border: 1px solid rgba(122, 215, 163, 0.18);
-            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
-        }
-        
-        [data-theme="dark"] .editor-btn,
-        [data-theme="dark"] .editor-size-select {
-            background: #10231F;
-            color: #F5F7F6;
-            border: 1px solid rgba(122, 215, 163, 0.22);
-        }
-        
-        [data-theme="dark"] .editor-btn:hover,
-        [data-theme="dark"] .editor-size-select:hover,
-        [data-theme="dark"] .editor-size-select:focus {
-            background: #193E37;
-            color: #F5F7F6;
         }
 
         .color-tool {
@@ -1446,17 +1020,15 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 30px;
-            height: 30px;
-            padding: 0 0.55rem;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 0.65rem;
             border-radius: 8px;
             background: #193e37;
             color: #ffffff;
             font-weight: 800;
             line-height: 1;
-            vertical-align: middle;
-            margin-right: 0.45rem;
-            cursor: pointer;
+            flex-shrink: 0;
         }
         
         .styled-section-text {
@@ -1464,6 +1036,11 @@
             font-weight: 800;
             font-size: 1rem; /* same size, just bolder */
             line-height: 1.2;
+        }
+        
+        /* keep it nice in editor */
+        .rich-editor .styled-section-line {
+            width: 100%;
         }
         
         /* dark mode */
@@ -1802,441 +1379,11 @@
         @media (max-width: 900px) {
           .nav-search-wrap { width: 160px; }
         }
-
-        /* ===== FIX HOME HERO SEARCH POSITION ===== */
-        
-        body {
-            overflow-x: hidden;
-        }
-        
-        /* Only affects the homepage hero, not note pages */
-        #homePage .hero {
-            max-width: none;
-            width: 100%;
-            padding: 0 0 4rem;
-        }
-        
-        /* Full-width hero banner without creating horizontal scroll */
-        #homePage .hero-banner {
-            width: 100%;
-            margin-left: 0;
-            padding: 4rem 2rem 3rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        /* Put the big search bar back in the middle */
-        #homePage .search-container {
-            max-width: 600px;
-            width: calc(100% - 2rem);
-            margin: 1.25rem auto 3.5rem;
-        }
-        
-        /* Make sure the big search input is centered and clean */
-        #homePage .search-input {
-            width: 100%;
-        }
-
-        /* ===== FINAL LIGHT THEME BOX POLISH ===== */
-
-        body:not([data-theme="dark"]) .category-card,
-        body:not([data-theme="dark"]) .subcategory-card,
-        body:not([data-theme="dark"]) .note-item,
-        body:not([data-theme="dark"]) .note-header,
-        body:not([data-theme="dark"]) .stat-card,
-        body:not([data-theme="dark"]) .note-editor {
-            background:
-                linear-gradient(180deg, rgba(255,255,255,0.92), rgba(246,244,239,0.96));
-            border: 1px solid rgba(25, 62, 55, 0.12);
-            box-shadow:
-                0 18px 38px rgba(25, 62, 55, 0.08),
-                inset 0 1px 0 rgba(255,255,255,0.8);
-        }
-        
-        body:not([data-theme="dark"]) .category-card:hover,
-        body:not([data-theme="dark"]) .subcategory-card:hover,
-        body:not([data-theme="dark"]) .note-item:hover {
-            border-color: rgba(25, 62, 55, 0.25);
-            box-shadow:
-                0 24px 50px rgba(25, 62, 55, 0.13),
-                inset 0 1px 0 rgba(255,255,255,0.9);
-        }
-        
-        body:not([data-theme="dark"]) .category-card h3,
-        body:not([data-theme="dark"]) .subcategory-card h4,
-        body:not([data-theme="dark"]) .note-info h4,
-        body:not([data-theme="dark"]) .stat-number {
-            color: #193e37;
-        }
-        
-        body:not([data-theme="dark"]) .category-card p,
-        body:not([data-theme="dark"]) .note-meta,
-        body:not([data-theme="dark"]) .note-views,
-        body:not([data-theme="dark"]) .stat-label {
-            color: #536862;
-        }
         @media (max-width: 768px) {
           .nav-search { display: none; } /* optional: hide on mobile */
         }
 
-                /* ===== FIX DARK MODE NOTE TEXT VISIBILITY ===== */
-        
-        [data-theme="dark"] .note-body {
-            color: #D7E3DE;
-        }
-        
-        [data-theme="dark"] .note-body p,
-        [data-theme="dark"] .note-body li,
-        [data-theme="dark"] .note-body span,
-        [data-theme="dark"] .note-body div {
-            color: inherit;
-        }
-        
-        /* Fix big note headings that were hardcoded black */
-        [data-theme="dark"] .note-body .main-heading,
-        [data-theme="dark"] .note-body h1,
-        [data-theme="dark"] .note-body h2 {
-            color: #F5F7F6;
-        }
-        
-        [data-theme="dark"] .note-body .main-heading:hover,
-        [data-theme="dark"] .note-body h1:hover,
-        [data-theme="dark"] .note-body h2:hover {
-            color: #7AD7A3;
-            text-shadow: 0 4px 18px rgba(122, 215, 163, 0.18);
-        }
-        
-        /* Fix the small arrow next to collapsible headings */
-        [data-theme="dark"] .note-body .main-heading::after,
-        [data-theme="dark"] .note-body h1::after,
-        [data-theme="dark"] .note-body h2::after {
-            color: #7AD7A3;
-        }
-        
-        /* Fix note title card */
-        [data-theme="dark"] .note-header h1,
-        [data-theme="dark"] #noteTitle {
-            color: #F5F7F6;
-        }
-        
-        /* Fix subheading titles */
-        [data-theme="dark"] .subheading-title {
-            color: #F5F7F6;
-        }
-        
-        [data-theme="dark"] .subheading-body {
-            color: #D7E3DE;
-        }
 
-        /* ===== HERO TEXT FIX ===== */
-
-        .hero-banner h1 {
-            color: #17211e;
-            text-shadow: 0 2px 14px rgba(255,255,255,0.55);
-        }
-        
-        .hero-banner p {
-            color: #536862;
-        }
-        
-        [data-theme="dark"] .hero-banner h1 {
-            color: #F5F7F6;
-            text-shadow: 0 12px 34px rgba(0, 0, 0, 0.55);
-        }
-        
-        [data-theme="dark"] .hero-banner p {
-            color: #D7E3DE;
-        }
-
-        /* ===== HOME SEARCH POSITION ===== */
-
-        #homePage .search-container {
-            max-width: 600px;
-            width: calc(100% - 2rem);
-            margin: 1.25rem auto 3rem;
-        }
-        
-        #homePage .search-input {
-            background: rgba(255,255,255,0.86);
-            border: 1px solid rgba(25, 62, 55, 0.22);
-            box-shadow: 0 12px 32px rgba(25, 62, 55, 0.08);
-        }
-        
-        [data-theme="dark"] #homePage .search-input {
-            background: rgba(7, 17, 15, 0.72);
-            color: #F5F7F6;
-            border: 1px solid rgba(122, 215, 163, 0.34);
-            box-shadow: 0 0 24px rgba(122, 215, 163, 0.08);
-        }
-        /* =========================================================
-           HIGH-YIELD PAGE
-        ========================================================= */
-        
-        .high-yield-layout {
-            display: grid;
-            grid-template-columns: 290px minmax(0, 1fr) 280px;
-            gap: 2rem;
-            max-width: 1500px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-        
-        .hy-sidebar {
-            position: sticky;
-            top: 95px;
-            height: calc(100vh - 120px);
-            overflow-y: auto;
-            background:
-                linear-gradient(180deg, rgba(25, 62, 55, 0.98), rgba(12, 28, 25, 0.98));
-            color: white;
-            border-radius: 18px;
-            padding: 1.5rem;
-            box-shadow: 0 18px 45px rgba(25, 62, 55, 0.18);
-        }
-        
-        .hy-sidebar-header h3 {
-            color: #7AD7A3;
-            font-size: 0.95rem;
-            letter-spacing: 0.08em;
-            margin-bottom: 1rem;
-        }
-        
-        .hy-add-category-btn {
-            width: 100%;
-            padding: 0.65rem 0.75rem;
-            border-radius: 10px;
-            border: 1px solid rgba(122, 215, 163, 0.35);
-            background: rgba(122, 215, 163, 0.08);
-            color: #ffffff;
-            cursor: pointer;
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-        
-        .hy-menu-category {
-            border-top: 1px solid rgba(255,255,255,0.14);
-        }
-        
-        .hy-menu-category-title {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: #ffffff;
-            padding: 0.85rem 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            font-weight: 700;
-            text-align: left;
-        }
-        
-        .hy-menu-category-title i {
-            color: #7AD7A3;
-            margin-right: 0.55rem;
-        }
-        
-        .hy-menu-notes {
-            padding: 0.35rem 0 0.8rem 1.4rem;
-            display: none;
-        }
-        
-        .hy-menu-category.open .hy-menu-notes {
-            display: block;
-        }
-        
-        .hy-menu-note {
-            display: block;
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: rgba(255,255,255,0.82);
-            padding: 0.55rem 0.65rem;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: left;
-            font-size: 0.92rem;
-        }
-        
-        .hy-menu-note:hover,
-        .hy-menu-note.active {
-            background: rgba(122, 215, 163, 0.14);
-            color: #ffffff;
-        }
-        
-        .hy-category-admin {
-            display: none;
-            gap: 0.35rem;
-            margin-left: auto;
-            margin-right: 0.5rem;
-        }
-        
-        .admin-logged-in .hy-menu-category-title:hover .hy-category-admin {
-            display: flex;
-        }
-        
-        .hy-mini-btn {
-            border: none;
-            background: transparent;
-            color: #7AD7A3;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-        
-        .hy-main {
-            min-width: 0;
-        }
-        
-        .hy-note-card {
-            background:
-                linear-gradient(180deg, rgba(255,255,255,0.94), rgba(250,248,244,0.96));
-            border: 1px solid rgba(25, 62, 55, 0.12);
-            border-radius: 18px;
-            padding: 2.5rem;
-            box-shadow: 0 18px 45px rgba(25, 62, 55, 0.10);
-        }
-        
-        .hy-breadcrumb {
-            color: var(--primary);
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        
-        .hy-note-card h1 {
-            font-size: 2.4rem;
-            color: #17211e;
-            margin-bottom: 1.5rem;
-        }
-        
-        .hy-key-point {
-            display: flex;
-            gap: 1rem;
-            align-items: flex-start;
-            background: rgba(212, 241, 232, 0.42);
-            border: 1px solid rgba(25, 62, 55, 0.18);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .hy-key-icon {
-            background: var(--primary);
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .hy-note-body {
-            color: #17211e;
-            font-size: 1rem;
-        }
-        
-        .hy-note-body h1,
-        .hy-note-body h2,
-        .hy-note-body h3,
-        .hy-note-body .main-heading,
-        .hy-note-body .subheading-title {
-            color: #193e37;
-        }
-        
-        .hy-note-body ul {
-            padding-left: 1.6rem;
-            margin: 0.5rem 0 1rem;
-        }
-        
-        .hy-glance {
-            position: sticky;
-            top: 95px;
-            align-self: start;
-            background:
-                linear-gradient(180deg, rgba(255,255,255,0.95), rgba(250,248,244,0.96));
-            border: 1px solid rgba(25, 62, 55, 0.12);
-            border-radius: 16px;
-            padding: 1.4rem;
-            box-shadow: 0 14px 34px rgba(25, 62, 55, 0.08);
-        }
-        
-        .hy-glance h3 {
-            font-size: 1.1rem;
-            color: #17211e;
-            margin-bottom: 1rem;
-        }
-        
-        .hy-glance-item {
-            display: flex;
-            gap: 0.75rem;
-            padding: 0.85rem 0;
-            border-top: 1px solid rgba(25, 62, 55, 0.10);
-        }
-        
-        .hy-glance-item:first-child {
-            border-top: none;
-        }
-        
-        .hy-glance-item i {
-            color: var(--primary);
-            width: 22px;
-            margin-top: 0.2rem;
-        }
-        
-        /* Dark mode */
-        [data-theme="dark"] .hy-note-card,
-        [data-theme="dark"] .hy-glance {
-            background:
-                linear-gradient(180deg, rgba(16, 34, 30, 0.96), rgba(7, 17, 15, 0.96));
-            border: 1px solid rgba(122, 215, 163, 0.18);
-            box-shadow: 0 18px 45px rgba(0,0,0,0.36);
-        }
-        
-        [data-theme="dark"] .hy-note-card h1,
-        [data-theme="dark"] .hy-glance h3,
-        [data-theme="dark"] .hy-note-body {
-            color: #F5F7F6;
-        }
-        
-        [data-theme="dark"] .hy-note-body h1,
-        [data-theme="dark"] .hy-note-body h2,
-        [data-theme="dark"] .hy-note-body h3,
-        [data-theme="dark"] .hy-note-body .main-heading,
-        [data-theme="dark"] .hy-note-body .subheading-title {
-            color: #7AD7A3;
-        }
-        
-        [data-theme="dark"] .hy-key-point {
-            background: rgba(122, 215, 163, 0.08);
-            border-color: rgba(122, 215, 163, 0.18);
-        }
-        
-        [data-theme="dark"] .hy-sidebar {
-            background:
-                linear-gradient(180deg, rgba(8, 22, 19, 0.98), rgba(5, 12, 10, 0.98));
-        }
-        
-        /* Hide admin-only things unless logged in */
-        .admin-only {
-            display: none;
-        }
-        
-        .admin-logged-in .admin-only {
-            display: block;
-        }
-        
-        @media (max-width: 1100px) {
-            .high-yield-layout {
-                grid-template-columns: 1fr;
-            }
-        
-            .hy-sidebar,
-            .hy-glance {
-                position: relative;
-                top: auto;
-                height: auto;
-            }
-        }
         /* Responsive */
         @media (max-width: 768px) {
             .hero h1 {
@@ -2252,476 +1399,6 @@
                 padding: 1rem;
             }
         }
-        /* RESPONSIVE ZOOM-SAFE LAYOUT
-           Makes the website adapt when browser zoom changes */
-        
-        /* Better than only using fixed 80%.
-           It stays small on large screens but grows safely on smaller/zoomed screens. */
-        html {
-            font-size: clamp(12px, 0.8vw + 4px, 16px);
-        }
-        
-        /* Prevent hidden horizontal overflow when zoom changes */
-        html,
-        body {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
-        }
-        
-        /* Make all big layout containers fluid instead of fixed */
-        .navbar-container,
-        .hero,
-        .categories,
-        .subcategories,
-        .notes-list,
-        .admin-dashboard,
-        .note-content,
-        .footer-content {
-            width: min(100% - 3rem, 1400px);
-            max-width: 1400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        /* Navbar: flexible so it does not break when zoomed in */
-        .navbar-container {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        /* Logo stays left */
-        .navbar-container > div:first-child {
-            flex: 0 0 auto;
-        }
-        
-        /* Right menu can shrink */
-        .nav-links {
-            flex: 1 1 auto;
-            justify-content: flex-end;
-            min-width: 0;
-            gap: clamp(0.8rem, 1.2vw, 1.8rem);
-        }
-        
-        /* Search bar adapts instead of staying fixed */
-        .nav-search-wrap {
-            width: clamp(160px, 18vw, 280px) !important;
-        }
-        
-        /* Buttons should not stretch weirdly */
-        #authButtons,
-        #userMenu {
-            flex: 0 0 auto;
-        }
-        
-        /* Hero title adjusts instead of overflowing */
-        .hero h1,
-        .hero-banner h1 {
-            font-size: clamp(2rem, 2.8vw, 3.4rem);
-            line-height: 1.15;
-            max-width: min(100%, 1200px);
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .hero p,
-        .hero-banner p {
-            font-size: clamp(1rem, 1vw, 1.2rem);
-        }
-        
-        /* Home search adjusts with zoom */
-        #homePage .search-container {
-            width: min(100% - 2rem, 650px);
-        }
-        
-        /* Cards automatically adjust based on available space */
-        .categories {
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-            gap: clamp(1rem, 1.5vw, 2rem);
-        }
-        
-        .subcategories {
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-            gap: clamp(1rem, 1.4vw, 1.6rem);
-        }
-        
-        /* Note page uses more width but stays readable */
-        .note-content {
-            width: min(100% - 4rem, 1400px) !important;
-            max-width: 1400px !important;
-        }
-        
-        .note-header {
-            width: 100%;
-        }
-        
-        .note-body {
-            width: 100%;
-            max-width: none;
-            font-size: clamp(0.95rem, 0.95vw, 1.05rem);
-        }
-        
-        .note-body > * {
-            max-width: 1280px;
-        }
-        
-        /* High-yield page adapts */
-        .high-yield-layout {
-            width: min(100% - 3rem, 1500px);
-            max-width: 1500px;
-            grid-template-columns:
-                minmax(220px, 0.8fr)
-                minmax(0, 2.4fr)
-                minmax(220px, 0.8fr);
-            gap: clamp(1rem, 1.5vw, 2rem);
-        }
-        
-        /* Images/tables never force the page wider */
-        img,
-        table,
-        pre,
-        code {
-            max-width: 100%;
-        }
-        
-        /* Medium screens or zoomed-in desktop */
-        @media (max-width: 1150px) {
-            .navbar {
-                padding: 0.75rem 0;
-            }
-        
-            .navbar-container {
-                width: min(100% - 2rem, 100%);
-            }
-        
-            .nav-links {
-                gap: 0.9rem;
-            }
-        
-            .nav-search-wrap {
-                width: 180px !important;
-            }
-        
-            .categories,
-            .subcategories {
-                width: min(100% - 2rem, 100%);
-            }
-        
-            .note-content {
-                width: min(100% - 2rem, 100%) !important;
-            }
-        
-            .high-yield-layout {
-                grid-template-columns: 1fr;
-                width: min(100% - 2rem, 100%);
-            }
-        
-            .hy-sidebar,
-            .hy-glance {
-                position: relative;
-                top: auto;
-                height: auto;
-            }
-        }
-        
-        /* Small screens or very zoomed-in browser */
-        @media (max-width: 850px) {
-            .navbar-container {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-        
-            .navbar-container > div:first-child {
-                width: 100%;
-                justify-content: center;
-            }
-        
-            .nav-links {
-                width: 100%;
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-        
-            .nav-search {
-                order: -1;
-                width: 100%;
-                display: flex !important;
-                justify-content: center;
-            }
-        
-            .nav-search-wrap {
-                width: min(100%, 420px) !important;
-            }
-        
-            #authButtons {
-                width: 100%;
-                justify-content: center;
-                display: flex;
-                gap: 0.75rem;
-            }
-        
-            .hero {
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-        
-            #homePage .hero-banner {
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-        
-            .category-card,
-            .subcategory-card,
-            .note-item,
-            .note-header {
-                padding: 1.2rem;
-            }
-        }
-        
-        /* Very small screens */
-        @media (max-width: 520px) {
-            html {
-                font-size: 13px;
-            }
-        
-            .login-btn,
-            .signup-btn,
-            .user-btn {
-                padding: 0.55rem 0.9rem;
-            }
-        
-            .categories,
-            .subcategories,
-            .notes-list,
-            .admin-dashboard,
-            .note-content {
-                width: calc(100% - 1rem) !important;
-            }
-        
-            .hero h1,
-            .hero-banner h1 {
-                font-size: 1.8rem;
-            }
-        }
-        html {
-            font-size: 100%;
-        }
-        /* =========================================================
-           ADMIN CATEGORY ACTION BUTTONS
-           Empty category = Add subcategory + Add note
-        ========================================================= */
-        
-        .admin-category-action-row {
-            width: 100%;
-            display: flex;
-            gap: 1.2rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .admin-category-action-row.two-actions {
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .admin-category-action-row.single-action {
-            justify-content: flex-start;
-        }
-        
-        .admin-choice-btn {
-            min-width: 240px;
-            padding: 0.85rem 1.2rem;
-            font-weight: 700;
-            border-radius: 10px;
-        }
-        
-        .admin-category-action-row.two-actions .admin-choice-btn {
-            width: calc(50% - 0.6rem);
-        }
-        
-        @media (max-width: 768px) {
-            .admin-category-action-row,
-            .admin-category-action-row.two-actions {
-                flex-direction: column;
-            }
-        
-            .admin-category-action-row.two-actions .admin-choice-btn,
-            .admin-choice-btn {
-                width: 100%;
-                min-width: 0;
-            }
-        }
-
-        /* =========================================================
-           HIGH-YIELD KEY POINT + AT A GLANCE EDITOR
-        ========================================================= */
-        
-        .hy-key-point-text {
-            margin-top: 0.25rem;
-        }
-        
-        .hy-key-point-text p,
-        .hy-key-point-text div,
-        .hy-key-point-text ul,
-        .hy-key-point-text ol {
-            margin: 0.35rem 0;
-        }
-        
-        .hy-glance-editor-wrap {
-            position: relative;
-            overflow: visible;
-        }
-        
-        .hy-glance-toolbar {
-            position: sticky;
-            top: 90px;
-            z-index: 1500;
-        
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.35rem;
-            padding: 0.45rem;
-            background: rgba(212, 241, 232, 0.55);
-            border-radius: 8px;
-            margin-bottom: 0.6rem;
-        }
-        
-        .hy-glance-editor {
-            min-height: 180px;
-            padding: 0.9rem;
-            border: 2px solid rgba(25, 62, 55, 0.16);
-            border-radius: 10px;
-            background: #ffffff;
-            color: #111111;
-            outline: none;
-            line-height: 1.6;
-        }
-        
-        .hy-glance-editor:focus {
-            border-color: var(--primary);
-        }
-        
-        .hy-glance-save-btn {
-            width: 100%;
-            margin-top: 0.75rem;
-        }
-        
-        .hy-glance-view {
-            line-height: 1.6;
-        }
-        
-        .hy-glance-view p,
-        .hy-glance-view ul,
-        .hy-glance-view ol {
-            margin: 0.45rem 0;
-        }
-        
-        [data-theme="dark"] .hy-glance-toolbar {
-            background: rgba(122, 215, 163, 0.10);
-        }
-        
-        [data-theme="dark"] .hy-glance-editor {
-            background: #07110F;
-            color: #F5F7F6;
-            border-color: rgba(122, 215, 163, 0.25);
-        }
-
-        
-        /* =========================================================
-           HIGH-YIELD AT A GLANCE TOOLBAR
-           Follows only inside the At a Glance box
-        ========================================================= */
-        
-        .hy-glance {
-            position: sticky;
-            top: 95px;
-            align-self: start;
-        }
-
-        .hy-glance-editor-wrap {
-            position: relative;
-            overflow: visible;
-        }
-        
-        .hy-glance-toolbar {
-            position: sticky;
-            top: 90px;
-            z-index: 1500;
-        
-            background: rgba(212, 241, 232, 0.95);
-            border-radius: 8px;
-        }
-        /* =========================================================
-           HOME PAGE ONLY SIZE ADJUSTMENT
-           This changes only the main page, not the other pages
-        ========================================================= */
-        
-        #homePage .hero-banner {
-            padding: 3rem 2rem 2.4rem;
-        }
-        
-        #homePage .hero-banner h1 {
-            font-size: 2.6rem;
-            max-width: 1100px;
-        }
-        
-        #homePage .hero-banner p {
-            font-size: 1rem;
-        }
-        
-        #homePage .search-container {
-            max-width: 560px;
-            margin: 1.2rem auto 2.5rem;
-        }
-        
-        #homePage .categories {
-            max-width: 1100px;
-            gap: 1.5rem;
-            padding: 1.5rem 2rem;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        }
-        
-        #homePage .category-card {
-            padding: 1.6rem;
-        }
-        
-        #homePage .category-icon {
-            font-size: 2.5rem;
-        }
-        
-        #homePage .category-card h3 {
-            font-size: 1.3rem;
-        }
-        
-        #homePage .category-card p {
-            font-size: 0.9rem;
-        }
-
-        /* =========================================================
-           MAIN ADD/EDIT NOTE TOOLBAR FOLLOW MODE
-        ========================================================= */
-        
-        #addNotePage .note-editor-content-box {
-            position: relative !important;
-            overflow: visible !important;
-        }
-        
-        #addNotePage .note-main-toolbar {
-            position: relative;
-            z-index: 3000;
-        }
-        
-        #addNotePage .note-main-toolbar.toolbar-following {
-            position: fixed !important;
-            top: 115px !important;
-            z-index: 3000 !important;
-        }
-        
-        #addNotePage .note-main-toolbar.toolbar-stopped {
-            position: absolute !important;
-            z-index: 3000 !important;
-        }
-        
     </style>
 </head>
 <body>
@@ -2776,10 +1453,8 @@
         <div id="homePage" class="page">
             <div class="hero">
                 <div class="hero-banner">
-                    <img class="hero-kitty kitty-light" src="images/kitty-light.png" alt="Sleeping cat">
-                    <img class="hero-kitty kitty-dark" src="images/kitty-dark.png" alt="Sleeping cat">
-                    <h1> <span class="hero-accent">deepen your roots</span> in medical knowledge to <span class="hero-accent">grow your branches</span> in clinical practice </h1>
-                    <p>A concept-first learning platform for medical students and early doctors. Understand the why behind every condition to think and act clinically.</p>
+                  <h1>Deepen your roots in medical knowledge to grow your branches in clinical practice</h1>
+                  <p>A concept-first learning platform for medical students and early doctors. Understand the why behind every condition to think and act clinically.</p>
                 </div>
                 
             <div class="search-container">
@@ -2815,7 +1490,7 @@
                         </button>
                     </div>
                     <div class="category-icon surgical">
-                        <i class="fas fa-notes-medical"></i>
+                        <i class="fas fa-user-md"></i>
                     </div>
                     <h3>Surgical</h3>
                     <p>Surgical procedures, techniques, and perioperative care</p>
@@ -2835,83 +1510,9 @@
                     <h3>Specialty</h3>
                     <p>Specialized medical fields and advanced practice areas</p>
                 </div>
-                <div class="category-card" onclick="showTools()">
-                    <div class="category-icon guide-book-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <h3>Guide</h3>
-                    <p>Guide on how to use the website to study effectively.</p>
-                </div>
-                
-                <div class="category-card" onclick="showHighYieldPage()">
-                    <div class="category-icon">
-                        <i class="fas fa-bolt" style="color: var(--primary);"></i>
-                    </div>
-                    <h3>High-Yield</h3>
-                    <p>Fast, focused clinical facts and reviews organized by module for revision.</p>
-                </div>
             </div>
         </div>
     </div>
-
-        <!-- High-Yield Page -->
-        <div id="highYieldPage" class="page hidden">
-            <div class="high-yield-layout">
-        
-                <!-- LEFT MENU -->
-                <aside class="hy-sidebar">
-                    <div class="hy-sidebar-header">
-                        <h3>HIGH-YIELD FACTS</h3>
-        
-                        <button
-                            class="hy-add-category-btn admin-only"
-                            onclick="addHighYieldCategory()"
-                            title="Add High-Yield category"
-                        >
-                            + Add Category
-                        </button>
-                    </div>
-        
-                    <div id="highYieldSidebar"></div>
-                </aside>
-        
-                <!-- MIDDLE NOTE CONTENT -->
-                <section class="hy-main">
-                    <button class="back-btn" onclick="showHome()">← Back to Home</button>
-        
-                    <div class="hy-note-card">
-                        <div class="hy-breadcrumb" id="highYieldBreadcrumb">
-                            High-Yield Facts
-                        </div>
-        
-                        <h1 id="highYieldNoteTitle">High-Yield</h1>
-        
-                        <div class="hy-key-point hidden" id="highYieldKeyPoint">
-                            <div class="hy-key-icon">
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div>
-                                <strong>Key Point</strong>
-                                <div id="highYieldKeyPointText" class="hy-key-point-text"></div>
-                            </div>
-                        </div>
-        
-                        <div class="hy-note-body" id="highYieldNoteBody">
-                            <p>Select a topic from the left menu.</p>
-                        </div>
-                    </div>
-                </section>
-        
-                <!-- RIGHT AT A GLANCE -->
-                <aside class="hy-glance">
-                    <h3>At a Glance</h3>
-                    <div id="highYieldAtGlance">
-                        <p>Select a note to see a quick summary.</p>
-                    </div>
-                </aside>
-        
-            </div>
-        </div>
         
 
         <!-- Library Page -->
@@ -3016,13 +1617,6 @@
                         <h3>Manage Categories</h3>
                         <p>Add, edit, or delete subcategories in Medical, Surgical, and Specialty</p>
                     </div>
-                    <div class="category-card" onclick="showHighYieldAdmin()">
-                        <div class="category-icon" style="color: var(--primary);">
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                        <h3>Edit High-Yield</h3>
-                        <p>Add, edit, or delete High-Yield categories and notes.</p>
-                    </div>
                     <div class="category-card" onclick="showAddNote()">
                         <div class="category-icon" style="color: var(--success);">
                             <i class="fas fa-plus-circle"></i>
@@ -3072,9 +1666,9 @@
                         </select>
                     </div>
 
-                    <div class="note-editor note-editor-content-box">
+                    <div class="note-editor">
                         <label class="form-label">Content Editor</label>
-                        <div class="editor-toolbar note-main-toolbar">
+                        <div class="editor-toolbar">
                             <button type="button" class="editor-btn" onclick="formatText('bold')" title="Bold">
                                 <i class="fas fa-bold"></i>
                             </button>
@@ -3296,7 +1890,7 @@ Our mission is to take every topic — from core mechanisms to real-world decisi
                     </ul>
 
                     <h3 style="margin-top: 2rem;">Contact Information</h3>
-                    <p>For questions or feedback, please contact us at: <strong>contact@clinicalroot.co.uk</strong></p>
+                    <p>For questions or feedback, please contact us at: <strong>contact@clincalroot.co.uk</strong></p>
                 </div>
             </div>
         </div>
