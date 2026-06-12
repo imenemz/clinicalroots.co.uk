@@ -2704,6 +2704,22 @@
         #homePage .category-card p {
             font-size: 0.9rem;
         }
+
+        /* =========================================================
+           MAIN ADD/EDIT NOTE TOOLBAR ONLY
+           Same behaviour as old index (4), but isolated
+        ========================================================= */
+        
+        #addNotePage .note-editor-content-box {
+            position: relative !important;
+            overflow: visible !important;
+        }
+        
+        #addNotePage .note-main-toolbar {
+            position: sticky !important;
+            top: 90px !important;
+            z-index: 3000 !important;
+        }
         
     </style>
 </head>
@@ -2761,7 +2777,7 @@
                 <div class="hero-banner">
                     <img class="hero-kitty kitty-light" src="images/kitty-light.png" alt="Sleeping cat">
                     <img class="hero-kitty kitty-dark" src="images/kitty-dark.png" alt="Sleeping cat">
-                    <h1> <span class="hero-accent">Deepen your roots</span> in medical knowledge to <span class="hero-accent">grow your branches</span> in clinical practice </h1>
+                    <h1> <span class="hero-accent">worked your roots</span> in medical knowledge to <span class="hero-accent">grow your branches</span> in clinical practice </h1>
                     <p>A concept-first learning platform for medical students and early doctors. Understand the why behind every condition to think and act clinically.</p>
                 </div>
                 
@@ -3055,7 +3071,7 @@
                         </select>
                     </div>
 
-                    <div class="note-editor">
+                    <div class="note-editor note-editor-content-box">
                         <label class="form-label">Content Editor</label>
                         <div class="editor-toolbar">
                             <button type="button" class="editor-btn" onclick="formatText('bold')" title="Bold">
