@@ -3228,8 +3228,6 @@ async function adminAddQuestionTopic() {
     alert("Topic created." );
 
 }
-
-```javascript
 async function showQuestionEditor(questionId = null) {
     if (!currentUser || currentUser.role !== "admin") return;
 
