@@ -82,12 +82,20 @@ const elements = {
         subcategory: qs("subcategoryPage"),
         noteView: qs("notePage"),
         highYield: qs("highYieldPage"),
+
+        questionBank: qs("questionBankPage"),
+        questionSession: qs("questionSessionPage"),
+        questionResults: qs("questionResultsPage"),
+        questionBankAdmin: qs("questionBankAdminPage"),
+        questionEditor: qs("questionEditorPage"),
+
         admin: qs("adminDashboard"),
         adminNotes: qs("adminNotesPage"),
         addNote: qs("addNotePage"),
         tools: qs("Guide"),
         ia: qs("iaPage"),
         about: qs("aboutPage"),
+        
     },
     subcategoriesGrid: qs("subcategoriesGrid"),
     notesContainer: qs("notesContainer"),
@@ -1026,6 +1034,3048 @@ async function saveDraggedNoteOrder(container) {
     } catch (err) {
         alert("Error saving note order: " + err.message);
     }
+}
+
+// ==========================================================
+// QUESTION BANK
+// ==========================================================
+
+let questionBankModules = [];
+
+let selectedQuestionModuleIds = [];
+
+let selectedQuestionCount = 5;
+
+let questionAvailableCount = 0;
+
+
+let activeQuestionSessionToken = null;
+
+let activeQuestionSession = null;
+
+let activeQuestionPosition = 1;
+
+let activeQuestionData = null;
+
+let activeQuestionStartedAt = null;
+
+
+let currentSelectedOptionId = null;
+
+let currentExcludedOptionIds = [];
+
+
+let questionResultData = null;
+
+let questionResultFilter = "all";
+
+
+let editingQuestionBankQuestionId = null;
+
+let questionEditorOptions = [];
+
+let selectedHighYieldNoteId = null;
+
+let selectedHighYieldNoteTitle = "";
+
+
+async function showQuestionBank() {
+
+    switchView("questionBank");
+
+    await loadQuestionBankModules();
+
+    selectedQuestionModuleIds = [];
+
+    selectedQuestionCount = 5;
+
+    updateQuestionBankLanding();
+
+    const unfinished =
+        localStorage.getItem(
+            "clinicalrootsActiveQuestionSession"
+        );
+
+    if (unfinished) {
+
+        const resume =
+            confirm(
+                "You have an unfinished question session. Resume it?"
+            );
+
+        if (resume) {
+
+            activeQuestionSessionToken =
+                unfinished;
+
+            await resumeQuestionBankSession();
+
+        }
+
+    }
+
+}
+
+
+async function loadQuestionBankModules() {
+
+    questionBankModules =
+        await api(
+            "/api/question-bank/modules"
+        );
+
+    renderQuestionBankModules();
+
+}
+
+
+function renderQuestionBankModules() {
+
+    const grid =
+        qs("qbModuleGrid");
+
+    if (!grid) return;
+
+    grid.innerHTML =
+        questionBankModules
+            .map(module => `
+
+                <button
+                    class="qb-module-card
+                    ${
+                        selectedQuestionModuleIds
+                            .includes(module.id)
+                            ? "selected"
+                            : ""
+                    }"
+
+                    onclick="
+                        toggleQuestionModule(${module.id})
+                    "
+                >
+
+                    <strong>
+                        ${escapeHtml(module.name)}
+                    </strong>
+
+                    <span>
+                        ${module.question_count}
+                        questions
+                    </span>
+
+                </button>
+
+            `)
+            .join("");
+
+}
+
+
+function toggleQuestionModule(moduleId) {
+
+    if (
+        selectedQuestionModuleIds
+            .includes(moduleId)
+    ) {
+
+        selectedQuestionModuleIds =
+            selectedQuestionModuleIds
+                .filter(
+                    id => id !== moduleId
+                );
+
+    }
+
+    else {
+
+        selectedQuestionModuleIds
+            .push(moduleId);
+
+    }
+
+    questionBankFiltersChanged();
+
+}
+
+
+function selectAllQuestionModules() {
+
+    selectedQuestionModuleIds =
+        questionBankModules
+            .map(module => module.id);
+
+    questionBankFiltersChanged();
+
+}
+
+
+function clearQuestionModules() {
+
+    selectedQuestionModuleIds = [];
+
+    questionBankFiltersChanged();
+
+}
+
+
+function getSelectedDifficulties() {
+
+    return [
+        ...document.querySelectorAll(
+            ".qbDifficulty:checked"
+        )
+    ].map(
+        input => input.value
+    );
+
+}
+
+
+function selectQuestionCount(
+    count,
+    button
+) {
+
+    selectedQuestionCount = count;
+
+    document
+        .querySelectorAll(
+            "#qbQuestionCountOptions .qb-choice"
+        )
+        .forEach(btn => {
+
+            btn.classList.remove(
+                "active"
+            );
+
+        });
+
+    button.classList.add("active");
+
+    updateQuestionBankLanding();
+
+}
+
+
+async function questionBankFiltersChanged() {
+
+    renderQuestionBankModules();
+
+    await updateQuestionAvailableCount();
+
+    updateQuestionBankLanding();
+
+}
+
+
+async function updateQuestionAvailableCount() {
+
+    if (
+        !selectedQuestionModuleIds.length
+    ) {
+
+        questionAvailableCount = 0;
+
+        updateQuestionBankLanding();
+
+        return;
+
+    }
+
+    try {
+
+        const data =
+            await api(
+                "/api/question-bank/available-count",
+                {
+                    method: "POST",
+
+                    body: JSON.stringify({
+                        module_ids:
+                            selectedQuestionModuleIds,
+
+                        difficulties:
+                            getSelectedDifficulties(),
+                    })
+                }
+            );
+
+        questionAvailableCount =
+            data.count || 0;
+
+    }
+
+    catch (err) {
+
+        console.error(
+            "Question count error:",
+            err
+        );
+
+        questionAvailableCount = 0;
+
+    }
+
+    updateQuestionBankLanding();
+
+}
+
+
+function updateQuestionBankLanding() {
+
+    renderQuestionBankModules();
+
+
+    const selectedCount =
+        selectedQuestionModuleIds.length;
+
+
+    const moduleCount =
+        qs("qbSelectedModuleCount");
+
+    if (moduleCount) {
+
+        moduleCount.textContent =
+            `${selectedCount} module${
+                selectedCount === 1
+                    ? ""
+                    : "s"
+            } selected`;
+
+    }
+
+
+    const availability =
+        qs("qbAvailableCount");
+
+    if (availability) {
+
+        availability.textContent =
+            selectedCount
+                ? `${questionAvailableCount} questions available for your current selection`
+                : "Select at least one module.";
+
+    }
+
+
+    document
+        .querySelectorAll(
+            "#qbQuestionCountOptions .qb-choice"
+        )
+        .forEach(btn => {
+
+            const value =
+                btn.dataset.count;
+
+            if (value === "all") {
+
+                btn.disabled =
+                    questionAvailableCount === 0;
+
+                return;
+
+            }
+
+            const count =
+                Number(value);
+
+            btn.disabled =
+                count >
+                questionAvailableCount;
+
+        });
+
+
+    const selectedModules =
+        questionBankModules
+            .filter(module =>
+                selectedQuestionModuleIds
+                    .includes(module.id)
+            )
+            .map(module => module.name);
+
+
+    const difficulty =
+        getSelectedDifficulties();
+
+
+    const summary =
+        qs("qbSessionSummary");
+
+
+    if (summary) {
+
+        if (!selectedCount) {
+
+            summary.innerHTML =
+                "Select at least one module to continue.";
+
+        }
+
+        else {
+
+            summary.innerHTML = `
+                <p>
+                    <strong>Modules:</strong>
+                    ${selectedModules
+                        .map(escapeHtml)
+                        .join(", ")}
+                </p>
+
+                <p>
+                    <strong>Questions:</strong>
+                    ${
+                        selectedQuestionCount === "all"
+                            ? `All available (${questionAvailableCount})`
+                            : selectedQuestionCount
+                    }
+                </p>
+
+                <p>
+                    <strong>Difficulty:</strong>
+                    ${
+                        difficulty.length === 3
+                            ? "Mixed"
+                            : difficulty
+                                .map(
+                                    d =>
+                                        d[0]
+                                            .toUpperCase()
+                                        + d.slice(1)
+                                )
+                                .join(", ")
+                    }
+                </p>
+
+                <p>
+                    <strong>Mode:</strong>
+                    Tutor
+                </p>
+            `;
+
+        }
+
+    }
+
+
+    const startButton =
+        qs("qbStartButton");
+
+
+    if (startButton) {
+
+        const countValid =
+            selectedQuestionCount === "all"
+                ? questionAvailableCount > 0
+                : selectedQuestionCount
+                    <= questionAvailableCount;
+
+
+        startButton.disabled =
+            !selectedCount
+            ||
+            !countValid
+            ||
+            questionAvailableCount === 0
+            ||
+            difficulty.length === 0;
+
+    }
+
+}
+async function startQuestionBankSession() {
+
+    const difficulties =
+        getSelectedDifficulties();
+
+
+    if (
+        !selectedQuestionModuleIds.length
+    ) {
+
+        return;
+
+    }
+
+
+    const order =
+        document.querySelector(
+            'input[name="qbOrder"]:checked'
+        )?.value || "random";
+
+
+    try {
+
+        const data =
+            await api(
+                "/api/question-bank/session",
+                {
+                    method: "POST",
+
+                    body: JSON.stringify({
+
+                        module_ids:
+                            selectedQuestionModuleIds,
+
+                        difficulties,
+
+                        question_count:
+                            selectedQuestionCount,
+
+                        mode: "tutor",
+
+                        order,
+
+                    })
+
+                }
+            );
+
+
+        activeQuestionSessionToken =
+            data.session_token;
+
+
+        localStorage.setItem(
+            "clinicalrootsActiveQuestionSession",
+            activeQuestionSessionToken
+        );
+
+
+        activeQuestionPosition = 1;
+
+
+        await loadActiveQuestionSession();
+
+
+        switchView(
+            "questionSession"
+        );
+
+
+        await loadCurrentQuestion();
+
+    }
+
+    catch (err) {
+
+        alert(
+            "Could not start session: "
+            + err.message
+        );
+
+    }
+
+}
+
+
+async function resumeQuestionBankSession() {
+
+    try {
+
+        await loadActiveQuestionSession();
+
+        if (
+            activeQuestionSession.status
+            === "completed"
+        ) {
+
+            localStorage.removeItem(
+                "clinicalrootsActiveQuestionSession"
+            );
+
+            return;
+
+        }
+
+
+        const firstUnanswered =
+            activeQuestionSession
+                .questions
+                .find(
+                    question =>
+                        !question.submitted
+                );
+
+
+        activeQuestionPosition =
+            firstUnanswered
+                ? firstUnanswered.position
+                : 1;
+
+
+        switchView(
+            "questionSession"
+        );
+
+
+        await loadCurrentQuestion();
+
+    }
+
+    catch (err) {
+
+        localStorage.removeItem(
+            "clinicalrootsActiveQuestionSession"
+        );
+
+        console.error(err);
+
+    }
+
+}
+
+
+async function loadActiveQuestionSession() {
+
+    activeQuestionSession =
+        await api(
+            `/api/question-bank/session/${activeQuestionSessionToken}`
+        );
+
+    renderQuestionNavigator();
+
+}
+
+async function loadCurrentQuestion() {
+
+    if (
+        !activeQuestionSessionToken
+    ) return;
+
+
+    activeQuestionStartedAt =
+        Date.now();
+
+
+    activeQuestionData =
+        await api(
+            `/api/question-bank/session/${activeQuestionSessionToken}/question/${activeQuestionPosition}`
+        );
+
+
+    currentSelectedOptionId =
+        activeQuestionData
+            .selected_option_id;
+
+
+    currentExcludedOptionIds =
+        activeQuestionData
+            .excluded_option_ids || [];
+
+
+    renderCurrentQuestion();
+
+}
+
+
+function renderCurrentQuestion() {
+
+    const q =
+        activeQuestionData;
+
+
+    if (!q) return;
+
+
+    qs("qbQuestionNumber")
+        .textContent =
+        `Question ${q.position} of ${activeQuestionSession.total_questions}`;
+
+
+    const metaParts = [
+        q.module,
+        q.topic,
+        q.difficulty
+            ? (
+                q.difficulty[0]
+                    .toUpperCase()
+                + q.difficulty.slice(1)
+            )
+            : ""
+    ].filter(Boolean);
+
+
+    qs("qbQuestionMeta")
+        .textContent =
+        metaParts.join(" · ");
+
+
+    qs("qbQuestionStem")
+        .innerHTML =
+        escapeHtml(q.stem)
+            .replace(/\n/g, "<br>");
+
+
+    const percentage =
+        (
+            q.position
+            /
+            activeQuestionSession
+                .total_questions
+        ) * 100;
+
+
+    qs("qbProgressFill")
+        .style.width =
+        `${percentage}%`;
+
+
+    const letters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+
+    qs("qbAnswerOptions")
+        .innerHTML =
+        q.options
+            .map(
+                (option, index) => {
+
+                    const selected =
+                        currentSelectedOptionId
+                        === option.id;
+
+
+                    const excluded =
+                        currentExcludedOptionIds
+                            .includes(option.id);
+
+
+                    let resultClass = "";
+
+
+                    if (
+                        q.submitted
+                        &&
+                        q.feedback
+                    ) {
+
+                        if (
+                            option.id
+                            ===
+                            q.feedback
+                                .correct_option_id
+                        ) {
+
+                            resultClass =
+                                "correct";
+
+                        }
+
+                        else if (
+                            option.id
+                            ===
+                            currentSelectedOptionId
+                        ) {
+
+                            resultClass =
+                                "incorrect";
+
+                        }
+
+                    }
+
+
+                    return `
+
+                        <div
+                            class="
+                                qb-answer-option
+                                ${selected ? "selected" : ""}
+                                ${excluded ? "excluded" : ""}
+                                ${resultClass}
+                            "
+
+                            onclick="
+                                selectQuestionOption(
+                                    ${option.id}
+                                )
+                            "
+                        >
+
+                            <span
+                                class="qb-answer-letter"
+                            >
+                                ${letters[index]}
+                            </span>
+
+
+                            <span
+                                class="qb-answer-text"
+                            >
+                                ${escapeHtml(option.text)}
+                            </span>
+
+
+                            <button
+                                type="button"
+
+                                class="qb-exclude-answer"
+
+                                aria-label="
+                                    Exclude answer
+                                    ${letters[index]}
+                                "
+
+                                onclick="
+                                    event.stopPropagation();
+
+                                    toggleExcludedQuestionOption(
+                                        ${option.id}
+                                    )
+                                "
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+
+    const submit =
+        qs("qbSubmitAnswerButton");
+
+
+    submit.disabled =
+        !currentSelectedOptionId
+        ||
+        q.submitted;
+
+
+    submit.classList.toggle(
+        "hidden",
+        q.submitted
+    );
+
+
+    const flagButton =
+        qs("qbFlagButton");
+
+
+    flagButton.classList.toggle(
+        "active",
+        !!q.flagged
+    );
+
+
+    if (q.submitted) {
+
+        renderQuestionFeedback(
+            q.feedback
+        );
+
+    }
+
+    else {
+
+        qs("qbFeedback")
+            .classList.add(
+                "hidden"
+            );
+
+        qs("qbFeedback")
+            .innerHTML = "";
+
+    }
+
+
+    renderQuestionNavigator();
+
+}
+
+async function selectQuestionOption(
+    optionId
+) {
+
+    if (
+        activeQuestionData
+            ?.submitted
+    ) return;
+
+
+    if (
+        currentExcludedOptionIds
+            .includes(optionId)
+    ) return;
+
+
+    currentSelectedOptionId =
+        optionId;
+
+
+    await saveCurrentQuestionState();
+
+
+    renderCurrentQuestion();
+
+}
+
+
+async function toggleExcludedQuestionOption(
+    optionId
+) {
+
+    if (
+        activeQuestionData
+            ?.submitted
+    ) return;
+
+
+    if (
+        currentExcludedOptionIds
+            .includes(optionId)
+    ) {
+
+        currentExcludedOptionIds =
+            currentExcludedOptionIds
+                .filter(
+                    id => id !== optionId
+                );
+
+    }
+
+    else {
+
+        currentExcludedOptionIds
+            .push(optionId);
+
+
+        if (
+            currentSelectedOptionId
+            === optionId
+        ) {
+
+            currentSelectedOptionId =
+                null;
+
+        }
+
+    }
+
+
+    await saveCurrentQuestionState();
+
+
+    renderCurrentQuestion();
+
+}
+
+
+async function saveCurrentQuestionState(
+    skipped = null
+) {
+
+    if (
+        !activeQuestionSessionToken
+        ||
+        activeQuestionData
+            ?.submitted
+    ) return;
+
+
+    const currentSessionState =
+        activeQuestionSession
+            ?.questions
+            ?.find(
+                q =>
+                    q.position
+                    ===
+                    activeQuestionPosition
+            );
+
+
+    const flagged =
+        activeQuestionData
+            ?.flagged || false;
+
+
+    await api(
+        `/api/question-bank/session/${activeQuestionSessionToken}/question/${activeQuestionPosition}/state`,
+        {
+            method: "PUT",
+
+            body: JSON.stringify({
+
+                selected_option_id:
+                    currentSelectedOptionId,
+
+                is_flagged:
+                    flagged,
+
+                is_skipped:
+                    skipped === null
+                        ? (
+                            currentSessionState
+                                ?.skipped
+                            || false
+                        )
+                        : skipped,
+
+                excluded_option_ids:
+                    currentExcludedOptionIds,
+
+            })
+
+        }
+    );
+
+
+    await loadActiveQuestionSession();
+
+}
+
+async function submitCurrentQuestionAnswer() {
+
+    if (
+        !currentSelectedOptionId
+        ||
+        activeQuestionData
+            ?.submitted
+    ) return;
+
+
+    const elapsed =
+        Math.max(
+            0,
+            Math.round(
+                (
+                    Date.now()
+                    -
+                    activeQuestionStartedAt
+                )
+                / 1000
+            )
+        );
+
+
+    try {
+
+        await api(
+            `/api/question-bank/session/${activeQuestionSessionToken}/question/${activeQuestionPosition}/submit`,
+            {
+                method: "POST",
+
+                body: JSON.stringify({
+
+                    selected_option_id:
+                        currentSelectedOptionId,
+
+                    time_spent_seconds:
+                        elapsed,
+
+                })
+
+            }
+        );
+
+
+        await loadActiveQuestionSession();
+
+
+        await loadCurrentQuestion();
+
+    }
+
+    catch (err) {
+
+        alert(
+            "Could not submit answer: "
+            + err.message
+        );
+
+    }
+
+}
+
+function renderQuestionFeedback(
+    feedback
+) {
+
+    const container =
+        qs("qbFeedback");
+
+
+    if (
+        !container
+        ||
+        !feedback
+    ) return;
+
+
+    container.classList.remove(
+        "hidden"
+    );
+
+
+    const statusHtml =
+        feedback.correct
+
+            ? `
+                <div
+                    class="
+                        qb-feedback-status
+                        correct
+                    "
+                >
+                    ✓ Correct
+                </div>
+            `
+
+            : `
+                <div
+                    class="
+                        qb-feedback-status
+                        incorrect
+                    "
+                >
+                    ✕ Incorrect
+                </div>
+            `;
+
+
+    const optionExplanations =
+        feedback
+            .option_explanations
+            ?.filter(
+                item =>
+                    item.explanation
+            )
+            .map(
+                item => {
+
+                    const option =
+                        activeQuestionData
+                            .options
+                            .find(
+                                o =>
+                                    o.id
+                                    ===
+                                    item.option_id
+                            );
+
+
+                    return `
+
+                        <div
+                            class="qb-explanation-card"
+                        >
+
+                            <strong>
+                                ${
+                                    item.is_correct
+                                        ? "✓ Correct answer"
+                                        : "Why this option is incorrect"
+                                }
+                            </strong>
+
+                            <p>
+                                ${
+                                    option
+                                        ? escapeHtml(
+                                            option.text
+                                        )
+                                        : ""
+                                }
+                            </p>
+
+                            <p>
+                                ${escapeHtml(
+                                    item.explanation
+                                )}
+                            </p>
+
+                        </div>
+
+                    `;
+
+                }
+            )
+            .join("")
+        || "";
+
+
+    container.innerHTML = `
+
+        ${statusHtml}
+
+
+        ${
+            feedback
+                .correct_answer_explanation
+
+            ? `
+                <div
+                    class="qb-explanation-card"
+                >
+
+                    <h3>
+                        Answer Explanation
+                    </h3>
+
+                    <p>
+                        ${escapeHtml(
+                            feedback
+                                .correct_answer_explanation
+                        )}
+                    </p>
+
+                </div>
+            `
+
+            : ""
+        }
+
+
+        ${
+            feedback.overall_explanation
+
+            ? `
+                <div
+                    class="qb-explanation-card"
+                >
+
+                    <h3>
+                        Clinical Reasoning
+                    </h3>
+
+                    <p>
+                        ${escapeHtml(
+                            feedback
+                                .overall_explanation
+                        )}
+                    </p>
+
+                </div>
+            `
+
+            : ""
+        }
+
+
+        ${optionExplanations}
+
+
+        ${
+            feedback.key_learning_point
+
+            ? `
+                <div
+                    class="qb-learning-point"
+                >
+
+                    <strong>
+                        🌱 Key Learning Point
+                    </strong>
+
+                    <p>
+                        ${escapeHtml(
+                            feedback
+                                .key_learning_point
+                        )}
+                    </p>
+
+                </div>
+            `
+
+            : ""
+        }
+
+
+        ${
+            feedback.clinical_tip
+
+            ? `
+                <div
+                    class="qb-learning-point"
+                >
+
+                    <strong>
+                        Clinical Tip
+                    </strong>
+
+                    <p>
+                        ${escapeHtml(
+                            feedback
+                                .clinical_tip
+                        )}
+                    </p>
+
+                </div>
+            `
+
+            : ""
+        }
+
+    `;
+
+}
+async function previousQuestion() {
+
+    if (
+        activeQuestionPosition <= 1
+    ) return;
+
+
+    activeQuestionPosition--;
+
+
+    await loadCurrentQuestion();
+
+}
+
+
+async function nextQuestion() {
+
+    if (
+        activeQuestionPosition
+        >=
+        activeQuestionSession
+            .total_questions
+    ) return;
+
+
+    activeQuestionPosition++;
+
+
+    await loadCurrentQuestion();
+
+}
+
+
+async function skipCurrentQuestion() {
+
+    if (
+        activeQuestionData
+            ?.submitted
+    ) {
+
+        await nextQuestion();
+
+        return;
+
+    }
+
+
+    await saveCurrentQuestionState(
+        true
+    );
+
+
+    await nextQuestion();
+
+}
+
+
+async function toggleCurrentQuestionFlag() {
+
+    if (!activeQuestionData) return;
+
+
+    activeQuestionData.flagged =
+        !activeQuestionData.flagged;
+
+
+    await api(
+        `/api/question-bank/session/${activeQuestionSessionToken}/question/${activeQuestionPosition}/state`,
+        {
+            method: "PUT",
+
+            body: JSON.stringify({
+
+                selected_option_id:
+                    currentSelectedOptionId,
+
+                is_flagged:
+                    activeQuestionData
+                        .flagged,
+
+                is_skipped:
+                    activeQuestionData
+                        .skipped,
+
+                excluded_option_ids:
+                    currentExcludedOptionIds,
+
+            })
+
+        }
+    );
+
+
+    await loadActiveQuestionSession();
+
+
+    renderCurrentQuestion();
+
+}
+function renderQuestionNavigator() {
+
+    const grid =
+        qs("qbNavigatorGrid");
+
+
+    if (
+        !grid
+        ||
+        !activeQuestionSession
+    ) return;
+
+
+    grid.innerHTML =
+        activeQuestionSession
+            .questions
+            .map(question => {
+
+                const classes = [
+                    "qb-navigator-number"
+                ];
+
+
+                if (
+                    question.position
+                    ===
+                    activeQuestionPosition
+                ) {
+
+                    classes.push(
+                        "current"
+                    );
+
+                }
+
+
+                if (
+                    question.submitted
+                ) {
+
+                    classes.push(
+                        "answered"
+                    );
+
+                }
+
+
+                if (
+                    question.flagged
+                ) {
+
+                    classes.push(
+                        "flagged"
+                    );
+
+                }
+
+
+                return `
+
+                    <button
+                        class="${classes.join(" ")}"
+
+                        onclick="
+                            goToQuestion(
+                                ${question.position}
+                            )
+                        "
+                    >
+                        ${question.position}
+                    </button>
+
+                `;
+
+            })
+            .join("");
+
+}
+
+
+async function goToQuestion(
+    position
+) {
+
+    activeQuestionPosition =
+        position;
+
+
+    await loadCurrentQuestion();
+
+
+    qs("qbQuestionNavigator")
+        ?.classList.remove(
+            "mobile-open"
+        );
+
+}
+
+
+function toggleQuestionNavigator() {
+
+    qs("qbQuestionNavigator")
+        ?.classList.toggle(
+            "mobile-open"
+        );
+
+}
+
+async function finishQuestionBankSession() {
+
+    if (
+        !confirm(
+            "Finish this question session?"
+        )
+    ) return;
+
+
+    try {
+
+        await api(
+            `/api/question-bank/session/${activeQuestionSessionToken}/finish`,
+            {
+                method: "POST"
+            }
+        );
+
+
+        localStorage.removeItem(
+            "clinicalrootsActiveQuestionSession"
+        );
+
+
+        await showQuestionBankResults();
+
+    }
+
+    catch (err) {
+
+        alert(
+            "Could not finish session: "
+            + err.message
+        );
+
+    }
+
+}
+
+
+function confirmEndQuestionSession() {
+
+    if (
+        confirm(
+            "Leave the session? Your progress is saved and you can resume later."
+        )
+    ) {
+
+        showQuestionBank();
+
+    }
+
+}
+
+
+async function showQuestionBankResults() {
+
+    switchView(
+        "questionResults"
+    );
+
+
+    questionResultData =
+        await api(
+            `/api/question-bank/session/${activeQuestionSessionToken}/results`
+        );
+
+
+    qs("qbResultPercentage")
+        .textContent =
+        `${questionResultData.percentage}%`;
+
+
+    qs("qbResultScore")
+        .textContent =
+        `${questionResultData.score} / ${questionResultData.total}`;
+
+
+    qs("qbResultCorrect")
+        .textContent =
+        questionResultData.correct;
+
+
+    qs("qbResultIncorrect")
+        .textContent =
+        questionResultData.incorrect;
+
+
+    qs("qbResultUnanswered")
+        .textContent =
+        questionResultData.unanswered;
+
+
+    qs("qbResultTime")
+        .textContent =
+        formatQuestionBankTime(
+            questionResultData
+                .total_time_seconds
+        );
+
+
+    renderQuestionBankPerformance(
+        "qbModuleResults",
+        questionResultData.modules
+    );
+
+
+    renderQuestionBankPerformance(
+        "qbDifficultyResults",
+        questionResultData
+            .difficulties
+    );
+
+
+    filterResultQuestions(
+        "all"
+    );
+
+}
+
+
+function formatQuestionBankTime(
+    seconds
+) {
+
+    const minutes =
+        Math.floor(
+            seconds / 60
+        );
+
+
+    const remainder =
+        seconds % 60;
+
+
+    return `${minutes}:${String(
+        remainder
+    ).padStart(2, "0")}`;
+
+}
+
+
+function renderQuestionBankPerformance(
+    containerId,
+    data
+) {
+
+    const container =
+        qs(containerId);
+
+
+    if (!container) return;
+
+
+    container.innerHTML =
+        Object.entries(data)
+            .map(([name, stats]) => {
+
+                const percentage =
+                    stats.total
+                        ? Math.round(
+                            (
+                                stats.correct
+                                /
+                                stats.total
+                            )
+                            * 100
+                        )
+                        : 0;
+
+
+                return `
+
+                    <div
+                        class="qb-performance-row"
+                    >
+
+                        <div
+                            class="qb-performance-row-top"
+                        >
+                            <strong>
+                                ${escapeHtml(name)}
+                            </strong>
+
+                            <span>
+                                ${stats.correct}
+                                /
+                                ${stats.total}
+                                (${percentage}%)
+                            </span>
+                        </div>
+
+                        <div
+                            class="qb-performance-bar"
+                        >
+
+                            <div
+                                class="qb-performance-fill"
+
+                                style="
+                                    width:
+                                    ${percentage}%;
+                                "
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+
+}
+
+
+function filterResultQuestions(
+    filter
+) {
+
+    questionResultFilter =
+        filter;
+
+
+    if (!questionResultData) return;
+
+
+    let questions =
+        questionResultData.questions;
+
+
+    if (filter === "correct") {
+
+        questions =
+            questions.filter(
+                q => q.correct === true
+            );
+
+    }
+
+
+    else if (
+        filter === "incorrect"
+    ) {
+
+        questions =
+            questions.filter(
+                q => q.correct === false
+            );
+
+    }
+
+
+    else if (
+        filter === "flagged"
+    ) {
+
+        questions =
+            questions.filter(
+                q => q.flagged
+            );
+
+    }
+
+
+    else if (
+        filter === "unanswered"
+    ) {
+
+        questions =
+            questions.filter(
+                q => !q.submitted
+            );
+
+    }
+
+
+    const container =
+        qs("qbResultQuestions");
+
+
+    container.innerHTML =
+        questions
+            .map(question => `
+
+                <div
+                    class="qb-result-question-row"
+                >
+
+                    <strong>
+                        Question
+                        ${question.position}
+                    </strong>
+
+                    <div
+                        class="qb-admin-question-meta"
+                    >
+                        ${escapeHtml(
+                            question.module
+                        )}
+
+                        ${question.topic
+                            ? " · "
+                              + escapeHtml(
+                                  question.topic
+                              )
+                            : ""
+                        }
+
+                        ·
+
+                        ${
+                            question.correct === true
+                                ? "✓ Correct"
+                                : question.correct === false
+                                    ? "✕ Incorrect"
+                                    : "Unanswered"
+                        }
+                    </div>
+
+                    <p>
+                        ${escapeHtml(
+                            question.stem
+                        )}
+                    </p>
+
+                </div>
+
+            `)
+            .join("");
+
+}
+async function showQuestionBankAdmin() {
+
+    if (
+        !currentUser
+        ||
+        currentUser.role !== "admin"
+    ) {
+
+        alert("Admin only.");
+
+        return;
+
+    }
+
+
+    switchView(
+        "questionBankAdmin"
+    );
+
+
+    await loadQuestionBankModules();
+
+
+    fillQuestionAdminModuleFilter();
+
+
+    await loadAdminQuestions();
+
+}
+
+
+function fillQuestionAdminModuleFilter() {
+
+    const select =
+        qs("qbAdminModuleFilter");
+
+
+    if (!select) return;
+
+
+    select.innerHTML =
+        `
+            <option value="">
+                All modules
+            </option>
+        `
+        +
+        questionBankModules
+            .map(module => `
+                <option value="${module.id}">
+                    ${escapeHtml(
+                        module.name
+                    )}
+                </option>
+            `)
+            .join("");
+
+}
+
+
+async function loadAdminQuestions() {
+
+    const container =
+        qs("qbAdminQuestionList");
+
+
+    if (!container) return;
+
+
+    const search =
+        qs("qbAdminSearch")
+            ?.value
+            ?.trim()
+        || "";
+
+
+    const module =
+        qs("qbAdminModuleFilter")
+            ?.value
+        || "";
+
+
+    const difficulty =
+        qs("qbAdminDifficultyFilter")
+            ?.value
+        || "";
+
+
+    const status =
+        qs("qbAdminStatusFilter")
+            ?.value
+        || "";
+
+
+    const params =
+        new URLSearchParams();
+
+
+    if (search) {
+        params.set(
+            "search",
+            search
+        );
+    }
+
+
+    if (module) {
+        params.set(
+            "module",
+            module
+        );
+    }
+
+
+    if (difficulty) {
+        params.set(
+            "difficulty",
+            difficulty
+        );
+    }
+
+
+    if (status) {
+        params.set(
+            "status",
+            status
+        );
+    }
+
+
+    try {
+
+        const questions =
+            await api(
+                `/api/admin/question-bank/questions?${params.toString()}`
+            );
+
+
+        if (!questions.length) {
+
+            container.innerHTML = `
+                <div class="empty-state">
+                    <p>No questions found.</p>
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            questions
+                .map(question => `
+
+                    <div
+                        class="qb-admin-question"
+                    >
+
+                        <div>
+
+                            <strong>
+                                ${
+                                    escapeHtml(
+                                        question.internal_title
+                                        ||
+                                        question.stem
+                                            .slice(
+                                                0,
+                                                100
+                                            )
+                                    )
+                                }
+                            </strong>
+
+                            <div
+                                class="qb-admin-question-meta"
+                            >
+                                #${question.id}
+
+                                ·
+                                ${escapeHtml(
+                                    question.module_name
+                                )}
+
+                                ${
+                                    question.topic_name
+                                        ? " · "
+                                          + escapeHtml(
+                                              question.topic_name
+                                          )
+                                        : ""
+                                }
+
+                                ·
+                                ${escapeHtml(
+                                    question.difficulty
+                                )}
+
+                                ·
+                                ${escapeHtml(
+                                    question.status
+                                )}
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <button
+                                class="btn btn-primary"
+
+                                onclick="
+                                    showQuestionEditor(
+                                        ${question.id}
+                                    )
+                                "
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                class="btn btn-danger"
+
+                                onclick="
+                                    archiveQuestionBankQuestion(
+                                        ${question.id}
+                                    )
+                                "
+                            >
+                                Archive
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                `)
+                .join("");
+
+    }
+
+    catch (err) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+                ${escapeHtml(
+                    err.message
+                )}
+            </div>
+        `;
+
+    }
+
+}
+
+async function adminAddQuestionModule() {
+
+    const name =
+        prompt(
+            "New Question Bank module:"
+        );
+
+
+    if (!name) return;
+
+
+    try {
+
+        await api(
+            "/api/admin/question-bank/module",
+            {
+                method: "POST",
+
+                body:
+                    JSON.stringify({
+                        name
+                    })
+            }
+        );
+
+
+        await loadQuestionBankModules();
+
+
+        fillQuestionAdminModuleFilter();
+
+
+        alert(
+            "Module created."
+        );
+
+    }
+
+    catch (err) {
+
+        alert(
+            "Error: "
+            + err.message
+        );
+
+    }
+
+}
+
+
+async function adminAddQuestionTopic() {
+
+    if (
+        !questionBankModules.length
+    ) {
+
+        await loadQuestionBankModules();
+
+    }
+
+
+    const moduleName =
+        prompt(
+            "Type the exact module name:"
+        );
+
+
+    if (!moduleName) return;
+
+
+    const module =
+        questionBankModules
+            .find(
+                item =>
+                    item.name
+                        .toLowerCase()
+                    ===
+                    moduleName
+                        .trim()
+                        .toLowerCase()
+            );
+
+
+    if (!module) {
+
+        alert(
+            "Module not found."
+        );
+
+        return;
+
+    }
+
+
+    const topicName =
+        prompt(
+            `New topic under "${module.name}":`
+        );
+
+
+    if (!topicName) return;
+
+
+    await api(
+        "/api/admin/question-bank/topic",
+        {method: "POST",
+            body:
+                JSON.stringify({
+                    module_id: module.id,
+                    name:topicName,
+                })
+
+        }
+    );
+    alert("Topic created." );
+
+}
+
+```javascript
+async function showQuestionEditor(questionId = null) {
+    if (!currentUser || currentUser.role !== "admin") return;
+
+    switchView("questionEditor");
+
+    editingQuestionBankQuestionId = questionId;
+    selectedHighYieldNoteId = null;
+    selectedHighYieldNoteTitle = "";
+
+    await loadQuestionBankModules();
+
+    fillQuestionEditorModules();
+
+    if (questionId) {
+        qs("qbEditorHeading").textContent = "Edit Question";
+        await loadQuestionIntoEditor(questionId);
+    } else {
+        qs("qbEditorHeading").textContent = "New Question";
+        resetQuestionEditor();
+    }
+}
+
+function fillQuestionEditorModules() {
+    const select = qs("qbEditorModule");
+
+    select.innerHTML =
+        `<option value="">Select module</option>` +
+        questionBankModules
+            .map(
+                module =>
+                    `<option value="${module.id}">${escapeHtml(module.name)}</option>`
+            )
+            .join("");
+}
+
+function resetQuestionEditor() {
+    qs("qbEditorInternalTitle").value = "";
+    qs("qbEditorModule").value = "";
+
+    qs("qbEditorTopic").innerHTML =
+        `<option value="">No topic</option>`;
+
+    qs("qbEditorDifficulty").value = "medium";
+    qs("qbEditorStem").value = "";
+    qs("qbEditorOverallExplanation").value = "";
+    qs("qbEditorCorrectExplanation").value = "";
+    qs("qbEditorLearningPoint").value = "";
+    qs("qbEditorClinicalTip").value = "";
+    qs("qbEditorCommonMistake").value = "";
+    qs("qbEditorSafetyPoint").value = "";
+    qs("qbEditorReferences").value = "";
+    qs("qbHighYieldSearch").value = "";
+    qs("qbHighYieldAnchor").value = "";
+
+    qs("qbSelectedHighYield").classList.add("hidden");
+
+    questionEditorOptions = [];
+
+    for (let i = 0; i < 5; i++) {
+        questionEditorOptions.push({
+            text: "",
+            explanation: "",
+            is_correct: i === 0,
+        });
+    }
+
+    renderQuestionEditorOptions();
+}
+
+function renderQuestionEditorOptions() {
+
+    const container =
+        qs("qbEditorOptions");
+
+
+    const letters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+
+    container.innerHTML =
+        questionEditorOptions
+            .map(
+                (option, index) => `
+
+                    <div
+                        class="qb-editor-option"
+                    >
+
+                        <div
+                            class="qb-editor-option-correct"
+                        >
+
+                            <input
+                                type="radio"
+
+                                name="qbCorrectOption"
+
+                                ${
+                                    option.is_correct
+                                        ? "checked"
+                                        : ""
+                                }
+
+                                onchange="
+                                    setCorrectQuestionEditorOption(
+                                        ${index}
+                                    )
+                                "
+                            >
+
+                        </div>
+
+
+                        <div
+                            class="qb-editor-option-fields"
+                        >
+
+                            <label>
+                                Answer
+                                ${letters[index]}
+                            </label>
+
+                            <input
+                                class="form-input"
+
+                                value="${escapeHtml(
+                                    option.text
+                                )}"
+
+                                oninput="
+                                    updateQuestionEditorOptionText(
+                                        ${index},
+                                        this.value
+                                    )
+                                "
+
+                                placeholder="Answer option"
+                            >
+
+
+                            <textarea
+                                class="form-textarea"
+
+                                oninput="
+                                    updateQuestionEditorOptionExplanation(
+                                        ${index},
+                                        this.value
+                                    )
+                                "
+
+                                placeholder="
+                                    Explain why this option is correct or incorrect...
+                                "
+                            >${escapeHtml(
+                                option.explanation
+                            )}</textarea>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+
+                            class="qb-option-remove"
+
+                            onclick="
+                                removeQuestionEditorOption(
+                                    ${index}
+                                )
+                            "
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+                `
+            )
+            .join("");
+
+}
+
+
+function addQuestionEditorOption() {
+
+    questionEditorOptions.push({
+        text: "",
+        explanation: "",
+        is_correct: false,
+    });
+
+
+    renderQuestionEditorOptions();
+
+}
+
+
+function removeQuestionEditorOption(
+    index
+) {
+
+    if (
+        questionEditorOptions.length <= 2
+    ) {
+
+        alert(
+            "At least two options are required."
+        );
+
+        return;
+
+    }
+
+
+    const removedCorrect =
+        questionEditorOptions[index]
+            ?.is_correct;
+
+
+    questionEditorOptions.splice(
+        index,
+        1
+    );
+
+
+    if (
+        removedCorrect
+        &&
+        questionEditorOptions.length
+    ) {
+
+        questionEditorOptions[0]
+            .is_correct = true;
+
+    }
+
+
+    renderQuestionEditorOptions();
+
+}
+
+
+function setCorrectQuestionEditorOption(
+    index
+) {
+
+    questionEditorOptions
+        .forEach(
+            (
+                option,
+                optionIndex
+            ) => {
+
+                option.is_correct =
+                    optionIndex
+                    === index;
+
+            }
+        );
+
+
+    renderQuestionEditorOptions();
+
+}
+
+
+function updateQuestionEditorOptionText(
+    index,
+    value
+) {
+
+    questionEditorOptions[index]
+        .text = value;
+
+}
+
+
+function updateQuestionEditorOptionExplanation(
+    index,
+    value
+) {
+
+    questionEditorOptions[index]
+        .explanation = value;
+
+}
+async function loadQuestionEditorTopics(
+    selectedTopicId = null
+) {
+
+    const moduleId =
+        qs("qbEditorModule")
+            .value;
+
+
+    const topicSelect =
+        qs("qbEditorTopic");
+
+
+    topicSelect.innerHTML = `
+        <option value="">
+            No topic
+        </option>
+    `;
+
+
+    if (!moduleId) return;
+
+
+    const topics =
+        await api(
+            `/api/question-bank/topics?module=${moduleId}`
+        );
+
+
+    topics.forEach(topic => {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+
+        option.value =
+            topic.id;
+
+
+        option.textContent =
+            topic.name;
+
+
+        topicSelect
+            .appendChild(
+                option
+            );
+
+    });
+
+
+    if (selectedTopicId) {
+
+        topicSelect.value =
+            selectedTopicId;
+
+    }
+
+}
+async function searchQuestionHighYieldNotes() {
+
+    const query =
+        qs("qbHighYieldSearch")
+            .value
+            .trim();
+
+
+    const results =
+        qs(
+            "qbHighYieldSearchResults"
+        );
+
+
+    if (
+        query.length < 2
+    ) {
+
+        results.innerHTML = "";
+
+        return;
+
+    }
+
+
+    try {
+
+        const notes =
+            await api(
+                `/api/admin/question-bank/high-yield-search?q=${encodeURIComponent(query)}`
+            );
+
+
+        results.innerHTML =
+            notes
+                .map(note => `
+
+                    <button
+                        type="button"
+
+                        class="qb-hy-search-result"
+
+                        onclick="
+                            selectQuestionHighYieldNote(
+                                ${note.id},
+                                '${escapeHtml(
+                                    note.title
+                                )
+                                .replace(
+                                    /'/g,
+                                    "\\'"
+                                )}'
+                            )
+                        "
+                    >
+                        ${escapeHtml(
+                            note.title
+                        )}
+                    </button>
+
+                `)
+                .join("");
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+
+
+function selectQuestionHighYieldNote(
+    id,
+    title
+) {
+
+    selectedHighYieldNoteId =
+        id;
+
+    selectedHighYieldNoteTitle =
+        title;
+
+
+    qs(
+        "qbHighYieldSearchResults"
+    ).innerHTML = "";
+
+
+    const selected =
+        qs("qbSelectedHighYield");
+
+
+    selected.classList.remove(
+        "hidden"
+    );
+
+
+    selected.innerHTML = `
+
+        <strong>
+            Related note:
+        </strong>
+
+        ${escapeHtml(title)}
+
+        <button
+            type="button"
+            class="qb-text-button"
+            onclick="
+                clearQuestionHighYieldNote()
+            "
+        >
+            Remove
+        </button>
+
+    `;
+
+}
+
+
+function clearQuestionHighYieldNote() {
+
+    selectedHighYieldNoteId = null;
+
+    selectedHighYieldNoteTitle = "";
+
+
+    qs("qbSelectedHighYield")
+        .classList.add(
+            "hidden"
+        );
+
+
+    qs("qbSelectedHighYield")
+        .innerHTML = "";
+
+}
+
+async function saveQuestionFromEditor(
+    status
+) {
+
+    const payload = {
+
+        internal_title:
+            qs("qbEditorInternalTitle")
+                .value
+                .trim(),
+
+        module_id:
+            Number(
+                qs("qbEditorModule")
+                    .value
+            ),
+
+        topic_id:
+            qs("qbEditorTopic")
+                .value
+                ? Number(
+                    qs("qbEditorTopic")
+                        .value
+                )
+                : null,
+
+        difficulty:
+            qs("qbEditorDifficulty")
+                .value,
+
+        stem:
+            qs("qbEditorStem")
+                .value
+                .trim(),
+
+        overall_explanation:
+            qs(
+                "qbEditorOverallExplanation"
+            )
+                .value
+                .trim(),
+
+        correct_answer_explanation:
+            qs(
+                "qbEditorCorrectExplanation"
+            )
+                .value
+                .trim(),
+
+        key_learning_point:
+            qs(
+                "qbEditorLearningPoint"
+            )
+                .value
+                .trim(),
+
+        clinical_tip:
+            qs(
+                "qbEditorClinicalTip"
+            )
+                .value
+                .trim(),
+
+        common_mistake:
+            qs(
+                "qbEditorCommonMistake"
+            )
+                .value
+                .trim(),
+
+        fy1_safety_point:
+            qs(
+                "qbEditorSafetyPoint"
+            )
+                .value
+                .trim(),
+
+        references:
+            qs(
+                "qbEditorReferences"
+            )
+                .value
+                .trim(),
+
+        status,
+
+        options:
+            questionEditorOptions
+                .map(option => ({
+                    text:
+                        option.text
+                            .trim(),
+
+                    explanation:
+                        option.explanation
+                            .trim(),
+
+                    is_correct:
+                        option.is_correct,
+                })),
+
+        primary_high_yield_note_id:
+            selectedHighYieldNoteId,
+
+        high_yield_anchor:
+            qs(
+                "qbHighYieldAnchor"
+            )
+                .value
+                .trim(),
+
+    };
+
+
+    if (
+        !payload.module_id
+        ||
+        !payload.stem
+    ) {
+
+        alert(
+            "Module and question stem are required."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        if (
+            editingQuestionBankQuestionId
+        ) {
+
+            await api(
+                `/api/admin/question-bank/question/${editingQuestionBankQuestionId}`,
+                {
+                    method: "PUT",
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
+                }
+            );
+
+        }
+
+        else {
+
+            await api(
+                "/api/admin/question-bank/question",
+                {
+                    method: "POST",
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
+                }
+            );
+
+        }
+
+
+        alert(
+            status === "draft"
+                ? "Draft saved."
+                : "Question published."
+        );
+
+
+        showQuestionBankAdmin();
+
+    }
+
+    catch (err) {
+
+        alert(
+            "Could not save question: "
+            + err.message
+        );
+    }
+}
+
+async function loadQuestionIntoEditor(
+    questionId
+) {
+
+    const question =
+        await api(
+            `/api/admin/question-bank/question/${questionId}`
+        );
+
+
+    qs("qbEditorInternalTitle")
+        .value =
+        question.internal_title || "";
+
+
+    qs("qbEditorModule")
+        .value =
+        question.module_id;
+
+
+    await loadQuestionEditorTopics(
+        question.topic_id
+    );
+
+
+    qs("qbEditorDifficulty")
+        .value =
+        question.difficulty;
+
+
+    qs("qbEditorStem")
+        .value =
+        question.stem || "";
+
+
+    qs(
+        "qbEditorOverallExplanation"
+    ).value =
+        question.overall_explanation
+        || "";
+
+
+    qs(
+        "qbEditorCorrectExplanation"
+    ).value =
+        question.correct_answer_explanation
+        || "";
+
+
+    qs(
+        "qbEditorLearningPoint"
+    ).value =
+        question.key_learning_point
+        || "";
+
+
+    qs(
+        "qbEditorClinicalTip"
+    ).value =
+        question.clinical_tip
+        || "";
+
+
+    qs(
+        "qbEditorCommonMistake"
+    ).value =
+        question.common_mistake
+        || "";
+
+
+    qs(
+        "qbEditorSafetyPoint"
+    ).value =
+        question.fy1_safety_point
+        || "";
+
+
+    qs("qbEditorReferences")
+        .value =
+        question.references_text
+        || "";
+
+
+    questionEditorOptions =
+        question.options.map(
+            option => ({
+
+                text:
+                    option.option_text,
+
+                explanation:
+                    option.explanation
+                    || "",
+
+                is_correct:
+                    !!option.is_correct,
+
+            })
+        );
+
+
+    renderQuestionEditorOptions();
+
+
+    selectedHighYieldNoteId =
+        question
+            .primary_high_yield_note_id;
+
+
+    qs("qbHighYieldAnchor")
+        .value =
+        question.high_yield_anchor
+        || "";
+
+
+    if (
+        selectedHighYieldNoteId
+    ) {
+
+        const selected =
+            qs(
+                "qbSelectedHighYield"
+            );
+
+
+        selected.classList.remove(
+            "hidden"
+        );
+
+
+        selected.innerHTML =
+            `
+                High-Yield note
+                #${selectedHighYieldNoteId}
+            `;
+    }
+}
+
+async function archiveQuestionBankQuestion(
+    questionId
+) {
+
+    if (
+        !confirm(
+            "Archive this question?"
+        )
+    ) return;
+
+
+    try {
+
+        await api(
+            `/api/admin/question-bank/question/${questionId}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+
+        await loadAdminQuestions();
+
+    }
+
+    catch (err) {
+
+        alert(
+            "Could not archive question: "
+            + err.message
+        );
+
+    }
+
 }
 
 // --------------------------
