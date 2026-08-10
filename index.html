@@ -1967,6 +1967,1159 @@
             border: 1px solid rgba(122, 215, 163, 0.34);
             box-shadow: 0 0 24px rgba(122, 215, 163, 0.08);
         }
+
+        /* =========================================================
+           QUESTION BANK
+        ========================================================= */
+        
+        .qb-container,
+        .qb-results-container {
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .qb-page-heading {
+            margin: 1rem 0 2rem;
+        }
+        
+        .qb-eyebrow {
+            display: block;
+            margin-bottom: .5rem;
+            color: var(--primary);
+            font-size: .75rem;
+            font-weight: 800;
+            letter-spacing: .12em;
+        }
+        
+        .qb-page-heading h1 {
+            margin-bottom: .5rem;
+        }
+        
+        .qb-page-heading p {
+            color: var(--text-light);
+        }
+        
+        .qb-config-section {
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(255,255,255,.95),
+                    rgba(247,245,241,.96)
+                );
+        
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+        
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        
+            box-shadow:
+                0 12px 30px rgba(25,62,55,.06);
+        }
+        
+        [data-theme="dark"] .qb-config-section {
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(18,35,31,.96),
+                    rgba(8,18,16,.96)
+                );
+        }
+        
+        .qb-config-section h2,
+        .qb-results-section h2,
+        .qb-editor-section h2 {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: .8rem;
+        }
+        
+        .qb-section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        
+        .qb-inline-actions {
+            display: flex;
+            gap: .7rem;
+        }
+        
+        .qb-text-button {
+            border: none;
+            background: transparent;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 700;
+        }
+        
+        .qb-module-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fill, minmax(190px, 1fr));
+        
+            gap: .8rem;
+            margin-top: 1.2rem;
+        }
+        
+        .qb-module-card {
+            position: relative;
+        
+            padding: 1rem;
+        
+            border:
+                1px solid rgba(25,62,55,.15);
+        
+            border-radius: 12px;
+        
+            background: var(--card-bg);
+        
+            cursor: pointer;
+        
+            transition:
+                transform .2s ease,
+                border-color .2s ease,
+                background .2s ease;
+        }
+        
+        .qb-module-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+        
+        .qb-module-card.selected {
+            background:
+                rgba(212,241,232,.55);
+        
+            border-color:
+                var(--primary);
+        }
+        
+        [data-theme="dark"] .qb-module-card.selected {
+            background:
+                rgba(122,215,163,.10);
+        }
+        
+        .qb-module-card strong {
+            display: block;
+            color: var(--text-dark);
+        }
+        
+        .qb-module-card span {
+            color: var(--text-light);
+            font-size: .82rem;
+        }
+        
+        .qb-config-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+        
+            gap: 1.5rem;
+        }
+        
+        .qb-choice-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(3, 1fr);
+        
+            gap: .6rem;
+        }
+        
+        .qb-choice {
+            padding: .75rem;
+        
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 9px;
+        
+            background: var(--card-bg);
+        
+            color: var(--text-dark);
+        
+            cursor: pointer;
+        
+            font-weight: 700;
+        }
+        
+        .qb-choice.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .qb-choice:disabled {
+            opacity: .35;
+            cursor: not-allowed;
+        }
+        
+        .qb-availability {
+            margin-top: .9rem;
+            color: var(--text-light);
+            font-size: .9rem;
+        }
+        
+        .qb-check-list {
+            display: flex;
+            flex-direction: column;
+            gap: .7rem;
+        }
+        
+        .qb-check-row {
+            display: flex;
+            gap: .65rem;
+            align-items: center;
+        
+            min-height: 44px;
+        
+            color: var(--text-dark);
+        
+            cursor: pointer;
+        }
+        
+        .qb-check-row input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+        
+        .qb-mode-card {
+            display: flex;
+            gap: .9rem;
+        
+            padding: 1rem;
+        
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+        
+            background:
+                rgba(212,241,232,.35);
+        }
+        
+        [data-theme="dark"] .qb-mode-card {
+            background:
+                rgba(122,215,163,.08);
+        }
+        
+        .qb-mode-card p {
+            color: var(--text-light);
+            font-size: .85rem;
+            margin-top: .2rem;
+        }
+        
+        .qb-coming-soon {
+            margin-top: .8rem;
+            color: var(--text-light);
+            font-size: .85rem;
+        }
+        
+        .qb-session-summary {
+            margin-top: 1rem;
+        
+            padding: 1.5rem;
+        
+            background: #193e37;
+            color: white;
+        
+            border-radius: 16px;
+        }
+        
+        .qb-session-summary h2 {
+            color: white;
+            font-size: 1.3rem;
+        }
+        
+        .qb-start-button {
+            margin-top: 1rem;
+            background: white;
+            color: #193e37;
+        }
+        
+        .qb-start-button:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+        
+        
+        /* =========================================================
+           QUESTION SESSION
+        ========================================================= */
+        
+        .qb-session-layout {
+            max-width: 1450px;
+            margin: 0 auto;
+        
+            display: grid;
+        
+            grid-template-columns:
+                minmax(0, 1fr) 280px;
+        
+            gap: 2rem;
+        
+            padding: 2rem;
+        }
+        
+        .qb-question-main {
+            min-width: 0;
+        }
+        
+        .qb-question-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .qb-question-card {
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(255,255,255,.97),
+                    rgba(248,246,242,.96)
+                );
+        
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 18px;
+        
+            padding: 2rem;
+        
+            box-shadow:
+                0 18px 42px rgba(25,62,55,.08);
+        }
+        
+        [data-theme="dark"] .qb-question-card {
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(18,35,31,.98),
+                    rgba(7,17,15,.98)
+                );
+        }
+        
+        .qb-question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 1rem;
+        }
+        
+        .qb-question-header h2 {
+            font-size: 1.3rem;
+            margin: 0;
+        }
+        
+        .qb-question-meta {
+            margin-bottom: .35rem;
+        
+            color: var(--primary);
+        
+            font-size: .82rem;
+            font-weight: 700;
+        }
+        
+        .qb-flag-button {
+            min-height: 42px;
+        
+            padding: .55rem .8rem;
+        
+            background: transparent;
+        
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 9px;
+        
+            color: var(--text-dark);
+        
+            cursor: pointer;
+        }
+        
+        .qb-flag-button.active {
+            background: rgba(245,158,11,.12);
+            border-color: #F59E0B;
+        }
+        
+        .qb-progress-track {
+            width: 100%;
+            height: 7px;
+        
+            margin: 1rem 0 2rem;
+        
+            background:
+                rgba(25,62,55,.12);
+        
+            border-radius: 99px;
+        
+            overflow: hidden;
+        }
+        
+        .qb-progress-fill {
+            height: 100%;
+        
+            width: 0;
+        
+            background: var(--primary);
+        
+            transition: width .25s ease;
+        }
+        
+        .qb-question-stem {
+            color: var(--text-dark);
+        
+            font-size: 1.05rem;
+            line-height: 1.75;
+        
+            margin-bottom: 1.6rem;
+        }
+        
+        .qb-answer-options {
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
+        }
+        
+        .qb-answer-option {
+            display: grid;
+        
+            grid-template-columns:
+                38px 1fr 44px;
+        
+            align-items: center;
+            gap: .75rem;
+        
+            min-height: 58px;
+        
+            padding: .55rem .7rem;
+        
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 11px;
+        
+            background: var(--card-bg);
+        
+            cursor: pointer;
+        
+            transition:
+                border-color .2s ease,
+                background .2s ease;
+        }
+        
+        .qb-answer-option:hover {
+            border-color: var(--primary);
+        }
+        
+        .qb-answer-option.selected {
+            border:
+                2px solid var(--primary);
+        
+            background:
+                rgba(212,241,232,.40);
+        }
+        
+        [data-theme="dark"] .qb-answer-option.selected {
+            background:
+                rgba(122,215,163,.08);
+        }
+        
+        .qb-answer-letter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        
+            width: 32px;
+            height: 32px;
+        
+            border-radius: 50%;
+        
+            background:
+                rgba(25,62,55,.09);
+        
+            color: var(--primary);
+        
+            font-weight: 800;
+        }
+        
+        .qb-answer-text {
+            color: var(--text-dark);
+        }
+        
+        .qb-exclude-answer {
+            width: 40px;
+            height: 40px;
+        
+            border: none;
+            border-radius: 50%;
+        
+            background: transparent;
+        
+            color: var(--text-light);
+        
+            cursor: pointer;
+        
+            font-size: 1.15rem;
+        }
+        
+        .qb-exclude-answer:hover {
+            background:
+                rgba(25,62,55,.08);
+        }
+        
+        .qb-answer-option.excluded
+        .qb-answer-text {
+            opacity: .45;
+            text-decoration: line-through;
+        }
+        
+        .qb-answer-option.correct {
+            border-color: #15803d;
+        
+            background:
+                rgba(34,197,94,.10);
+        }
+        
+        .qb-answer-option.incorrect {
+            border-color: #dc2626;
+        
+            background:
+                rgba(239,68,68,.08);
+        }
+        
+        .qb-feedback {
+            margin-top: 1.5rem;
+        }
+        
+        .qb-feedback-status {
+            padding: 1rem;
+        
+            border-radius: 11px;
+        
+            font-weight: 800;
+        }
+        
+        .qb-feedback-status.correct {
+            background:
+                rgba(34,197,94,.12);
+        }
+        
+        .qb-feedback-status.incorrect {
+            background:
+                rgba(239,68,68,.10);
+        }
+        
+        .qb-explanation-card {
+            margin-top: 1rem;
+        
+            padding: 1.25rem;
+        
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 12px;
+        }
+        
+        .qb-explanation-card h3 {
+            color: var(--primary);
+            margin-bottom: .5rem;
+        }
+        
+        .qb-learning-point {
+            margin-top: 1rem;
+        
+            padding: 1rem;
+        
+            border-left:
+                4px solid var(--primary);
+        
+            background:
+                rgba(212,241,232,.30);
+        }
+        
+        [data-theme="dark"] .qb-learning-point {
+            background:
+                rgba(122,215,163,.08);
+        }
+        
+        .qb-submit-area {
+            margin-top: 1.4rem;
+        }
+        
+        .qb-question-navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: .75rem;
+        
+            margin-top: 2rem;
+        
+            padding-top: 1rem;
+        
+            border-top:
+                1px solid var(--border-color);
+        }
+        
+        .qb-nav-button {
+            min-height: 44px;
+        
+            padding: .65rem 1rem;
+        
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 9px;
+        
+            background: var(--card-bg);
+        
+            color: var(--text-dark);
+        
+            cursor: pointer;
+        }
+        
+        
+        /* NAVIGATOR */
+        
+        .qb-navigator {
+            position: sticky;
+            top: 100px;
+        
+            align-self: start;
+        
+            background: var(--card-bg);
+        
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 16px;
+        
+            padding: 1.25rem;
+        
+            box-shadow:
+                0 14px 35px rgba(25,62,55,.08);
+        }
+        
+        .qb-navigator-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .qb-navigator-heading h3 {
+            color: var(--text-dark);
+        }
+        
+        .qb-navigator-close {
+            display: none;
+        }
+        
+        .qb-navigator-grid {
+            display: grid;
+        
+            grid-template-columns:
+                repeat(5, 1fr);
+        
+            gap: .45rem;
+        
+            margin-top: 1rem;
+        }
+        
+        .qb-navigator-number {
+            aspect-ratio: 1;
+        
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 8px;
+        
+            background: transparent;
+        
+            color: var(--text-dark);
+        
+            cursor: pointer;
+        }
+        
+        .qb-navigator-number.current {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .qb-navigator-number.answered {
+            border-color: #15803d;
+        }
+        
+        .qb-navigator-number.flagged {
+            box-shadow:
+                inset 0 0 0 2px #F59E0B;
+        }
+        
+        .qb-navigator-legend {
+            display: flex;
+            flex-direction: column;
+            gap: .4rem;
+        
+            margin-top: 1rem;
+        
+            font-size: .8rem;
+        
+            color: var(--text-light);
+        }
+        
+        .qb-dot {
+            display: inline-block;
+        
+            width: 9px;
+            height: 9px;
+        
+            margin-right: .4rem;
+        
+            border-radius: 50%;
+        }
+        
+        .qb-dot.current {
+            background: var(--primary);
+        }
+        
+        .qb-dot.answered {
+            background: #15803d;
+        }
+        
+        .qb-dot.flagged {
+            background: #F59E0B;
+        }
+        
+        .qb-dot.unanswered {
+            background: #94a3b8;
+        }
+        
+        .qb-end-session {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .qb-mobile-navigator-btn {
+            display: none;
+        }
+        
+        
+        /* =========================================================
+           RESULTS
+        ========================================================= */
+        
+        .qb-results-hero {
+            text-align: center;
+        
+            padding: 2rem;
+        }
+        
+        .qb-score-circle {
+            width: 160px;
+            height: 160px;
+        
+            margin: 1.5rem auto;
+        
+            border:
+                8px solid rgba(25,62,55,.15);
+        
+            border-radius: 50%;
+        
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qb-score-circle strong {
+            font-size: 2.2rem;
+            color: var(--primary);
+        }
+        
+        .qb-score-circle span {
+            color: var(--text-light);
+        }
+        
+        .qb-result-stat-grid {
+            display: grid;
+        
+            grid-template-columns:
+                repeat(4, 1fr);
+        
+            gap: 1rem;
+        }
+        
+        .qb-result-stat {
+            padding: 1.2rem;
+        
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 12px;
+        
+            background: var(--card-bg);
+        
+            text-align: center;
+        }
+        
+        .qb-result-stat strong {
+            display: block;
+        
+            font-size: 1.8rem;
+        
+            color: var(--primary);
+        }
+        
+        .qb-result-stat span {
+            color: var(--text-light);
+        }
+        
+        .qb-results-section {
+            margin-top: 2rem;
+        
+            padding: 1.5rem;
+        
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 14px;
+        
+            background: var(--card-bg);
+        }
+        
+        .qb-performance-row {
+            margin: .8rem 0;
+        }
+        
+        .qb-performance-row-top {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .qb-performance-bar {
+            margin-top: .3rem;
+        
+            height: 7px;
+        
+            border-radius: 99px;
+        
+            background:
+                rgba(25,62,55,.12);
+        
+            overflow: hidden;
+        }
+        
+        .qb-performance-fill {
+            height: 100%;
+            background: var(--primary);
+        }
+        
+        .qb-review-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+        
+            margin-bottom: 1rem;
+        }
+        
+        .qb-review-filters button {
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 8px;
+        
+            padding: .5rem .75rem;
+        
+            background: transparent;
+        
+            color: var(--text-dark);
+        
+            cursor: pointer;
+        }
+        
+        .qb-result-question-row {
+            padding: 1rem 0;
+        
+            border-top:
+                1px solid var(--border-color);
+        }
+        
+        .qb-results-actions {
+            margin-top: 2rem;
+        }
+        
+        
+        /* =========================================================
+           ADMIN QUESTION BANK
+        ========================================================= */
+        
+        .qb-admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        
+            margin-bottom: 1.5rem;
+        }
+        
+        .qb-admin-toolbar {
+            display: grid;
+        
+            grid-template-columns:
+                2fr 1fr 1fr 1fr;
+        
+            gap: .75rem;
+        
+            margin-bottom: 1rem;
+        }
+        
+        .qb-admin-module-tools {
+            display: flex;
+            gap: .7rem;
+        
+            margin-bottom: 1.5rem;
+        }
+        
+        .qb-admin-question {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        
+            padding: 1.2rem;
+        
+            margin-bottom: .8rem;
+        
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 12px;
+        
+            background: var(--card-bg);
+        }
+        
+        .qb-admin-question-meta {
+            margin-top: .4rem;
+        
+            color: var(--text-light);
+        
+            font-size: .82rem;
+        }
+        
+        .qb-editor-section {
+            margin-bottom: 1.5rem;
+        
+            padding: 1.5rem;
+        
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 14px;
+        
+            background: var(--card-bg);
+        }
+        
+        .qb-editor-grid {
+            display: grid;
+        
+            grid-template-columns:
+                repeat(3, 1fr);
+        
+            gap: 1rem;
+        }
+        
+        .qb-large-textarea {
+            min-height: 260px;
+        }
+        
+        .qb-editor-help {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        
+        .qb-editor-option {
+            display: grid;
+        
+            grid-template-columns:
+                40px minmax(0, 1fr) auto;
+        
+            gap: .75rem;
+        
+            padding: 1rem;
+        
+            margin-bottom: 1rem;
+        
+            border:
+                1px solid var(--border-color);
+        
+            border-radius: 12px;
+        }
+        
+        .qb-editor-option-correct {
+            display: flex;
+            align-items: start;
+            justify-content: center;
+        
+            padding-top: .8rem;
+        }
+        
+        .qb-editor-option-fields {
+            display: flex;
+            flex-direction: column;
+            gap: .65rem;
+        }
+        
+        .qb-option-remove {
+            border: none;
+            background: transparent;
+            color: var(--danger);
+        
+            cursor: pointer;
+        
+            font-size: 1.1rem;
+        }
+        
+        .qb-editor-actions {
+            display: flex;
+            gap: .75rem;
+        }
+        
+        .qb-hy-search-results {
+            margin-top: .3rem;
+        
+            border-radius: 8px;
+        
+            overflow: hidden;
+        }
+        
+        .qb-hy-search-result {
+            display: block;
+            width: 100%;
+        
+            padding: .7rem;
+        
+            border: none;
+        
+            border-bottom:
+                1px solid var(--border-color);
+        
+            background: var(--card-bg);
+        
+            text-align: left;
+        
+            color: var(--text-dark);
+        
+            cursor: pointer;
+        }
+        
+        .qb-selected-hy {
+            padding: .8rem;
+        
+            margin-bottom: 1rem;
+        
+            border-radius: 9px;
+        
+            background:
+                rgba(212,241,232,.35);
+        }
+        
+        
+        /* =========================================================
+           RESPONSIVE QUESTION BANK
+        ========================================================= */
+        
+        @media (max-width: 900px) {
+        
+            .qb-config-grid {
+                grid-template-columns: 1fr;
+            }
+        
+            .qb-session-layout {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+        
+            .qb-navigator {
+                display: none;
+        
+                position: fixed;
+        
+                inset: 90px 1rem 1rem;
+        
+                top: 90px;
+        
+                z-index: 1900;
+        
+                overflow-y: auto;
+            }
+        
+            .qb-navigator.mobile-open {
+                display: block;
+            }
+        
+            .qb-navigator-close {
+                display: block;
+        
+                border: none;
+                background: transparent;
+        
+                font-size: 1.5rem;
+        
+                color: var(--text-dark);
+            }
+        
+            .qb-mobile-navigator-btn {
+                display: block;
+        
+                border:
+                    1px solid var(--border-color);
+        
+                border-radius: 8px;
+        
+                padding: .5rem .75rem;
+        
+                background: var(--card-bg);
+        
+                color: var(--text-dark);
+            }
+        
+            .qb-result-stat-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+        
+            .qb-admin-toolbar {
+                grid-template-columns: 1fr;
+            }
+        
+            .qb-editor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 600px) {
+        
+            .qb-container,
+            .qb-results-container {
+                padding: 1rem;
+            }
+        
+            .qb-module-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        
+            .qb-question-card {
+                padding: 1.2rem;
+            }
+        
+            .qb-question-navigation {
+                flex-wrap: wrap;
+            }
+        
+            .qb-nav-button {
+                flex: 1;
+            }
+        
+            .qb-result-stat-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
         /* =========================================================
            HIGH-YIELD PAGE
         ========================================================= */
@@ -3049,6 +4202,23 @@
                         <h3>Add New Note</h3>
                         <p>Create new medical content</p>
                     </div>
+                    <div
+                        class="category-card"
+                        onclick="showQuestionBankAdmin()"
+                    >
+                        <div
+                            class="category-icon"
+                            style="color: var(--primary);"
+                        >
+                            <i class="fas fa-circle-question"></i>
+                        </div>
+                    
+                        <h3>Question Bank</h3>
+                    
+                        <p>
+                            Create, edit and publish clinical questions.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3231,6 +4401,453 @@
             </div>
         </div>
 
+        <!-- QUESTION BANK ADMIN -->
+        <div id="questionBankAdminPage" class="page hidden">
+        
+            <div class="admin-dashboard">
+        
+                <button
+                    class="back-btn"
+                    onclick="showAdminDashboard()"
+                >
+                    ← Back to Dashboard
+                </button>
+        
+        
+                <div class="qb-admin-header">
+        
+                    <div>
+                        <h1>Question Bank</h1>
+        
+                        <p>
+                            Manage modules and clinical questions.
+                        </p>
+                    </div>
+        
+                    <button
+                        class="btn btn-primary"
+                        onclick="showQuestionEditor()"
+                    >
+                        + New Question
+                    </button>
+        
+                </div>
+        
+        
+                <div class="qb-admin-toolbar">
+        
+                    <input
+                        id="qbAdminSearch"
+                        class="form-input"
+                        placeholder="Search questions..."
+                        oninput="loadAdminQuestions()"
+                    >
+        
+                    <select
+                        id="qbAdminModuleFilter"
+                        class="form-select"
+                        onchange="loadAdminQuestions()"
+                    >
+                        <option value="">
+                            All modules
+                        </option>
+                    </select>
+        
+                    <select
+                        id="qbAdminDifficultyFilter"
+                        class="form-select"
+                        onchange="loadAdminQuestions()"
+                    >
+                        <option value="">
+                            All difficulties
+                        </option>
+        
+                        <option value="easy">
+                            Easy
+                        </option>
+        
+                        <option value="medium">
+                            Medium
+                        </option>
+        
+                        <option value="hard">
+                            Hard
+                        </option>
+                    </select>
+        
+                    <select
+                        id="qbAdminStatusFilter"
+                        class="form-select"
+                        onchange="loadAdminQuestions()"
+                    >
+                        <option value="">
+                            All statuses
+                        </option>
+        
+                        <option value="draft">
+                            Draft
+                        </option>
+        
+                        <option value="published">
+                            Published
+                        </option>
+                    </select>
+        
+                </div>
+        
+        
+                <div class="qb-admin-module-tools">
+        
+                    <button
+                        class="btn btn-secondary"
+                        onclick="adminAddQuestionModule()"
+                    >
+                        + Add Module
+                    </button>
+        
+                    <button
+                        class="btn btn-secondary"
+                        onclick="adminAddQuestionTopic()"
+                    >
+                        + Add Topic
+                    </button>
+        
+                </div>
+        
+        
+                <div id="qbAdminQuestionList"></div>
+        
+            </div>
+        
+        </div>
+        
+        <!-- QUESTION EDITOR-->
+        <div id="questionEditorPage" class="page hidden">
+        
+            <div class="note-content">
+        
+                <button
+                    class="back-btn"
+                    onclick="showQuestionBankAdmin()"
+                >
+                    ← Back to Question Bank
+                </button>
+        
+        
+                <div class="note-header">
+        
+                    <h1 id="qbEditorHeading">
+                        New Question
+                    </h1>
+        
+                </div>
+        
+        
+                <section class="qb-editor-section">
+        
+                    <h2>Core Information</h2>
+        
+        
+                    <div class="form-group">
+        
+                        <label class="form-label">
+                            Internal title
+                        </label>
+        
+                        <input
+                            id="qbEditorInternalTitle"
+                            class="form-input"
+                            placeholder="e.g. ACS initial management"
+                        >
+        
+                    </div>
+        
+        
+                    <div class="qb-editor-grid">
+        
+                        <div class="form-group">
+        
+                            <label class="form-label">
+                                Module
+                            </label>
+        
+                            <select
+                                id="qbEditorModule"
+                                class="form-select"
+                                onchange="loadQuestionEditorTopics()"
+                            ></select>
+        
+                        </div>
+        
+        
+                        <div class="form-group">
+        
+                            <label class="form-label">
+                                Topic
+                            </label>
+        
+                            <select
+                                id="qbEditorTopic"
+                                class="form-select"
+                            >
+                                <option value="">
+                                    No topic
+                                </option>
+                            </select>
+        
+                        </div>
+        
+        
+                        <div class="form-group">
+        
+                            <label class="form-label">
+                                Difficulty
+                            </label>
+        
+                            <select
+                                id="qbEditorDifficulty"
+                                class="form-select"
+                            >
+        
+                                <option value="easy">
+                                    Easy
+                                </option>
+        
+                                <option value="medium" selected>
+                                    Medium
+                                </option>
+        
+                                <option value="hard">
+                                    Hard
+                                </option>
+        
+                            </select>
+        
+                        </div>
+        
+                    </div>
+        
+                </section>
+        
+        
+                <section class="qb-editor-section">
+        
+                    <h2>Question Stem</h2>
+        
+                    <textarea
+                        id="qbEditorStem"
+                        class="form-textarea qb-large-textarea"
+                        placeholder="Write the clinical scenario and question..."
+                    ></textarea>
+        
+                </section>
+        
+        
+                <section class="qb-editor-section">
+        
+                    <div class="qb-section-heading">
+        
+                        <h2>Answer Options</h2>
+        
+                        <button
+                            class="btn btn-secondary"
+                            onclick="addQuestionEditorOption()"
+                        >
+                            + Add Answer
+                        </button>
+        
+                    </div>
+        
+                    <p class="qb-editor-help">
+                        Select exactly one correct answer.
+                    </p>
+        
+                    <div id="qbEditorOptions"></div>
+        
+                </section>
+        
+        
+                <section class="qb-editor-section">
+        
+                    <h2>Teaching Explanation</h2>
+        
+        
+                    <div class="form-group">
+        
+                        <label class="form-label">
+                            Overall explanation
+                        </label>
+        
+                        <textarea
+                            id="qbEditorOverallExplanation"
+                            class="form-textarea"
+                        ></textarea>
+        
+                    </div>
+        
+        
+                    <div class="form-group">
+        
+                        <label class="form-label">
+                            Correct-answer explanation
+                        </label>
+        
+                        <textarea
+                            id="qbEditorCorrectExplanation"
+                            class="form-textarea"
+                        ></textarea>
+        
+                    </div>
+        
+        
+                    <div class="form-group">
+        
+                        <label class="form-label">
+                            Key learning point
+                        </label>
+        
+                        <textarea
+                            id="qbEditorLearningPoint"
+                            class="form-textarea"
+                        ></textarea>
+        
+                    </div>
+        
+        
+                    <div class="form-group">
+        
+                        <label class="form-label">
+                            Clinical tip
+                        </label>
+        
+                        <textarea
+                            id="qbEditorClinicalTip"
+                            class="form-textarea"
+                        ></textarea>
+        
+                    </div>
+        
+        
+                    <div class="form-group">
+        
+                        <label class="form-label">
+                            Common mistake
+                        </label>
+        
+                        <textarea
+                            id="qbEditorCommonMistake"
+                            class="form-textarea"
+                        ></textarea>
+        
+                    </div>
+        
+        
+                    <div class="form-group">
+        
+                        <label class="form-label">
+                            FY1 safety point
+                        </label>
+        
+                        <textarea
+                            id="qbEditorSafetyPoint"
+                            class="form-textarea"
+                        ></textarea>
+        
+                    </div>
+        
+                </section>
+        
+        
+                <section class="qb-editor-section">
+        
+                    <h2>Related High-Yield Note</h2>
+        
+        
+                    <div class="form-group">
+        
+                        <label class="form-label">
+                            Search ClinicalRoots High-Yield
+                        </label>
+        
+                        <input
+                            id="qbHighYieldSearch"
+                            class="form-input"
+                            placeholder="Search high-yield notes..."
+                            oninput="searchQuestionHighYieldNotes()"
+                        >
+        
+                        <div
+                            id="qbHighYieldSearchResults"
+                            class="qb-hy-search-results"
+                        ></div>
+        
+                    </div>
+        
+        
+                    <div
+                        id="qbSelectedHighYield"
+                        class="qb-selected-hy hidden"
+                    ></div>
+        
+        
+                    <div class="form-group">
+        
+                        <label class="form-label">
+                            Optional section anchor
+                        </label>
+        
+                        <input
+                            id="qbHighYieldAnchor"
+                            class="form-input"
+                            placeholder="e.g. initial-management"
+                        >
+        
+                    </div>
+        
+                </section>
+        
+        
+                <section class="qb-editor-section">
+        
+                    <h2>References</h2>
+        
+                    <textarea
+                        id="qbEditorReferences"
+                        class="form-textarea"
+                        placeholder="NICE, BNF, guideline references..."
+                    ></textarea>
+        
+                </section>
+        
+        
+                <section class="qb-editor-section">
+        
+                    <h2>Publishing</h2>
+        
+                    <div class="qb-editor-actions">
+        
+                        <button
+                            class="btn btn-secondary"
+                            onclick="saveQuestionFromEditor('draft')"
+                        >
+                            Save Draft
+                        </button>
+        
+                        <button
+                            class="btn btn-primary"
+                            onclick="saveQuestionFromEditor('published')"
+                        >
+                            Publish
+                        </button>
+        
+                    </div>
+        
+                </section>
+        
+            </div>
+        
+        </div>
+
         <!-- guide -->
         <div id="Guide" class="page hidden">
             <div class="hero">
@@ -3251,12 +4868,20 @@
                     <h3>Study Guide Generator</h3>
                     <p>Coming Soon - Generate personalized study guides from your notes "should i keep this ??"</p>
                 </div>
-                <div class="category-card">
+                <div class="category-card" onclick="showQuestionBank()">
                     <div class="category-icon">
-                        <i class="fas fa-brain" style="color: #7c3aed;"></i>
+                        <i
+                            class="fas fa-brain"
+                            style="color: var(--primary);"
+                        ></i>
                     </div>
-                    <h3>Quiz Builder</h3>
-                    <p>Coming Soon - Create custom quizzes to test your knowledge</p>
+                
+                    <h3>Question Bank</h3>
+                
+                    <p>
+                        Practise clinical questions by module,
+                        combine topics and review detailed explanations.
+                    </p>
                 </div>
                 <div class="category-card">
                     <div class="category-icon">
@@ -3266,6 +4891,610 @@
                     <p>Coming Soon - Track your learning progress across specialties</p>
                 </div>
             </div>
+        </div>
+
+        <!-- =====================================================
+             QUESTION BANK LANDING PAGE
+        ===================================================== -->
+        <div id="questionBankPage" class="page hidden">
+        
+            <div class="qb-container">
+        
+                <button
+                    class="back-btn"
+                    onclick="showTools()"
+                >
+                    ← Back to Guide
+                </button>
+        
+                <div class="qb-page-heading">
+        
+                    <div>
+                        <span class="qb-eyebrow">
+                            CLINICALROOTS QUESTION BANK
+                        </span>
+        
+                        <h1>Build your question session</h1>
+        
+                        <p>
+                            Choose the modules, number of questions
+                            and difficulty you want to practise.
+                        </p>
+                    </div>
+        
+                </div>
+        
+        
+                <!-- MODULES -->
+                <section class="qb-config-section">
+        
+                    <div class="qb-section-heading">
+        
+                        <div>
+                            <h2>1. Choose modules</h2>
+        
+                            <p id="qbSelectedModuleCount">
+                                0 modules selected
+                            </p>
+                        </div>
+        
+                        <div class="qb-inline-actions">
+        
+                            <button
+                                class="qb-text-button"
+                                onclick="selectAllQuestionModules()"
+                            >
+                                Select All
+                            </button>
+        
+                            <button
+                                class="qb-text-button"
+                                onclick="clearQuestionModules()"
+                            >
+                                Clear Selection
+                            </button>
+        
+                        </div>
+        
+                    </div>
+        
+                    <div
+                        id="qbModuleGrid"
+                        class="qb-module-grid"
+                    ></div>
+        
+                </section>
+        
+        
+                <!-- SESSION CONFIG -->
+                <div class="qb-config-grid">
+        
+                    <!-- NUMBER -->
+                    <section class="qb-config-section">
+        
+                        <h2>2. Number of questions</h2>
+        
+                        <div
+                            id="qbQuestionCountOptions"
+                            class="qb-choice-grid"
+                        >
+        
+                            <button
+                                class="qb-choice active"
+                                data-count="5"
+                                onclick="selectQuestionCount(5, this)"
+                            >
+                                5
+                            </button>
+        
+                            <button
+                                class="qb-choice"
+                                data-count="10"
+                                onclick="selectQuestionCount(10, this)"
+                            >
+                                10
+                            </button>
+        
+                            <button
+                                class="qb-choice"
+                                data-count="20"
+                                onclick="selectQuestionCount(20, this)"
+                            >
+                                20
+                            </button>
+        
+                            <button
+                                class="qb-choice"
+                                data-count="30"
+                                onclick="selectQuestionCount(30, this)"
+                            >
+                                30
+                            </button>
+        
+                            <button
+                                class="qb-choice"
+                                data-count="50"
+                                onclick="selectQuestionCount(50, this)"
+                            >
+                                50
+                            </button>
+        
+                            <button
+                                class="qb-choice"
+                                data-count="all"
+                                onclick="selectQuestionCount('all', this)"
+                            >
+                                All
+                            </button>
+        
+                        </div>
+        
+                        <p
+                            class="qb-availability"
+                            id="qbAvailableCount"
+                        >
+                            Select at least one module.
+                        </p>
+        
+                    </section>
+        
+        
+                    <!-- DIFFICULTY -->
+                    <section class="qb-config-section">
+        
+                        <h2>3. Difficulty</h2>
+        
+                        <div class="qb-check-list">
+        
+                            <label class="qb-check-row">
+                                <input
+                                    type="checkbox"
+                                    value="easy"
+                                    class="qbDifficulty"
+                                    checked
+                                    onchange="questionBankFiltersChanged()"
+                                >
+                                <span>Easy</span>
+                            </label>
+        
+                            <label class="qb-check-row">
+                                <input
+                                    type="checkbox"
+                                    value="medium"
+                                    class="qbDifficulty"
+                                    checked
+                                    onchange="questionBankFiltersChanged()"
+                                >
+                                <span>Medium</span>
+                            </label>
+        
+                            <label class="qb-check-row">
+                                <input
+                                    type="checkbox"
+                                    value="hard"
+                                    class="qbDifficulty"
+                                    checked
+                                    onchange="questionBankFiltersChanged()"
+                                >
+                                <span>Hard</span>
+                            </label>
+        
+                        </div>
+        
+                    </section>
+        
+        
+                    <!-- MODE -->
+                    <section class="qb-config-section">
+        
+                        <h2>4. Study mode</h2>
+        
+                        <label class="qb-mode-card active">
+        
+                            <input
+                                type="radio"
+                                name="qbMode"
+                                value="tutor"
+                                checked
+                            >
+        
+                            <div>
+                                <strong>Tutor Mode</strong>
+        
+                                <p>
+                                    Get feedback and explanations
+                                    after each answer.
+                                </p>
+                            </div>
+        
+                        </label>
+        
+                        <div class="qb-coming-soon">
+                            Exam Mode — coming later
+                        </div>
+        
+                    </section>
+        
+        
+                    <!-- ORDER -->
+                    <section class="qb-config-section">
+        
+                        <h2>5. Question order</h2>
+        
+                        <label class="qb-check-row">
+        
+                            <input
+                                type="radio"
+                                name="qbOrder"
+                                value="random"
+                                checked
+                            >
+        
+                            <span>Random order</span>
+        
+                        </label>
+        
+                        <label class="qb-check-row">
+        
+                            <input
+                                type="radio"
+                                name="qbOrder"
+                                value="default"
+                            >
+        
+                            <span>Default order</span>
+        
+                        </label>
+        
+                    </section>
+        
+                </div>
+        
+        
+                <!-- SUMMARY -->
+                <section class="qb-session-summary">
+        
+                    <h2>Your session</h2>
+        
+                    <div id="qbSessionSummary">
+                        Select at least one module to continue.
+                    </div>
+        
+                    <button
+                        id="qbStartButton"
+                        class="btn btn-primary qb-start-button"
+                        onclick="startQuestionBankSession()"
+                        disabled
+                    >
+                        Start Questions
+                    </button>
+        
+                </section>
+        
+            </div>
+        
+        </div>
+
+        <!-- =====================================================
+             QUESTION SESSION
+        ===================================================== -->
+        <div id="questionSessionPage" class="page hidden">
+        
+            <div class="qb-session-layout">
+        
+                <!-- MAIN QUESTION -->
+                <main class="qb-question-main">
+        
+                    <div class="qb-question-topbar">
+        
+                        <button
+                            class="back-btn"
+                            onclick="confirmEndQuestionSession()"
+                        >
+                            ← Exit session
+                        </button>
+        
+                        <button
+                            id="qbNavigatorMobileBtn"
+                            class="qb-mobile-navigator-btn"
+                            onclick="toggleQuestionNavigator()"
+                        >
+                            Questions
+                        </button>
+        
+                    </div>
+        
+        
+                    <section class="qb-question-card">
+        
+                        <div class="qb-question-header">
+        
+                            <div>
+        
+                                <div
+                                    id="qbQuestionMeta"
+                                    class="qb-question-meta"
+                                ></div>
+        
+                                <h2 id="qbQuestionNumber">
+                                    Question
+                                </h2>
+        
+                            </div>
+        
+                            <button
+                                id="qbFlagButton"
+                                class="qb-flag-button"
+                                onclick="toggleCurrentQuestionFlag()"
+                            >
+                                <i class="far fa-flag"></i>
+                                Flag
+                            </button>
+        
+                        </div>
+        
+        
+                        <div class="qb-progress-track">
+        
+                            <div
+                                id="qbProgressFill"
+                                class="qb-progress-fill"
+                            ></div>
+        
+                        </div>
+        
+        
+                        <div
+                            id="qbQuestionStem"
+                            class="qb-question-stem"
+                        ></div>
+        
+        
+                        <div
+                            id="qbAnswerOptions"
+                            class="qb-answer-options"
+                        ></div>
+        
+        
+                        <div class="qb-submit-area">
+        
+                            <button
+                                id="qbSubmitAnswerButton"
+                                class="btn btn-primary"
+                                onclick="submitCurrentQuestionAnswer()"
+                                disabled
+                            >
+                                Submit Answer
+                            </button>
+        
+                        </div>
+        
+        
+                        <div
+                            id="qbFeedback"
+                            class="qb-feedback hidden"
+                        ></div>
+        
+        
+                        <div class="qb-question-navigation">
+        
+                            <button
+                                class="qb-nav-button"
+                                onclick="previousQuestion()"
+                            >
+                                ← Previous
+                            </button>
+        
+                            <button
+                                class="qb-nav-button"
+                                onclick="skipCurrentQuestion()"
+                            >
+                                Skip
+                            </button>
+        
+                            <button
+                                class="qb-nav-button"
+                                onclick="nextQuestion()"
+                            >
+                                Next →
+                            </button>
+        
+                        </div>
+        
+                    </section>
+        
+                </main>
+        
+        
+                <!-- NAVIGATOR -->
+                <aside
+                    id="qbQuestionNavigator"
+                    class="qb-navigator"
+                >
+        
+                    <div class="qb-navigator-heading">
+        
+                        <h3>Questions</h3>
+        
+                        <button
+                            class="qb-navigator-close"
+                            onclick="toggleQuestionNavigator()"
+                        >
+                            ×
+                        </button>
+        
+                    </div>
+        
+                    <div
+                        id="qbNavigatorGrid"
+                        class="qb-navigator-grid"
+                    ></div>
+        
+        
+                    <div class="qb-navigator-legend">
+        
+                        <span>
+                            <i class="qb-dot current"></i>
+                            Current
+                        </span>
+        
+                        <span>
+                            <i class="qb-dot answered"></i>
+                            Answered
+                        </span>
+        
+                        <span>
+                            <i class="qb-dot flagged"></i>
+                            Flagged
+                        </span>
+        
+                        <span>
+                            <i class="qb-dot unanswered"></i>
+                            Unanswered
+                        </span>
+        
+                    </div>
+        
+        
+                    <button
+                        class="btn btn-danger qb-end-session"
+                        onclick="finishQuestionBankSession()"
+                    >
+                        End Session
+                    </button>
+        
+                </aside>
+        
+            </div>
+        
+        </div>
+        <!-- =====================================================
+             QUESTION BANK RESULTS
+        ===================================================== -->
+        <div id="questionResultsPage" class="page hidden">
+        
+            <div class="qb-results-container">
+        
+                <button
+                    class="back-btn"
+                    onclick="showQuestionBank()"
+                >
+                    ← Back to Question Bank
+                </button>
+        
+        
+                <section class="qb-results-hero">
+        
+                    <span class="qb-eyebrow">
+                        SESSION COMPLETE
+                    </span>
+        
+                    <h1>Your Results</h1>
+        
+                    <div class="qb-score-circle">
+        
+                        <strong id="qbResultPercentage">
+                            0%
+                        </strong>
+        
+                        <span id="qbResultScore">
+                            0 / 0
+                        </span>
+        
+                    </div>
+        
+                </section>
+        
+        
+                <div class="qb-result-stat-grid">
+        
+                    <div class="qb-result-stat">
+                        <strong id="qbResultCorrect">0</strong>
+                        <span>Correct</span>
+                    </div>
+        
+                    <div class="qb-result-stat">
+                        <strong id="qbResultIncorrect">0</strong>
+                        <span>Incorrect</span>
+                    </div>
+        
+                    <div class="qb-result-stat">
+                        <strong id="qbResultUnanswered">0</strong>
+                        <span>Unanswered</span>
+                    </div>
+        
+                    <div class="qb-result-stat">
+                        <strong id="qbResultTime">0:00</strong>
+                        <span>Total time</span>
+                    </div>
+        
+                </div>
+        
+        
+                <section class="qb-results-section">
+        
+                    <h2>Performance by module</h2>
+        
+                    <div id="qbModuleResults"></div>
+        
+                </section>
+        
+        
+                <section class="qb-results-section">
+        
+                    <h2>Performance by difficulty</h2>
+        
+                    <div id="qbDifficultyResults"></div>
+        
+                </section>
+        
+        
+                <section class="qb-results-section">
+        
+                    <h2>Question review</h2>
+        
+                    <div class="qb-review-filters">
+        
+                        <button onclick="filterResultQuestions('all')">
+                            All
+                        </button>
+        
+                        <button onclick="filterResultQuestions('incorrect')">
+                            Incorrect
+                        </button>
+        
+                        <button onclick="filterResultQuestions('correct')">
+                            Correct
+                        </button>
+        
+                        <button onclick="filterResultQuestions('flagged')">
+                            Flagged
+                        </button>
+        
+                        <button onclick="filterResultQuestions('unanswered')">
+                            Unanswered
+                        </button>
+        
+                    </div>
+        
+                    <div id="qbResultQuestions"></div>
+        
+                </section>
+        
+        
+                <div class="qb-results-actions">
+        
+                    <button
+                        class="btn btn-primary"
+                        onclick="showQuestionBank()"
+                    >
+                        Start New Session
+                    </button>
+        
+                </div>
+        
+            </div>
+        
         </div>
 
         <!-- IA Page -->
