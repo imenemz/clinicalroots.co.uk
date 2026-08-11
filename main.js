@@ -231,6 +231,8 @@ function initTheme() {
 // --------------------------
 // AUTH
 // --------------------------
+
+
 async function handleLogin(e) {
     e.preventDefault();
     const email = qs("loginEmail").value;
@@ -257,23 +259,204 @@ async function handleLogin(e) {
         alert("Login error: " + err.message);
     }
 }
+async function handleSignup(e) {
 
+    e.preventDefault();
+
+
+    const username =
+        qs("signupUsername")
+            .value
+            .trim();
+
+
+    const email =
+        qs("signupEmail")
+            .value
+            .trim();
+
+
+    const password =
+        qs("signupPassword")
+            .value;
+
+
+    const confirmPassword =
+        qs("signupPasswordConfirm")
+            .value;
+
+
+    if (
+        password !==
+        confirmPassword
+    ) {
+
+        alert(
+            "Passwords do not match."
+        );
+
+        return;
+    }
+
+
+    if (
+        password.length < 8
+    ) {
+
+        alert(
+            "Password must be at least 8 characters."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const data =
+            await api(
+                "/api/signup",
+                {
+                    method: "POST",
+
+                    body:
+                        JSON.stringify({
+                            username,
+                            email,
+                            password,
+                        }),
+                }
+            );
+
+
+        sessionStorage.setItem(
+            "jwt",
+            data.token
+        );
+
+
+        sessionStorage.setItem(
+            "user",
+            JSON.stringify(
+                data.user
+            )
+        );
+
+
+        currentUser =
+            data.user;
+
+
+        updateLoginUI();
+
+
+        closeSignup();
+
+
+        alert(
+            `Welcome to ClinicalRoots, ${data.user.username}!`
+        );
+
+
+        showHome();
+
+    }
+
+    catch (err) {
+
+        alert(
+            "Sign up error: "
+            + err.message
+        );
+
+    }
+
+}
 function updateLoginUI() {
-    const stored = sessionStorage.getItem("user");
-    currentUser = stored ? JSON.parse(stored) : null;
 
-    const authButtons = qs("authButtons");
-    if (!authButtons || !elements.userMenu) return;
+    const stored =
+        sessionStorage.getItem(
+            "user"
+        );
+
+
+    currentUser =
+        stored
+            ? JSON.parse(stored)
+            : null;
+
+
+    const authButtons =
+        qs("authButtons");
+
+
+    if (
+        !authButtons ||
+        !elements.userMenu
+    ) return;
+
 
     if (!currentUser) {
-        authButtons.classList.remove("hidden");
-        elements.userMenu.classList.add("hidden");
-        document.body.classList.remove("admin-logged-in");
-    } else {
-        authButtons.classList.add("hidden");
-        elements.userMenu.classList.remove("hidden");
-        document.body.classList.add("admin-logged-in");
+
+        authButtons.classList.remove(
+            "hidden"
+        );
+
+        elements.userMenu.classList.add(
+            "hidden"
+        );
+
+        document.body.classList.remove(
+            "admin-logged-in"
+        );
+
+        return;
     }
+
+
+    authButtons.classList.add(
+        "hidden"
+    );
+
+
+    elements.userMenu.classList.remove(
+        "hidden"
+    );
+
+
+    if (
+        currentUser.role ===
+        "admin"
+    ) {
+
+        document.body.classList.add(
+            "admin-logged-in"
+        );
+
+    }
+
+    else {
+
+        document.body.classList.remove(
+            "admin-logged-in"
+        );
+
+    }
+
+
+    const userButtonLabel =
+        qs("userButtonLabel");
+
+
+    if (userButtonLabel) {
+
+        userButtonLabel.textContent =
+            currentUser.username
+            ||
+            currentUser.email;
+
+    }
+
 }
 
 function handleLogout(showAlert = true) {
@@ -292,11 +475,42 @@ function openLogin() {
     }
 }
 
+
 function closeLogin() {
     if (elements.loginModal) {
         elements.loginModal.style.display = "none";
     }
 }
+
+function showSignup() {
+    const modal = qs("signupModal");
+
+    if (modal) {
+        modal.style.display = "flex";
+    }
+}
+
+
+function closeSignup() {
+    const modal = qs("signupModal");
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
+
+function switchLoginToSignup() {
+    closeLogin();
+    showSignup();
+}
+
+
+function switchSignupToLogin() {
+    closeSignup();
+    openLogin();
+}
+
 
 function toggleUserMenu() {
     const dd = qs("userDropdownContent");
@@ -5912,9 +6126,30 @@ document.addEventListener("DOMContentLoaded", () => {
         elements.loginForm.addEventListener("submit", handleLogin);
     }
 
+    const signupForm =
+        qs("signupForm");
+    
+    if (signupForm) {
+    
+        signupForm.addEventListener(
+            "submit",
+            handleSignup
+        );
+    
+    }
+
     window.addEventListener("click", (e) => {
         if (e.target === elements.loginModal) {
             closeLogin();
+        }
+        const signupModal = qs("signupModal");
+        
+        if (signupModal &&
+            e.target === signupModal
+        ) {
+    
+            closeSignup();
+    
         }
     });
 
