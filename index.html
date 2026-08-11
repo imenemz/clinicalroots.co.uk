@@ -3798,7 +3798,46 @@
             border-color: rgba(122, 215, 163, 0.25);
         }
 
+        /*the sign in button */
+        .auth-modal-content {
+            max-width: 480px;
+        }
         
+        .auth-modal-subtitle {
+            color: var(--text-light);
+            margin-top: 0.25rem;
+            font-size: 0.95rem;
+        }
+        
+        .auth-submit-btn {
+            width: 100%;
+        }
+        
+        .auth-field-help {
+            display: block;
+            margin-top: 0.4rem;
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+        
+        .auth-switch-text {
+            margin-top: 1.25rem;
+            text-align: center;
+            color: var(--text-light);
+        }
+        
+        .auth-switch-button {
+            border: none;
+            background: none;
+            padding: 0;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .auth-switch-button:hover {
+            text-decoration: underline;
+        }
         /* =========================================================
            HIGH-YIELD AT A GLANCE TOOLBAR
            Follows only inside the At a Glance box
@@ -3929,8 +3968,15 @@
                 </li>
                 <li id="userMenu" class="hidden">
                     <div class="user-dropdown">
-                        <button class="user-btn" onclick="toggleUserMenu()">
-                            <i class="fas fa-user-circle"></i> Admin
+                        <button
+                            class="user-btn"
+                            onclick="toggleUserMenu()"
+                        >
+                            <i class="fas fa-user-circle"></i>
+                        
+                            <span id="userButtonLabel">
+                                Account
+                            </span>
                         </button>
                         <div class="user-dropdown-content" id="userDropdownContent">
                             <a href="#" onclick="hideUserMenu(); showAdminDashboard()"><i class="fas fa-gauge"></i> Dashboard</a>
