@@ -375,36 +375,33 @@ async function handleSignup(e) {
 function updateLoginUI() {
 
     const stored =
-        sessionStorage.getItem(
-            "user"
-        );
-
+        sessionStorage.getItem("user");
 
     currentUser =
         stored
             ? JSON.parse(stored)
             : null;
 
-
     const authButtons =
         qs("authButtons");
 
+    const adminMenu =
+        qs("userMenu");
 
-    if (
-        !authButtons ||
-        !elements.userMenu
-    ) return;
+    const studentMenu =
+        qs("studentUserMenu");
 
 
+    // =========================
+    // NOT LOGGED IN
+    // =========================
     if (!currentUser) {
 
-        authButtons.classList.remove(
-            "hidden"
-        );
+        authButtons?.classList.remove("hidden");
 
-        elements.userMenu.classList.add(
-            "hidden"
-        );
+        adminMenu?.classList.add("hidden");
+
+        studentMenu?.classList.add("hidden");
 
         document.body.classList.remove(
             "admin-logged-in"
@@ -414,49 +411,37 @@ function updateLoginUI() {
     }
 
 
-    authButtons.classList.add(
-        "hidden"
-    );
+    // Hide login + signup for all logged-in users
+    authButtons?.classList.add("hidden");
 
 
-    elements.userMenu.classList.remove(
-        "hidden"
-    );
+    // =========================
+    // ADMIN
+    // =========================
+    if (currentUser.role === "admin") {
 
+        adminMenu?.classList.remove("hidden");
 
-    if (
-        currentUser.role ===
-        "admin"
-    ) {
+        studentMenu?.classList.add("hidden");
 
         document.body.classList.add(
             "admin-logged-in"
         );
 
-    }
-
-    else {
-
-        document.body.classList.remove(
-            "admin-logged-in"
-        );
-
+        return;
     }
 
 
-    const userButtonLabel =
-        qs("userButtonLabel");
+    // =========================
+    // STUDENT
+    // =========================
+    adminMenu?.classList.add("hidden");
 
+    studentMenu?.classList.remove("hidden");
 
-    if (userButtonLabel) {
-
-        userButtonLabel.textContent =
-            currentUser.username
-            ||
-            currentUser.email;
-
-    }
-
+    document.body.classList.remove(
+        "admin-logged-in"
+    );
 }
 
 function handleLogout(showAlert = true) {
