@@ -1,7 +1,5 @@
 //BASIC API HELPER
 
-
-
 const API_BASE = "https://imeneee.pythonanywhere.com";
 
 function apiUrl(path) {
@@ -503,6 +501,19 @@ function toggleUserMenu() {
 
     dd.style.display =
         dd.style.display === "block" ? "none" : "block";
+}
+
+function toggleStudentUserMenu() {
+
+    const dd =
+        qs("studentUserDropdownContent");
+
+    if (!dd) return;
+
+    dd.style.display =
+        dd.style.display === "block"
+            ? "none"
+            : "block";
 }
 
 function hideUserMenu() {
