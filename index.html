@@ -5799,6 +5799,66 @@ Our mission is to take every topic — from core mechanisms to real-world decisi
         </div>
     
     </div>
+    
+    <div id="userMenu" class="user-dropdown hidden">
+
+        <button
+            class="user-btn"
+            onclick="toggleUserMenu()"
+        >
+            <i class="fas fa-user-circle"></i>
+            Admin
+        </button>
+    
+        <div
+            id="userDropdownContent"
+            class="user-dropdown-content"
+        >
+    
+            <a onclick="showAdminDashboard()">
+                <i class="fas fa-gauge"></i>
+                Dashboard
+            </a>
+    
+            <a onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </a>
+    
+        </div>
+    
+    </div>
+    <div
+        id="studentUserMenu"
+        class="user-dropdown hidden"
+    >
+    
+        <button
+            class="user-btn"
+            onclick="toggleStudentUserMenu()"
+        >
+            <i class="fas fa-user-circle"></i>
+            Account
+        </button>
+    
+        <div
+            id="studentUserDropdownContent"
+            class="user-dropdown-content"
+        >
+    
+            <a onclick="showQuestionBank()">
+                <i class="fas fa-list-check"></i>
+                Question Bank
+            </a>
+    
+            <a onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </a>
+    
+        </div>
+    
+    </div>
 
     <!-- About Editor Modal -->
     <div id="aboutEditorModal" class="modal">
