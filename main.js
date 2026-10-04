@@ -378,76 +378,40 @@ async function handleSignup(e) {
     }
 
 }
+
 function updateLoginUI() {
+    const stored = sessionStorage.getItem("user");
+    currentUser = stored ? JSON.parse(stored) : null;
 
-    const stored =
-        sessionStorage.getItem("user");
+    const authButtons = qs("authButtons");
 
-    currentUser =
-        stored
-            ? JSON.parse(stored)
-            : null;
+    if (!authButtons || !elements.userMenu) {
+        return;
+    }
 
-    const authButtons =
-        qs("authButtons");
-
-    const adminMenu =
-        qs("userMenu");
-
-    const studentMenu =
-        qs("studentUserMenu");
-
-
-    // =========================
-    // NOT LOGGED IN
-    // =========================
     if (!currentUser) {
+        // Visitor
+        authButtons.classList.remove("hidden");
+        elements.userMenu.classList.add("hidden");
 
-        authButtons?.classList.remove("hidden");
-
-        adminMenu?.classList.add("hidden");
-
-        studentMenu?.classList.add("hidden");
-
-        document.body.classList.remove(
-            "admin-logged-in"
-        );
+        document.body.classList.remove("admin-logged-in");
+        document.body.classList.remove("user-logged-in");
 
         return;
     }
 
+    // Any logged-in account
+    authButtons.classList.add("hidden");
+    elements.userMenu.classList.remove("hidden");
 
-    // Hide login + signup for all logged-in users
-    authButtons?.classList.add("hidden");
+    document.body.classList.add("user-logged-in");
 
-
-    // =========================
-    // ADMIN
-    // =========================
+    // ONLY administrators get admin UI
     if (currentUser.role === "admin") {
-
-        adminMenu?.classList.remove("hidden");
-
-        studentMenu?.classList.add("hidden");
-
-        document.body.classList.add(
-            "admin-logged-in"
-        );
-
-        return;
+        document.body.classList.add("admin-logged-in");
+    } else {
+        document.body.classList.remove("admin-logged-in");
     }
-
-
-    // =========================
-    // STUDENT
-    // =========================
-    adminMenu?.classList.add("hidden");
-
-    studentMenu?.classList.remove("hidden");
-
-    document.body.classList.remove(
-        "admin-logged-in"
-    );
 }
 
 // ==========================================================
@@ -612,6 +576,85 @@ function isFeatureAvailable(featureKey) {
 
     return getFeatureStatus(featureKey) === "available";
 }
+
+// ==========================================================
+// SUBSCRIPTION ACCESS
+// ==========================================================
+
+function getCurrentPlan() {
+    if (currentUser?.role === "admin") {
+        return "premium";
+    }
+
+    return (
+        currentSubscription?.plan ||
+        currentUser?.subscription?.plan ||
+        currentUser?.subscription_plan ||
+        "free"
+    ).toLowerCase();
+}
+
+
+function hasActiveSubscription() {
+    if (currentUser?.role === "admin") {
+        return true;
+    }
+
+    return (
+        currentSubscription?.status === "active" ||
+        currentUser?.subscription?.status === "active" ||
+        currentUser?.subscription_status === "active"
+    );
+}
+
+
+function canAccessLevel(accessLevel = "free") {
+    if (currentUser?.role === "admin") {
+        return true;
+    }
+
+    const required =
+        String(accessLevel || "free").toLowerCase();
+
+    // Everyone can access free content
+    if (required === "free") {
+        return true;
+    }
+
+    // Paid content requires an account + active subscription
+    if (!currentUser || !hasActiveSubscription()) {
+        return false;
+    }
+
+    const plan = getCurrentPlan();
+
+    if (required === "standard") {
+        return plan === "standard" || plan === "premium";
+    }
+
+    if (required === "premium") {
+        return plan === "premium";
+    }
+
+    return false;
+}
+
+
+function accessLabel(accessLevel = "free") {
+    const level =
+        String(accessLevel || "free").toLowerCase();
+
+    if (level === "premium") {
+        return "Premium";
+    }
+
+    if (level === "standard") {
+        return "Standard";
+    }
+
+    return "Free";
+}
+
 function handleLogout(showAlert = true) {
     sessionStorage.removeItem("jwt");
     sessionStorage.removeItem("user");
