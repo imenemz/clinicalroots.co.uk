@@ -117,6 +117,14 @@ const elements = {
 };
 
 let currentUser = null;
+let currentSubscription = {
+    plan: "free",
+    status: "inactive",
+    expires_at: null,
+};
+
+let siteFeatures = {};
+
 let currentCategoryId = null;
 let categoriesTree = [];
 let flatCategories = [];   // {id, name, parent_id, path}
@@ -442,6 +450,168 @@ function updateLoginUI() {
     );
 }
 
+// ==========================================================
+// SUBSCRIPTION / ACCESS HELPERS
+// ==========================================================
+
+function getCurrentPlan() {
+    if (currentUser?.role === "admin") {
+        return "premium";
+    }
+
+    return (
+        currentSubscription?.plan ||
+        currentUser?.subscription?.plan ||
+        currentUser?.subscription_plan ||
+        "free"
+    ).toLowerCase();
+}
+
+
+function hasActiveSubscription() {
+    if (currentUser?.role === "admin") {
+        return true;
+    }
+
+    return (
+        currentSubscription?.status === "active" ||
+        currentUser?.subscription?.status === "active" ||
+        currentUser?.subscription_status === "active"
+    );
+}
+
+
+function canAccessLevel(accessLevel = "free") {
+    if (currentUser?.role === "admin") {
+        return true;
+    }
+
+    const required = String(accessLevel || "free").toLowerCase();
+
+    if (required === "free") {
+        return true;
+    }
+
+    if (!currentUser || !hasActiveSubscription()) {
+        return false;
+    }
+
+    const currentPlan = getCurrentPlan();
+
+    if (required === "standard") {
+        return currentPlan === "standard" || currentPlan === "premium";
+    }
+
+    if (required === "premium") {
+        return currentPlan === "premium";
+    }
+
+    return false;
+}
+
+
+function accessLabel(accessLevel = "free") {
+    const level = String(accessLevel || "free").toLowerCase();
+
+    if (level === "premium") return "Premium";
+    if (level === "standard") return "Standard";
+
+    return "Free";
+}
+
+
+function accessIcon(accessLevel = "free") {
+    return canAccessLevel(accessLevel)
+        ? ""
+        : `<i class="fas fa-lock"></i>`;
+}
+
+async function refreshCurrentUser() {
+    const token = sessionStorage.getItem("jwt");
+
+    if (!token) {
+        currentUser = null;
+
+        currentSubscription = {
+            plan: "free",
+            status: "inactive",
+            expires_at: null,
+        };
+
+        return null;
+    }
+
+    try {
+        const data = await api("/api/me");
+
+        currentUser = data.user || data;
+
+        currentSubscription =
+            data.subscription ||
+            currentUser.subscription || {
+                plan: currentUser.subscription_plan || "free",
+                status: currentUser.subscription_status || "inactive",
+                expires_at: currentUser.subscription_expires_at || null,
+            };
+
+        sessionStorage.setItem(
+            "user",
+            JSON.stringify(currentUser)
+        );
+
+        updateLoginUI();
+
+        return currentUser;
+
+    } catch (err) {
+        console.error("Could not refresh account:", err);
+        return null;
+    }
+}
+
+async function loadSiteFeatures() {
+    try {
+        const data = await api("/api/site-features");
+
+        if (Array.isArray(data)) {
+            siteFeatures = {};
+
+            data.forEach(feature => {
+                siteFeatures[feature.feature_key] = feature;
+            });
+        } else {
+            siteFeatures = data || {};
+        }
+
+    } catch (err) {
+        console.error("Could not load site features:", err);
+        siteFeatures = {};
+    }
+}
+
+
+function getFeatureStatus(featureKey) {
+    const feature = siteFeatures[featureKey];
+
+    if (!feature) {
+        return "coming_soon";
+    }
+
+    if (typeof feature === "string") {
+        return feature;
+    }
+
+    return feature.status || "coming_soon";
+}
+
+
+function isFeatureAvailable(featureKey) {
+    if (currentUser?.role === "admin") {
+        return true;
+    }
+
+    return getFeatureStatus(featureKey) === "available";
+}
 function handleLogout(showAlert = true) {
     sessionStorage.removeItem("jwt");
     sessionStorage.removeItem("user");
@@ -897,13 +1067,37 @@ async function openCategoryById(catId) {
                 `
                 : "";
 
+            const noteAccess = (n.access_level || "free").toLowerCase();
+            const noteLocked = !canAccessLevel(noteAccess);
+            
+            card.classList.toggle("locked-note", noteLocked);
+            
             card.innerHTML = `
                 <div class="note-info">
-                    <h4>${n.title}</h4>
-                    <div class="note-meta">${n.views} views</div>
-                    ${isAdmin ? `<div class="note-drag-hint">Hold and drag to reorder</div>` : ""}
+            
+                    <div class="note-title-row">
+                        <h4>${escapeHtml(n.title)}</h4>
+            
+                        <span class="access-badge access-${noteAccess}">
+                            ${accessIcon(noteAccess)}
+                            ${accessLabel(noteAccess)}
+                        </span>
+                    </div>
+            
+                    <div class="note-meta">
+                        ${n.views} views
+                    </div>
+            
+                    ${
+                        isAdmin
+                            ? `<div class="note-drag-hint">
+                                   Hold and drag to reorder
+                               </div>`
+                            : ""
+                    }
+            
                 </div>
-
+            
                 ${orderControlsHtml}
             `;
 
