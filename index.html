@@ -3932,6 +3932,157 @@
             position: absolute !important;
             z-index: 3000 !important;
         }
+
+        /* ==========================================================
+           SUBSCRIPTION / ACCESS UI
+           ========================================================== */
+        
+        .note-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        
+        .note-title-row h4 {
+            margin: 0;
+        }
+        
+        .access-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            white-space: nowrap;
+            letter-spacing: 0.02em;
+        }
+        
+        .access-free {
+            background: rgba(122, 215, 163, 0.16);
+            color: #17643d;
+            border: 1px solid rgba(122, 215, 163, 0.45);
+        }
+        
+        .access-standard {
+            background: rgba(25, 62, 55, 0.09);
+            color: var(--primary);
+            border: 1px solid rgba(25, 62, 55, 0.22);
+        }
+        
+        .access-premium {
+            background: #193e37;
+            color: #ffffff;
+            border: 1px solid #193e37;
+        }
+        
+        .locked-note {
+            position: relative;
+        }
+        
+        .locked-note:hover {
+            border-color: var(--primary);
+        }
+        
+        .locked-note .note-info {
+            opacity: 0.82;
+        }
+        
+        
+        /* Coming Soon */
+        
+        .coming-soon-badge {
+            position: absolute;
+            top: 0.8rem;
+            right: 0.8rem;
+        
+            padding: 0.35rem 0.7rem;
+        
+            background: var(--primary);
+            color: white;
+        
+            border-radius: 999px;
+        
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        
+            z-index: 3;
+        }
+        
+        
+        /* Subscription modal */
+        
+        .subscription-modal-content {
+            max-width: 520px;
+            text-align: center;
+        }
+        
+        .subscription-lock-icon {
+            width: 64px;
+            height: 64px;
+        
+            margin: 0 auto 1.2rem;
+        
+            border-radius: 50%;
+        
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        
+            background: rgba(122, 215, 163, 0.16);
+            color: var(--primary);
+        
+            font-size: 1.5rem;
+        }
+        
+        .subscription-modal-content h2 {
+            margin-bottom: 0.7rem;
+        }
+        
+        .subscription-modal-content p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        
+        .subscription-modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        
+        [data-theme="dark"] .access-free {
+            color: var(--primary);
+        }
+        
+        [data-theme="dark"] .access-standard {
+            color: var(--primary);
+            border-color: rgba(122, 215, 163, 0.35);
+        }
+        
+        [data-theme="dark"] .access-premium {
+            background: var(--primary);
+            color: #102a25;
+        }
+        
+        
+        @media (max-width: 600px) {
+            .note-title-row {
+                align-items: flex-start;
+            }
+        
+            .access-badge {
+                font-size: 0.65rem;
+            }
+        }
+
+        
         
     </style>
 </head>
@@ -3990,6 +4141,130 @@
 
     <!-- Main Content -->
     <main class="main-content">
+
+        <!-- Plans Page -->
+        <div id="plansPage" class="page hidden">
+        
+            <div class="hero">
+                <button
+                    class="back-btn"
+                    onclick="showHome()"
+                >
+                    ← Back to Home
+                </button>
+        
+                <h1>Choose your ClinicalRoots plan</h1>
+        
+                <p>
+                    Start with the essentials and upgrade when
+                    you want the complete ClinicalRoots learning experience.
+                </p>
+            </div>
+        
+        
+            <div class="pricing-section">
+        
+                <div class="pricing-card">
+        
+                    <div class="pricing-plan-name">
+                        Free
+                    </div>
+        
+                    <div class="pricing-price">
+                        £0
+                    </div>
+        
+                    <p>
+                        Explore ClinicalRoots before subscribing.
+                    </p>
+        
+                    <ul>
+                        <li>Free sample clinical notes</li>
+                        <li>ClinicalRoots account</li>
+                        <li>Preview the learning platform</li>
+                    </ul>
+        
+                    <button
+                        class="btn btn-primary"
+                        onclick="showSignup()"
+                    >
+                        Create Free Account
+                    </button>
+        
+                </div>
+        
+        
+                <div class="pricing-card">
+        
+                    <div class="pricing-plan-name">
+                        Standard
+                    </div>
+        
+                    <div class="pricing-price">
+                        £3.99
+                    </div>
+        
+                    <p>
+                        Access the comprehensive ClinicalRoots
+                        clinical notes library.
+                    </p>
+        
+                    <ul>
+                        <li>Everything in Free</li>
+                        <li>Full Standard clinical notes</li>
+                        <li>Core medical learning library</li>
+                    </ul>
+        
+                    <button
+                        class="btn btn-primary"
+                        onclick="selectPlan('standard')"
+                    >
+                        Choose Standard
+                    </button>
+        
+                </div>
+        
+        
+                <div class="pricing-card featured">
+        
+                    <div class="pricing-recommended">
+                        Most Complete
+                    </div>
+        
+                    <div class="pricing-plan-name">
+                        Premium
+                    </div>
+        
+                    <div class="pricing-price">
+                        £6.99
+                    </div>
+        
+                    <p>
+                        The complete ClinicalRoots learning
+                        experience.
+                    </p>
+        
+                    <ul>
+                        <li>Everything in Standard</li>
+                        <li>High-Yield revision notes</li>
+                        <li>Question Bank</li>
+                        <li>AI Tutor</li>
+                        <li>AI Ward Rounds &amp; Clinics</li>
+                        <li>Future premium learning features</li>
+                    </ul>
+        
+                    <button
+                        class="btn btn-success"
+                        onclick="selectPlan('premium')"
+                    >
+                        Choose Premium
+                    </button>
+        
+                </div>
+        
+            </div>
+        
+        </div>
         <!-- Home Page -->
         <div id="homePage" class="page">
             <div class="hero">
@@ -5897,6 +6172,53 @@ Our mission is to take every topic — from core mechanisms to real-world decisi
         </div>
     </div>
     <script src="main.js"></script>
+
+    <!-- Subscription Required Modal -->
+    <div id="subscriptionModal" class="modal">
+        <div class="modal-content subscription-modal-content">
+    
+            <button
+                class="close-btn"
+                onclick="closeSubscriptionModal()"
+                style="float: right;"
+            >
+                &times;
+            </button>
+    
+            <div class="subscription-lock-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+    
+            <h2 id="subscriptionModalTitle">
+                Unlock this content
+            </h2>
+    
+            <p id="subscriptionModalText">
+                This content requires a ClinicalRoots subscription.
+            </p>
+    
+            <div class="subscription-modal-actions">
+    
+                <button
+                    id="subscriptionSignupButton"
+                    class="btn btn-primary"
+                    onclick="closeSubscriptionModal(); showSignup();"
+                >
+                    Create Free Account
+                </button>
+    
+                <button
+                    id="subscriptionUpgradeButton"
+                    class="btn btn-success"
+                    onclick="showPlans()"
+                >
+                    View Plans
+                </button>
+    
+            </div>
+    
+        </div>
+    </div>
 
 
 </body>
